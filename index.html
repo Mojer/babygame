@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>小寶寶躲避球遊戲</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    canvas {
+      border: 2px solid #fff;
+      background: #000;
+    }
+    @keyframes glowmove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+  </style>
+</head>
+<body>
+<div id="startScreen" style="position:absolute; top:0; left:0; width:100vw; height:100vh; background: linear-gradient(-45deg, #ffff99, #66ff66, #ccffcc, #ffff99); background-size: 400% 400%; animation: glowmove 10s ease infinite; display:flex; justify-content:center; align-items:center; flex-direction:column; z-index:10;">
+  <h1 style="color:white; font-size:32px; font-family:sans-serif; margin-bottom:20px; text-shadow: 1px 1px 4px black;">小寶寶躲避球</h1>
+  <button onclick="startGame()" id="startBtn" style="padding: 10px 20px; font-size: 18px; border-radius: 8px; border: none; cursor: pointer; background: white; color: black;">開始遊戲</button>
+</div>
+<canvas id="gameCanvas" width="400" height="600"></canvas>
+<div id="touchControls" style="position: absolute; bottom: 300px; width: 100%; display: flex; justify-content: space-between; padding: 0 40px; pointer-events: auto;">
+  <button id="leftBtn" style="width: 60px; height: 60px; font-size: 24px; border-radius: 30px; border: none; background: #fff; cursor: pointer; opacity: 0.8;">←</button>
+  <button id="rightBtn" style="width: 60px; height: 60px; font-size: 24px; border-radius: 30px; border: none; background: #fff; cursor: pointer; opacity: 0.8;">→</button>
+</div>
+<script type="module">
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+const ASSETS = {
+  background: 'https://i.imgur.com/4vYAj7S.jpeg',
+  player: 'https://i.imgur.com/GEBB2Pw.png',
+  ball: 'https://i.imgur.com/w4cyFLY.png',
+  gameover: 'https://i.imgur.com/UNTpzqE.png'
+};
+
+function loadImage(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.src = src;
+  });
+}
+
+const player = {
+  x: 180,
+  y: 530,
+  width: 64,
+  height: 64,
+  speed: 5
+};
+
+const obstacles = [];
+let gameOver = false;
+let startTime = 0;
+let finalTime = 0;
+
+function createObstacle() {
+  const size = 64;
+  const x = Math.random() * (canvas.width - size);
+  obstacles.push({ x, y: -size, width: size, height: size, speed: 3 });
+}
+
+function update() {
+  if (gameOver) return;
+  for (let obs of obstacles) {
+    obs.y += obs.speed;
+    if (
+      obs.x < player.x + player.width - 16 &&
+      obs.x + obs.width > player.x + 16 &&
+      obs.y < player.y + player.height - 16 &&
+      obs.y + obs.height > player.y + 16
+    ) {
+      gameOver = true;
+      finalTime = ((performance.now() - startTime) / 1000).toFixed(1);
+      return;
+    }
+  }
+  while (obstacles.length && obstacles[0].y > canvas.height) {
+    obstacles.shift();
+  }
+}
+
+function draw(bg, playerImg, ballImg, gameoverImg) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const scaleBg = Math.max(canvas.width / bg.width, canvas.height / bg.height);
+  const xBg = (canvas.width - bg.width * scaleBg) / 2;
+  const yBg = (canvas.height - bg.height * scaleBg) / 2;
+  ctx.drawImage(bg, xBg, yBg, bg.width * scaleBg, bg.height * scaleBg);
+  ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
+  for (let obs of obstacles) {
+    ctx.drawImage(ballImg, obs.x, obs.y, obs.width, obs.height);
+  }
+  const now = performance.now();
+  const elapsed = ((now - startTime) / 1000).toFixed(1);
+  ctx.fillStyle = '#fff';
+  ctx.font = '20px monospace';
+  ctx.fillText(`Survived: ${elapsed}s`, 10, 30);
+  if (gameOver) {
+    const scaleGo = Math.max(canvas.width / gameoverImg.width, canvas.height / gameoverImg.height);
+    const xGo = (canvas.width - gameoverImg.width * scaleGo) / 2;
+    const yGo = (canvas.height - gameoverImg.height * scaleGo) / 2;
+    ctx.drawImage(gameoverImg, xGo, yGo, gameoverImg.width * scaleGo, gameoverImg.height * scaleGo);
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillRect(50, 390, 300, 130);
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(50, 390, 300, 130);
+    ctx.fillStyle = '#000';
+    ctx.font = '20px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`🎉 恭喜你支撐了 ${finalTime} 秒 🎉`, 200, 440);
+    ctx.fillText(`請點擊下方按鈕重新開始`, 200, 480);
+    const button = document.createElement('button');
+    button.textContent = '重新開始';
+    button.style.position = 'absolute';
+    button.style.left = '50%';
+    button.style.top = '540px';
+    button.style.transform = 'translateX(-50%)';
+    button.style.padding = '10px 20px';
+    button.style.fontSize = '16px';
+    button.style.borderRadius = '8px';
+    button.style.border = 'none';
+    button.style.cursor = 'pointer';
+    button.style.backgroundColor = '#ffffff';
+    button.style.color = '#000000';
+    button.onclick = () => { window.location.href = window.location.href; };
+    if (!document.getElementById('restartButton')) {
+      button.id = 'restartButton';
+      document.body.appendChild(button);
+    }
+  }
+}
+
+function gameLoop(bg, playerImg, ballImg, gameoverImg) {
+  update();
+  draw(bg, playerImg, ballImg, gameoverImg);
+  if (!gameOver) {
+    requestAnimationFrame(() => gameLoop(bg, playerImg, ballImg, gameoverImg));
+  }
+}
+
+function setupControls() {
+  document.addEventListener('keydown', (e) => {
+    if (gameOver) return;
+    if (e.key === 'ArrowLeft' && player.x > 0) player.x -= player.speed;
+    if (e.key === 'ArrowRight' && player.x + player.width < canvas.width) player.x += player.speed;
+  });
+
+  const leftBtn = document.getElementById('leftBtn');
+  const rightBtn = document.getElementById('rightBtn');
+  if (leftBtn && rightBtn) {
+    leftBtn.addEventListener('touchstart', () => {
+      if (!gameOver && player.x > 0) player.x -= player.speed;
+    });
+    rightBtn.addEventListener('touchstart', () => {
+      if (!gameOver && player.x + player.width < canvas.width) player.x += player.speed;
+    });
+  }
+}
+
+async function main() {
+  const [bg, playerImg, ballImg, gameoverImg] = await Promise.all([
+    loadImage(ASSETS.background),
+    loadImage(ASSETS.player),
+    loadImage(ASSETS.ball),
+    loadImage(ASSETS.gameover)
+  ]);
+  setupControls();
+  setInterval(createObstacle, 1000);
+  startTime = performance.now();
+  gameLoop(bg, playerImg, ballImg, gameoverImg);
+}
+
+window.startGame = function () {$1}
+window.startGame = function () {
+  document.getElementById('startScreen').style.display = 'none';
+  main();
+}
+</script>
+</body>
+</html>
