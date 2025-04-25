@@ -26,15 +26,15 @@
       object-fit: contain;
     }
     #touchControls {
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  padding: 0;
-  pointer-events: auto;
-}
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0;
+      pointer-events: auto;
+    }
     #touchControls button {
       width: 64px;
       height: 64px;
@@ -89,8 +89,6 @@ const player = {
 };
 
 const obstacles = [];
-let movingLeft = false;
-let movingRight = false;
 let gameOver = false;
 let startTime = 0;
 let finalTime = 0;
@@ -102,8 +100,6 @@ function createObstacle() {
 }
 
 function update() {
-  if (movingLeft && player.x > 0) player.x -= player.speed;
-  if (movingRight && player.x + player.width < canvas.width) player.x += player.speed;
   if (gameOver) return;
   for (let obs of obstacles) {
     obs.y += obs.speed;
@@ -185,25 +181,21 @@ function gameLoop(bg, playerImg, ballImg, gameoverImg) {
 }
 
 function setupControls() {
-  document.addEventListener('keyup', (e) => {
-    if (e.key === 'ArrowLeft') movingLeft = false;
-    if (e.key === 'ArrowRight') movingRight = false;
-  });
   document.addEventListener('keydown', (e) => {
-    if (e.repeat) return; // 避免重複觸發
     if (gameOver) return;
-    if (e.key === 'ArrowLeft') movingLeft = true;
-    if (e.key === 'ArrowRight') movingRight = true;
-  }););
+    if (e.key === 'ArrowLeft' && player.x > 0) player.x -= player.speed;
+    if (e.key === 'ArrowRight' && player.x + player.width < canvas.width) player.x += player.speed;
+  });
 
   const leftBtn = document.getElementById('leftBtn');
   const rightBtn = document.getElementById('rightBtn');
   if (leftBtn && rightBtn) {
     leftBtn.addEventListener('touchstart', () => {
-      movingLeft = true;
+      if (!gameOver && player.x > 0) player.x -= player.speed;
     });
-    rightBtn.addEventListener('touchend', () => { movingRight = false; });
-    leftBtn.addEventListener('touchend', () => { movingLeft = false; });
+    rightBtn.addEventListener('touchstart', () => {
+      if (!gameOver && player.x + player.width < canvas.width) player.x += player.speed;
+    });
   }
 }
 
@@ -224,12 +216,15 @@ window.startGame = function () {
   document.getElementById('startScreen').style.display = 'none';
   main();
 }
+
+// 阻止雙擊縮放
 document.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
+
 let lastTouchEnd = 0;
 function preventDoubleTapZoom(e) {
   const now = new Date().getTime();
   if (now - lastTouchEnd <= 300) {
-    e.preventDefault();
+    e.preventDefault(); // 阻止雙擊縮放
   }
   lastTouchEnd = now;
 }
