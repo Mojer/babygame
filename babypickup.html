@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>籃子接接樂</title>
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      touch-action: none;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<script>
+// === UI 設定與掉落物屬性 ===
+const UI_LAYOUT = {
+  playerYRatio: 0.70,
+  controlZoneYRatio: 0.80,
+  basketUIYRatio: 0.88,
+  basketWidthRatio: 0.15,
+  basketHeightRatio: 0.1,
+  playerWidthRatio: 0.2,
+  fontSizeRatio: {
+    title: 0.06,
+    button: 0.05,
+    info: 0.03
+  },
+  startScreen: {
+    titleY: 0.65,
+    buttonY: 0.70
+  }
+};
+
+const DROP_ITEM_CONFIG = {
+  vegetable: { speed: 5, score: 5 },
+  fruit:     { speed: 4, score: 4 },
+  candy:     { speed: 1, score: 1 }
+};
+
+const BACKGROUND_IMAGES = {
+  start: "background_start",
+  game: "background_game",
+  end: "background_end"
+};
+
+// === 初始化變數 ===
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+let gameState = "loading";
+let score = 0;
+let timeLeft = 60;
+let selectedBasket = "vegetable";
+let playerX = 0;
+let playerSpeed = 0;
+let dropItems = [];
+let resources = {};
+const basketTypes = ["vegetable", "fruit", "candy"];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+function drawFullCoverImage(img, ctx, canvas) {
+  const imgRatio = img.width / img.height;
+  const canvasRatio = canvas.width / canvas.height;
+  let sw, sh, sx, sy;
+  if (imgRatio > canvasRatio) {
+    sh = img.height;
+    sw = canvasRatio * sh;
+    sx = (img.width - sw) / 2;
+    sy = 0;
+  } else {
+    sw = img.width;
+    sh = sw / canvasRatio;
+    sx = 0;
+    sy = (img.height - sh) / 2;
+  }
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+}
+
+function drawBackgroundForState(state) {
+  const bgKey = BACKGROUND_IMAGES[state];
+  const bgImg = resources[bgKey];
+  if (bgImg) drawFullCoverImage(bgImg, ctx, canvas);
+}
+
+function loadImages(imageList, callback) {
+  let loaded = 0;
+  imageList.forEach(({ name, src }) => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => {
+      resources[name] = img;
+      loaded++;
+      if (loaded === imageList.length) callback();
+    };
+  });
+}
+
+class DropItem {
+  constructor(type, x, y) {
+    this.type = type;
+    this.x = x;
+    this.y = y;
+    this.speed = DROP_ITEM_CONFIG[type].speed;
+    this.size = canvas.width * 0.1;
+  }
+  update() {
+    this.y += this.speed;
+  }
+  draw() {
+    const img = resources[this.type];
+    if (img) ctx.drawImage(img, this.x, this.y, this.size, this.size);
+  }
+  isCaught(px, py, pw, selectedType) {
+    const cx = this.x + this.size / 2;
+    const cy = this.y + this.size / 2;
+    return cx >= px && cx <= px + pw && cy >= py && cy <= py + pw * 0.5 && this.type === selectedType;
+  }
+}
+
+function drawText(text, xR, yR, fontR, color = "#fff") {
+  ctx.fillStyle = color;
+  ctx.font = `${canvas.height * fontR}px 'ZCOOL KuaiLe', sans-serif`;
+  ctx.textAlign = "center";
+  ctx.fillText(text, canvas.width * xR, canvas.height * yR);
+}
+
+function drawButton(label, x, y, w, h) {
+  ctx.fillStyle = "#444";
+  ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = "#fff";
+  ctx.font = `${h * 0.5}px 'ZCOOL KuaiLe', sans-serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(label, x + w / 2, y + h / 2);
+}
+  
+// === 控制 ===
+canvas.addEventListener("pointerdown", (e) => {
+  const x = e.clientX;
+  const y = e.clientY;
+
+  if (gameState === "start") {
+    gameState = "playing";
+    startTimer();
+    return;
+  }
+
+  if (gameState === "end") {
+    const btnX = canvas.width * 0.35;
+    const btnY = canvas.height * 0.5;
+    const btnW = canvas.width * 0.3;
+    const btnH = canvas.height * 0.08;
+    if (x >= btnX && x <= btnX + btnW && y >= btnY && y <= btnY + btnH) {
+      resetGame();
+    }
+    return;
+  }
+
+  if (gameState !== "playing") return;
+
+  basketTypes.forEach((type, i) => {
+    const bx = canvas.width * (0.2 + i * 0.2);
+    const by = canvas.height * UI_LAYOUT.basketUIYRatio;
+    const bw = canvas.width * UI_LAYOUT.basketWidthRatio;
+    const bh = canvas.height * UI_LAYOUT.basketHeightRatio;
+    if (x >= bx && x <= bx + bw && y >= by && y <= by + bh) {
+      selectedBasket = type;
+    }
+  });
+
+  if (y < canvas.height * UI_LAYOUT.controlZoneYRatio) {
+    playerSpeed = x < canvas.width / 2 ? -10 : 10;
+  }
+});
+canvas.addEventListener("pointerup", () => { playerSpeed = 0; });
+
+document.addEventListener("keydown", (e) => {
+  if (gameState !== "playing") return;
+  if (e.key === "ArrowLeft" || e.key === "a") playerSpeed = -10;
+  if (e.key === "ArrowRight" || e.key === "d") playerSpeed = 10;
+  if (e.key === "1") selectedBasket = "vegetable";
+  if (e.key === "2") selectedBasket = "fruit";
+  if (e.key === "3") selectedBasket = "candy";
+});
+document.addEventListener("keyup", (e) => {
+  if (["ArrowLeft", "ArrowRight", "a", "d"].includes(e.key)) playerSpeed = 0;
+});
+
+// === 遊戲邏輯 ===
+function startTimer() {
+  const timer = setInterval(() => {
+    if (gameState === "playing") {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        gameState = "end";
+      }
+    }
+  }, 1000);
+}
+
+function resetGame() {
+  score = 0;
+  timeLeft = 60;
+  playerX = canvas.width * 0.4;
+  dropItems = [];
+  selectedBasket = "vegetable";
+  gameState = "start";
+}
+
+function spawnItem() {
+  const types = ["vegetable", "fruit", "candy"];
+  const type = types[Math.floor(Math.random() * types.length)];
+  const x = Math.random() * (canvas.width - canvas.width * 0.1);
+  dropItems.push(new DropItem(type, x, -60));
+}
+
+function update() {
+  if (gameState !== "playing") return;
+  playerX += playerSpeed;
+  playerX = Math.max(0, Math.min(playerX, canvas.width * 0.9));
+  const playerY = canvas.height * UI_LAYOUT.playerYRatio;
+  const playerW = canvas.width * UI_LAYOUT.playerWidthRatio;
+
+  dropItems.forEach(item => item.update());
+  dropItems = dropItems.filter(item => {
+    if (item.isCaught(playerX, playerY, playerW, selectedBasket)) {
+      score += DROP_ITEM_CONFIG[item.type].score;
+      return false;
+    }
+    return item.y < canvas.height;
+  });
+
+  if (Math.random() < 0.05) spawnItem();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (gameState === "loading") {
+    drawText("載入中...", 0.5, 0.5, UI_LAYOUT.fontSizeRatio.button);
+    return;
+  }
+
+  if (gameState === "start") {
+    drawBackgroundForState("start");
+    drawText("🥗 籃子接接樂", 0.5, UI_LAYOUT.startScreen.titleY, UI_LAYOUT.fontSizeRatio.title);
+    drawButton("開始遊戲", canvas.width * 0.35, canvas.height * UI_LAYOUT.startScreen.buttonY, canvas.width * 0.3, canvas.height * 0.08);
+    drawText("依種類選籃子接住", 0.5, 0.88, UI_LAYOUT.fontSizeRatio.info);
+    return;
+  }
+
+  if (gameState === "playing") {
+    drawBackgroundForState("game");
+    drawText(`分數：${score}`, 0.85, 0.05, UI_LAYOUT.fontSizeRatio.info);
+    drawText(`倒數：${timeLeft}s`, 0.15, 0.05, UI_LAYOUT.fontSizeRatio.info);
+
+    const playerW = canvas.width * UI_LAYOUT.playerWidthRatio;
+    const playerImg = resources["player_" + selectedBasket];
+    if (playerImg) {
+  const playerH = canvas.height * 0.18; // 根據畫面高度決定主角高度（例如佔 18%）
+  const playerW = playerH * (128 / 162); // 用素材原始比例算出寬度
+  ctx.drawImage(playerImg, playerX, canvas.height * UI_LAYOUT.playerYRatio, playerW, playerH);
+}
+
+    dropItems.forEach(item => item.draw());
+
+    // 籃子圖示與分數標示
+    basketTypes.forEach((type, i) => {
+      const bx = canvas.width * (0.2 + i * 0.2);
+      const by = canvas.height * UI_LAYOUT.basketUIYRatio;
+      const bw = canvas.width * UI_LAYOUT.basketWidthRatio;
+      const bh = canvas.height * UI_LAYOUT.basketHeightRatio;
+      const img = resources[type];
+      if (img) ctx.drawImage(img, bx, by, bw, bh);
+
+      // 分數小字顯示
+      ctx.fillStyle = "#fff";
+      ctx.font = `${canvas.height * 0.05}px 'ZCOOL KuaiLe', sans-serif`;
+      ctx.textAlign = "right";
+      ctx.strokeStyle = "#000"; // 黑色外框
+ctx.strokeText(DROP_ITEM_CONFIG[type].score, bx + bw - 5, by + bh - 5); // 外框
+
+      ctx.fillText(DROP_ITEM_CONFIG[type].score, bx + bw - 5, by + bh - 5);
+
+      if (selectedBasket === type) {
+        ctx.strokeStyle = "yellow";
+        ctx.lineWidth = 4;
+        ctx.strokeRect(bx, by, bw, bh);
+      }
+    });
+    return;
+  }
+
+  if (gameState === "end") {
+    drawBackgroundForState("end");
+    drawText(`🎉 遊戲結束！你的分數：${score}`, 0.5, 0.4, UI_LAYOUT.fontSizeRatio.info);
+    drawButton("再玩一次", canvas.width * 0.35, canvas.height * 0.5, canvas.width * 0.3, canvas.height * 0.08);
+  }
+}
+
+function gameLoop() {
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+// === 圖片載入與啟動遊戲 ===
+loadImages([
+  { name: "background_start", src: "https://i.imgur.com/xwH6aec.png" },
+  { name: "background_game",  src: "https://i.imgur.com/RIjpBS8.png" },
+  { name: "background_end",   src: "https://i.imgur.com/xwH6aec.png" },
+  { name: "player_vegetable", src: "https://i.imgur.com/F3rJCGN.png" },
+  { name: "player_fruit",     src: "https://i.imgur.com/nkapLyz.png" },
+  { name: "player_candy",     src: "https://i.imgur.com/v5U7iAD.png" },
+  { name: "vegetable", src: "https://i.imgur.com/VjYuIrA.png" },
+  { name: "fruit",     src: "https://i.imgur.com/Y7ecO7P.png" },
+  { name: "candy",     src: "https://i.imgur.com/A37wLep.png" }
+], () => {
+  resetGame();
+  gameLoop();
+});
+</script>
+</body>
+</html>
