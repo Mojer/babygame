@@ -5,18 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>寶貝遊戲選單</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .app-header {
+      background-color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .card {
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+    }
+    .game-link {
+      text-decoration: none;
+      color: #212529;
+    }
+  </style>
 </head>
-<body class="bg-light">
+<body>
 
-  <div class="container py-5">
-    <h1 class="mb-4 text-center">寶貝遊戲選單</h1>
-    <div class="list-group">
-      <a href="https://mojer.github.io/babygame/babyball" class="list-group-item list-group-item-action">
-        🎯 寶貝被球K
-      </a>
-      <a href="https://mojer.github.io/babygame/babypickup" class="list-group-item list-group-item-action">
-        🥦 寶貝撿菜菜
-      </a>
+  <div class="app-header">寶貝遊戲選單</div>
+
+  <div class="container py-4">
+    <div class="row g-3">
+      <div class="col-12">
+        <a href="https://mojer.github.io/babygame/babyball" class="game-link">
+          <div class="card p-3">
+            <h5 class="mb-0">🎯 寶貝被球K</h5>
+          </div>
+        </a>
+      </div>
+      <div class="col-12">
+        <a href="https://mojer.github.io/babygame/babypickup" class="game-link">
+          <div class="card p-3">
+            <h5 class="mb-0">🥦 寶貝撿菜菜</h5>
+          </div>
+        </a>
+      </div>
     </div>
   </div>
 
