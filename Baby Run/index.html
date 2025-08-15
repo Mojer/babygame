@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>BABY RUN！可愛田徑賽</title>
+  <title>CUTE RUN！可愛田徑賽</title>
   <style>
     :root{ --bg:#f9fbff; --ink:#1d2b3a; --mint:#b8f1e2; --violet:#dcd0ff; --accent:#7c6cff; --shadow:0 8px 24px rgba(0,0,0,.12); }
     *{box-sizing:border-box}
@@ -23,6 +23,7 @@
     .grow{flex:1}
 
     canvas{width:100%;height:auto;aspect-ratio:16/9;background:linear-gradient(180deg,#c7ecff 0 45%, #eafff2 45%);border-radius:18px;border:2px solid #e7ecff;touch-action:none}
+    canvas.no-ar{aspect-ratio:auto}
     #gameWrap{position:relative}
 
     .mobile-ctrls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0}
@@ -32,8 +33,8 @@
     @media (max-width: 900px){
       .card{max-width:none;border-radius:16px}
       .wrap{gap:0}
-      .mobile-ctrls.is-overlay{position:absolute;left:8px;right:8px;bottom:8px;margin:0;z-index:10;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
-      canvas.fullheight{height:100svh;aspect-ratio:auto;border-radius:0}
+      .mobile-ctrls{position:static;margin:8px 0;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+      canvas.fullheight{height:auto;border-radius:0}
     }
 
     .overlay{position:absolute;inset:0;display:grid;place-items:center}
@@ -54,8 +55,8 @@
 <div id="app">
   <div class="card">
     <header>
-      <h1>🏃‍♀️ BABY RUN！可愛田徑賽</h1>
-      
+      <h1>🏃‍♀️ CUTE RUN！可愛田徑賽</h1>
+      <span class="tag">HTML 單檔 · 自訂 4 角色圖片</span>
     </header>
 
     <div class="wrap">
@@ -106,7 +107,6 @@
 
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
-  const gameWrap = document.getElementById('gameWrap');
 
   const isMobile = ()=> window.innerWidth <= 900;
 
@@ -114,13 +114,28 @@
   function recomputeLayout(){
     const dpr = Math.max(1, Math.min(3, window.devicePixelRatio||1));
     const rect = canvas.getBoundingClientRect();
-    const wantFullH = isMobile() || !!document.fullscreenElement;
-    if (wantFullH) canvas.classList.add('fullheight'); else canvas.classList.remove('fullheight');
     const cssW = rect.width || canvas.clientWidth || window.innerWidth || 960;
+
     const vh = window.visualViewport?.height || window.innerHeight || rect.height || 540;
-    const cssH = wantFullH ? vh : cssW*9/16;
-    canvas.width  = Math.floor(cssW * dpr);
-    canvas.height = Math.floor(cssH * dpr);
+    let cssH;
+    if(isMobile()){
+      canvas.classList.add('no-ar');
+      const headerH = document.querySelector('header')?.getBoundingClientRect().height || 0;
+      const uiH     = document.getElementById('ui')?.getBoundingClientRect().height || 0;
+      const ctrlsH  = document.getElementById('mobileCtrls')?.getBoundingClientRect().height || 0;
+      const paddings= 24;
+      cssH = Math.max(220, vh - headerH - uiH - ctrlsH - paddings);
+    }else{
+      canvas.classList.remove('no-ar');
+      cssH = cssW*9/16;
+    }
+
+    canvas.style.height = cssH + 'px';
+
+    const dprW = Math.floor(cssW * dpr);
+    const dprH = Math.floor(cssH * dpr);
+    if(canvas.width!==dprW) canvas.width = dprW;
+    if(canvas.height!==dprH) canvas.height = dprH;
     W=canvas.width; H=canvas.height;
     TRACK_TOP = Math.max(48, Math.floor((H - CONFIG.lanes*CONFIG.laneHeight)/2));
   }
@@ -139,7 +154,6 @@
   const finishStats = document.getElementById('finishStats');
   const btnRestart = document.getElementById('btnRestart');
   const btnShare = document.getElementById('btnShare');
-  const countBar = document.getElementById('countBar');
   const mobileCtrls = document.getElementById('mobileCtrls');
   const btnFull = document.getElementById('btnFull');
   const rotateHint = document.querySelector('.rotate-hint');
@@ -154,29 +168,26 @@
   function beep(f=880,d=0.08,v=0.04){ if(muted||!actx) return; try{ const t=actx.currentTime; const o=actx.createOscillator(); const g=actx.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(0.0001,t+d); o.connect(g).connect(actx.destination); o.start(); o.stop(t+d);}catch(_){}}
 
   const Images = new Map();
-  function loadImage(url){ return new Promise((res,rej)=>{ if(!url) return res(null); if(Images.has(url)) return res(Images.get(url)); const img=new Image(); img.onload=()=>{Images.set(url,img);res(img)}; img.onerror=rej; img.src=url; }); }
-  function makeSpriteSheet(color='#ff8fab', eye='#222', frames=4, size=128){ const c=document.createElement('canvas'); c.width=frames*size; c.height=size; const g=c.getContext('2d'); for(let i=0;i<frames;i++){ const ox=i*size, cx=ox+size/2, cy=size*0.62; g.fillStyle='#0001'; g.beginPath(); g.ellipse(cx, cy+24, 42, 10, 0, 0, Math.PI*2); g.fill(); g.fillStyle=color; g.beginPath(); g.ellipse(cx, cy-8, 46, 30, 0, 0, Math.PI*2); g.fill(); g.fillStyle='#fff'; g.beginPath(); g.ellipse(cx-12, cy-16, 9, 9, 0, 0, Math.PI*2); g.fill(); g.beginPath(); g.ellipse(cx+12, cy-16, 9, 9, 0, 0, Math.PI*2); g.fill(); g.fillStyle=eye; g.beginPath(); g.ellipse(cx-12, cy-16, 3, 3, 0, 0, Math.PI*2); g.fill(); g.beginPath(); g.ellipse(cx+12, cy-16, 3, 3, 0, 0, Math.PI*2); g.fill(); const k=(i%4); g.strokeStyle='#333'; g.lineWidth=4; g.lineCap='round'; g.beginPath(); g.moveTo(cx-10, cy+4); g.lineTo(cx-10, cy+18 + (k===0?10:k===1?4:k===2?-2:4)); g.stroke(); g.beginPath(); g.moveTo(cx+10, cy+4); g.lineTo(cx+10, cy+18 + (k===2?10:k===3?4:k===0?-2:4)); g.stroke(); } return c.toDataURL('image/png'); }
+  function loadImage(url){ return new Promise((res,rej)=>{ if(!url) return res(null); if(Images.has(url)) return res(Images.get(url)); const img=new Image(); img.crossOrigin='anonymous'; img.onload=()=>{Images.set(url,img);res(img)}; img.onerror=rej; img.src=url; }); }
 
-  const SPRITES={
-    player:{ url: makeSpriteSheet('#ff8fab'), frames:4, fps:10, scale:1.5, offsetY:10 },
-    ai:[
-      { url: makeSpriteSheet('#9ad0f5'), frames:4, fps:10, scale:1.5, offsetY:10 },
-      { url: makeSpriteSheet('#a7f3d0'), frames:4, fps:10, scale:1.5, offsetY:10 },
-      { url: makeSpriteSheet('#ffe28a'), frames:4, fps:10, scale:1.5, offsetY:10 }
-    ]
-  };
+  // 你的四張角色圖片（可直接改 URL）
+  const runnerImages = [
+    'https://i.imgur.com/juEnPa4.png', // 玩家
+    'https://i.imgur.com/Wwiq6CU.png', // NPC1
+    'https://i.imgur.com/NbNVPKA.png', // NPC2
+    'https://i.imgur.com/YOaMEC9.png'  // NPC3
+  ];
 
   const colors=['#ffb7c5','#b3e5fc','#c8e6c9','#fff59d'];
-  const mascots=['你','🐰','🐼','🦊','🐵','🐨'];
+  const mascots=['你','🐰','🐼','🦊'];
   const laneBase = (i)=> TRACK_TOP + (i+1)*CONFIG.laneHeight - 12;
 
-  function createRunner(i,isPlayer=false){
-    const spriteCfg = isPlayer? SPRITES.player : SPRITES.ai[i % SPRITES.ai.length];
+  function createRunner(i,isPlayer=false,img){
     return { id:i,isPlayer,name:(isPlayer?'你':mascots[i%mascots.length]), x:40, y:laneBase(i), vy:0, onGround:true,
       speed:isPlayer?CONFIG.playerBaseSpeed:CONFIG.aiBaseSpeed*(0.9+Math.random()*0.2), boost:0, dirLast:null,
-      dist:0, finished:false, finishTime:null, color:colors[i%colors.length], sprite:spriteCfg };
+      dist:0, finished:false, finishTime:null, color:colors[i%colors.length], img, scale:1.35, offsetY:10 };
   }
-  const runners = Array.from({length:CONFIG.lanes}, (_,i)=>createRunner(i, i===0));
+  let runners=[];
 
   const obstacles=[]; function spawnObstacles(){ const n=Math.max(1,Math.floor(CONFIG.trackLength/100*CONFIG.obstaclesPer100m)); obstacles.length=0; for(let i=0;i<n;i++){ const at=60+Math.random()*(CONFIG.trackLength-100); const lane=Math.floor(Math.random()*CONFIG.lanes); obstacles.push({m:at,lane,w:22,h:24,hit:false}); } obstacles.sort((a,b)=>a.m-b.m);} spawnObstacles();
 
@@ -187,7 +198,6 @@
 
   function reset(){ elapsed=0; distance=0; ranking='-'; spawnObstacles(); for(let i=0;i<runners.length;i++){ const r=runners[i]; r.x=40; r.vy=0; r.onGround=true; r.boost=0; r.dist=0; r.finished=false; r.finishTime=null; r.dirLast=null; r.y=laneBase(i); r.speed = r.isPlayer? CONFIG.playerBaseSpeed : CONFIG.aiBaseSpeed*(0.9+Math.random()*0.2); } gameState='ready'; startOv.style.display='grid'; finishOv.style.display='none'; btnPause.textContent='暫停'; }
   async function start(){
-    try{ if(isMobile() && !document.fullscreenElement){ await gameWrap.requestFullscreen?.(); mountMobileCtrls(); } }catch(_){}
     rotateHint.style.display='none';
     if(gameState==='running') return;
     gameState='running'; elapsed=0; startOv.style.display='none';
@@ -197,13 +207,12 @@
   function finish(){ gameState='finished'; const order=[...runners].sort((a,b)=> (a.finishTime??1e9)-(b.finishTime??1e9)); const rank=order.findIndex(r=>r.isPlayer)+1; finishTitle.textContent = rank===1? '🥇 你是第一名！' : `完成！第 ${rank} 名`; const my=runners[0]; finishStats.innerHTML = `用時 <b>${(my.finishTime??elapsed).toFixed(2)}s</b>｜總距離 <b>${CONFIG.trackLength}m</b><br/>對手成績：`+ order.map((r,i)=> `${i+1}. ${r.isPlayer? '你' : r.name} — ${(r.finishTime??elapsed).toFixed(2)}s`).join('<br/>'); finishOv.style.display='grid'; beep(520,0.12,0.06); setTimeout(()=>beep(660,0.12,0.06),120); setTimeout(()=>beep(800,0.12,0.06),240); }
 
   btnStart?.addEventListener('click', start);
-  btnHow?.addEventListener('click', ()=>{ alert(`玩法：交替按鍵盤 ← → 加速，↑ 或空白鍵跳躍。
-手機可用下方按鈕。`); });
+  btnHow?.addEventListener('click', ()=>{ alert(`玩法：交替按鍵盤 ← → 加速，↑ 或空白鍵跳躍。\n手機可用下方按鈕。`); });
   btnRestart?.addEventListener('click', ()=>{ reset(); start(); });
   btnShare?.addEventListener('click', ()=>{ const url=canvas.toDataURL('image/png'); const a=document.createElement('a'); a.href=url; a.download='cute-run.png'; a.click(); });
   btnPause?.addEventListener('click', ()=>{ if(gameState==='running'){ gameState='paused'; btnPause.textContent='繼續'; } else if(gameState==='paused'){ gameState='running'; btnPause.textContent='暫停'; last=performance.now(); requestAnimationFrame(animate); } });
   btnMute?.addEventListener('click', ()=>{ muted=!muted; btnMute.textContent=muted?'🔇':'🔊'; });
-  btnFull?.addEventListener('click', async()=>{ try{ if(!document.fullscreenElement){ await gameWrap.requestFullscreen?.(); mountMobileCtrls(); } else { await document.exitFullscreen?.(); } }catch(_){} finally{ recomputeLayout(); } });
+  btnFull?.addEventListener('click', async()=>{ try{ if(!document.fullscreenElement){ await document.documentElement.requestFullscreen?.(); } else { await document.exitFullscreen?.(); } }catch(_){} finally{ recomputeLayout(); } });
   btnIgnoreRotate?.addEventListener('click', ()=>{ document.querySelector('.rotate-hint').style.display='none'; });
   startOv.addEventListener('pointerdown', (e)=>{ if(gameState==='ready' && e.target===startOv) start(); });
   document.addEventListener('fullscreenchange', recomputeLayout);
@@ -247,7 +256,19 @@
 
   function drawTrack(camX){ const top=TRACK_TOP; const trackH=CONFIG.lanes*CONFIG.laneHeight; ctx.fillStyle='#f7d9ba'; ctx.fillRect(0, top, W, trackH); for(let i=0;i<=CONFIG.lanes;i++){ const y=top + i*CONFIG.laneHeight; ctx.strokeStyle='white'; ctx.lineWidth=4; ctx.setLineDash([16,12]); ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); } ctx.setLineDash([]); ctx.fillStyle='#ffffffaa'; ctx.font='bold 16px system-ui'; ctx.textAlign='center'; ctx.textBaseline='top'; for(let m=0;m<=CONFIG.trackLength;m+=50){ const x=worldToScreen(m, camX); if(x<0||x>W) continue; ctx.fillRect(x-1, top, 2, trackH); ctx.fillText(m+'m', x, top+6); } const fx=worldToScreen(CONFIG.trackLength, camX); if(fx>0&&fx<W){ ctx.fillStyle='#fff'; for(let i=0;i<12;i++) ctx.fillRect(fx-2, top+i*10, 4, 6); } }
 
-  function drawRunner(r, camX){ const x=worldToScreen(r.dist, camX); const y=r.y; const cfg=r.sprite; const img=cfg?.url? Images.get(cfg.url) : null; if(img){ const frames=Math.max(1, cfg.frames|0); const fps=Math.max(1, cfg.fps|0); const scale=cfg.scale??1.0; const offY=cfg.offsetY??0; const t=performance.now()/1000; const fi=frames===1?0:Math.floor(t*fps)%frames; const fw=Math.floor(img.width/frames); const fh=img.height; const dw=fw*0.75*scale; const dh=fh*0.75*scale; ctx.drawImage(img, fi*fw,0,fw,fh, x-dw/2, (y-dh)-offY, dw, dh); if(!r.isPlayer){ ctx.font='20px system-ui'; ctx.textAlign='center'; ctx.textBaseline='bottom'; ctx.fillStyle='#222'; ctx.fillText(r.name, x, (y-dh)-offY-6); } return; } ctx.fillStyle=r.color; const w=64,h=42,rad=20; roundRect(ctx, x-w/2, y-h, w, h, rad); ctx.fill(); ctx.fillStyle='#fff'; roundRect(ctx, x-w/2+8, y-h+6, w-16, h-16, 14); ctx.fill(); ctx.fillStyle='#2b2b2b'; const blink=(Math.sin(performance.now()/180 + r.id) > 0.95); const ey=y-h+16; ctx.beginPath(); ctx.arc(x-10, ey, blink?1:3, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x+10, ey, blink?1:3, 0, Math.PI*2); ctx.fill(); ctx.fillStyle='#ffffff'; ctx.fillRect(x-14, y-h+20, 28, 12); ctx.fillStyle='#333'; ctx.font='bold 10px system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(r.name, x, y-h+26); ctx.strokeStyle='#444'; ctx.lineWidth=3; ctx.lineCap='round'; const phase=performance.now()/100 + r.id*0.8 + r.speed*0.3; const k=Math.sin(phase)*8; ctx.beginPath(); ctx.moveTo(x-8, y-2); ctx.lineTo(x-8, y+8+k); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x+8, y-2); ctx.lineTo(x+8, y+8-k); ctx.stroke(); }
+  function drawRunner(r, camX){
+    const x=worldToScreen(r.dist, camX); const y=r.y;
+    const img=r.img;
+    if(img){
+      const dw=img.width * 0.5 * r.scale; // 自動依圖寬縮放
+      const dh=img.height* 0.5 * r.scale;
+      ctx.drawImage(img, x-dw/2, (y-dh)-r.offsetY, dw, dh);
+      if(!r.isPlayer){ ctx.font='20px system-ui'; ctx.textAlign='center'; ctx.textBaseline='bottom'; ctx.fillStyle='#222'; ctx.fillText(r.name, x, (y-dh)-r.offsetY-6); }
+      return;
+    }
+    // 後備：若圖片載不到，畫簡單方塊
+    ctx.fillStyle=r.color; const w=64,h=42,rad=20; roundRect(ctx, x-w/2, y-h, w, h, rad); ctx.fill();
+  }
 
   function drawObstacles(camX){ for(const o of obstacles){ const x=worldToScreen(o.m, camX), y=laneBase(o.lane)-4; ctx.fillStyle=o.hit?'#cfd8dc':'#ff8a80'; roundRect(ctx, x-12, y-26, 24, 24, 6); ctx.fill(); ctx.fillStyle='#fff'; ctx.fillRect(x-10, y-22, 20, 6); } }
   function roundRect(ctx,x,y,w,h,r){ const rr=Math.min(r, w/2, h/2); ctx.beginPath(); ctx.moveTo(x+rr, y); ctx.arcTo(x+w, y, x+w, y+h, rr); ctx.arcTo(x+w, y+h, x, y+h, rr); ctx.arcTo(x, y+h, x, y, rr); ctx.arcTo(x, y, x+w, y, rr); ctx.closePath(); }
@@ -274,16 +295,19 @@
       console.assert(a-b===100, 'worldToScreen 應隨 camX 差值線性遞減');
       console.assert(W>0 && H>0, '畫布像素大小需>0');
       const y0=laneBase(0), y3=laneBase(3); console.assert(y0<y3 && y3<=H, '跑道垂直位置需在畫面內');
-      console.assert(runners[0].isPlayer===true, '第 1 跑者需為玩家');
+      console.assert(runners[0]?.isPlayer===true, '第 1 跑者需為玩家');
       console.assert(obstacles.length>0 && obstacles.every((_,i,arr)=> i===0 || arr[i-1].m<=arr[i].m), '障礙需存在且已排序');
       console.log('✅ 自檢通過'); console.groupEnd();
     }catch(e){ console.error('❌ 自檢失敗', e); }
   }
 
-  function mountMobileCtrls(){ if (!mobileCtrls.classList.contains('is-overlay')){ gameWrap.appendChild(mobileCtrls); mobileCtrls.classList.add('is-overlay'); } }
-  if (isMobile()) mountMobileCtrls();
-
-  (async()=>{ idleBar(); await Promise.all([ loadImage(SPRITES.player.url), ...SPRITES.ai.map(s=>loadImage(s.url)) ]); reset(); selfTest(); })();
+  (async()=>{
+    idleBar();
+    const imgs = await Promise.all(runnerImages.map(loadImage));
+    runners = imgs.map((img, i)=> createRunner(i, i===0, img));
+    reset();
+    selfTest();
+  })();
 })();
 </script>
 </body>
