@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimal-ui">
+    <title>小男孩宇宙冒險</title>
+    <style>
+        /* 全域樣式 */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Inter', sans-serif;
+            touch-action: none; /* 禁用瀏覽器手勢，防止誤觸 */
+        }
+        canvas {
+            display: block;
+        }
+        
+        /* 直向模式提示 */
+        .orientation-message {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            z-index: 100;
+        }
+        
+        /* 僅在直向模式下顯示提示 */
+        @media screen and (orientation: portrait) {
+            .orientation-message {
+                display: flex;
+            }
+            canvas {
+                display: none;
+            }
+        }
+
+        .orientation-message .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="orientationMessage" class="orientation-message">
+    <span class="icon">🔄</span>
+    <h1>請將裝置轉為橫向模式</h1>
+    <p>為了獲得最佳遊戲體驗，請將手機橫放。</p>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+    // 版本號: 20250910
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // --- 遊戲設定 ---
+    let GAME_WIDTH = 800;
+    let GAME_HEIGHT = 600;
+    const PLAYER_SPEED = 4; // 調整玩家速度，讓桌機版移動更平穩
+    const BULLET_SPEED = 10;
+    const MAX_PLAYER_HEALTH = 5;
+    const TOUCH_IMAGE_THRESHOLD = 5; // 新增：觸控圖片切換的最小移動距離
+
+    // --- 遊戲狀態管理 ---
+    let gameState = 'START_SCREEN';
+    let animationFrameId;
+    
+    // --- 敵人種類設定 (已更新為圖片 URL) ---
+    const ENEMY_TYPES = [
+        { color: 'red', speed: 2, points: 10, width: 32, height: 32, url: 'https://imgur.com/UKNwV2J.png' },
+        { color: 'purple', speed: 3.5, points: 20, width: 28, height: 28, url: 'https://imgur.com/b5XwOYG.png' }
+    ];
+    
+    // --- 遊戲對象類別 ---
+    class GameObject {
+        constructor(x, y, width, height, color) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.color = color;
+        }
+    
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+    
+        collidesWith(other) {
+            return this.x < other.x + other.width &&
+                   this.x + this.width > other.x &&
+                   this.y < other.y + other.height &&
+                   this.y + this.height > other.y;
+        }
+    }
+    
+    // --- 玩家圖片素材 ---
+    const playerImages = {
+        idle: new Image(),
+        up: new Image(),
+        down: new Image(),
+        right: new Image(),
+        left: new Image(),
+    };
+    playerImages.idle.src = "https://imgur.com/PLTfm59.png";
+    playerImages.up.src = "https://imgur.com/w500qrB.png";
+    playerImages.down.src = "https://imgur.com/AKOiUJR.png";
+    playerImages.right.src = "https://imgur.com/fnyayVn.png";
+    playerImages.left.src = "https://imgur.com/NTS6YR9.png";
+
+    class Player extends GameObject {
+        constructor(x, y) {
+            super(x, y, 64, 64, 'transparent');
+            this.bullets = [];
+            this.canShoot = true;
+            this.shootCooldown = 200;
+            this.health = MAX_PLAYER_HEALTH;
+            this.currentImage = playerImages.idle;
+        }
+    
+        shoot() {
+            if (this.canShoot) {
+                const bullet = new Bullet(this.x + this.width, this.y + this.height / 2 - 4, 'yellow');
+                this.bullets.push(bullet);
+                this.canShoot = false;
+                setTimeout(() => {
+                    this.canShoot = true;
+                }, this.shootCooldown);
+            }
+        }
+    
+        update() {
+            if (this.y < 0) this.y = 0;
+            if (this.y > GAME_HEIGHT - this.height) this.y = GAME_HEIGHT - this.height;
+            if (this.x < 0) this.x = 0;
+            if (this.x > GAME_WIDTH - this.width) this.x = GAME_WIDTH - this.width;
+        }
+    
+        draw() {
+            if (this.currentImage.complete) {
+                ctx.drawImage(this.currentImage, this.x, this.y, this.width, this.height);
+            } else {
+                ctx.fillStyle = 'blue';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+
+            this.bullets.forEach(bullet => bullet.draw());
+        }
+    }
+    
+    // 更新敵人類別，以載入並繪製圖片
+    class Enemy extends GameObject {
+        constructor(x, y, type) {
+            super(x, y, type.width, type.height, 'transparent'); // 使用透明背景
+            this.speed = type.speed;
+            this.points = type.points;
+            this.image = new Image();
+            this.image.src = type.url;
+        }
+    
+        update() {
+            this.x -= this.speed;
+        }
+    
+        draw() {
+            // 檢查圖片是否載入完成，如果沒有則使用純色作為備用
+            if (this.image.complete) {
+                ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+            } else {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        }
+    }
+    
+    class Bullet extends GameObject {
+        constructor(x, y, color) {
+            super(x, y, 16, 8, color);
+        }
+    
+        update() {
+            this.x += BULLET_SPEED;
+        }
+    }
+    
+    // 更新補血道具類別，以載入並繪製圖片
+    class HealItem extends GameObject {
+        constructor(x, y) {
+            super(x, y, 24, 24, 'transparent'); // 使用透明背景
+            this.speed = 1.5;
+            this.image = new Image();
+            this.image.src = 'https://imgur.com/NQl4RGO.png'; // 新的補血道具圖片 URL
+        }
+    
+        update() {
+            this.x -= this.speed;
+        }
+    
+        draw() {
+            // 檢查圖片是否載入完成，如果沒有則使用純色作為備用
+            if (this.image.complete) {
+                ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+            } else {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        }
+    }
+    
+    // --- 遊戲物件變數 ---
+    let player;
+    let enemies = [];
+    let healItems = [];
+    let score = 0;
+    let startButtonRect = null;
+    let restartButtonRect = null;
+    let touchStartX = null;
+    let touchStartY = null;
+    let isShooting = false;
+    
+    // 背景圖片
+    const startScreenBackground = new Image();
+    startScreenBackground.src = "https://i.imgur.com/8zeg9MQ.png";
+    let isStartBackgroundLoaded = false;
+    startScreenBackground.onload = () => {
+        isStartBackgroundLoaded = true;
+        if (gameState === 'START_SCREEN') {
+            drawStartScreen();
+            gameLoop();
+        }
+    };
+
+    // 新增：遊戲中的背景圖片
+    const gameBackground = new Image();
+    gameBackground.src = "https://imgur.com/mVKhgRk.png"; // 更新為新的背景圖 URL
+    let isGameBackgroundLoaded = false;
+    gameBackground.onload = () => {
+        isGameBackgroundLoaded = true;
+    };
+    
+    // --- 輸入處理 ---
+    const keys = {};
+    document.addEventListener('keydown', (e) => {
+        keys[e.key] = true;
+    });
+    document.addEventListener('keyup', (e) => {
+        keys[e.key] = false;
+    });
+    
+    // 觸控事件處理
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const touchX = e.touches[0].clientX - rect.left;
+        const touchY = e.touches[0].clientY - rect.top;
+    
+        if (gameState === 'START_SCREEN' && startButtonRect) {
+            if (touchX > startButtonRect.x &&
+                touchX < startButtonRect.x + startButtonRect.width &&
+                touchY > startButtonRect.y &&
+                touchY < startButtonRect.y + startButtonRect.height) {
+                initializeGame();
+            }
+        } else if (gameState === 'GAME_OVER' && restartButtonRect) {
+            if (touchX > restartButtonRect.x &&
+                touchX < restartButtonRect.x + restartButtonRect.width &&
+                touchY > restartButtonRect.y &&
+                touchY < restartButtonRect.y + restartButtonRect.height) {
+                initializeGame();
+            }
+        } else if (gameState === 'PLAYING') {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            isShooting = true;
+        }
+    });
+    
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (gameState !== 'PLAYING' || touchStartX === null) return;
+        const touch = e.touches[0];
+        const dx = touch.clientX - touchStartX;
+        const dy = touch.clientY - touchStartY;
+        
+        const touchSpeed = Math.min(PLAYER_SPEED, Math.sqrt(dx * dx + dy * dy) * 0.1);
+        
+        player.x += (dx / Math.max(1, Math.sqrt(dx*dx + dy*dy))) * touchSpeed;
+        player.y += (dy / Math.max(1, Math.sqrt(dx*dx + dy*dy))) * touchSpeed;
+
+        // 僅在有足夠移動時才改變圖片
+        if (Math.abs(dx) > TOUCH_IMAGE_THRESHOLD || Math.abs(dy) > TOUCH_IMAGE_THRESHOLD) {
+            if (Math.abs(dx) > Math.abs(dy)) {
+                player.currentImage = (dx > 0) ? playerImages.right : playerImages.left;
+            } else {
+                player.currentImage = (dy > 0) ? playerImages.down : playerImages.up;
+            }
+        } else {
+            player.currentImage = playerImages.idle;
+        }
+    });
+    
+    canvas.addEventListener('touchend', (e) => {
+        touchStartX = null;
+        touchStartY = null;
+        isShooting = false;
+        player.currentImage = playerImages.idle;
+    });
+    
+    // 桌機點擊事件處理
+    canvas.addEventListener('click', (event) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+        
+        if (gameState === 'START_SCREEN' && startButtonRect) {
+            if (mouseX > startButtonRect.x &&
+                mouseX < startButtonRect.x + startButtonRect.width &&
+                mouseY > startButtonRect.y &&
+                mouseY < startButtonRect.y + startButtonRect.height) {
+                initializeGame();
+            }
+        } else if (gameState === 'GAME_OVER' && restartButtonRect) {
+            if (mouseX > restartButtonRect.x &&
+                mouseX < restartButtonRect.x + restartButtonRect.width &&
+                mouseY > restartButtonRect.y &&
+                mouseY < restartButtonRect.y + restartButtonRect.height) {
+                initializeGame();
+            }
+        }
+    });
+    
+    
+    function handleInput() {
+        let movedHorizontally = false;
+        let movedVertically = false;
+
+        if (keys['ArrowUp'] && player.y > 0) {
+            player.y -= PLAYER_SPEED;
+            player.currentImage = playerImages.up;
+            movedVertically = true;
+        } 
+        if (keys['ArrowDown'] && player.y < GAME_HEIGHT - player.height) {
+            player.y += PLAYER_SPEED;
+            player.currentImage = playerImages.down;
+            movedVertically = true;
+        }
+        
+        if (keys['ArrowLeft'] && player.x > 0) {
+            player.x -= PLAYER_SPEED;
+            player.currentImage = playerImages.left;
+            movedHorizontally = true;
+        } 
+        if (keys['ArrowRight'] && player.x < GAME_WIDTH - player.width) {
+            player.x += PLAYER_SPEED;
+            player.currentImage = playerImages.right;
+            movedHorizontally = true;
+        }
+        
+        if (!movedHorizontally && !movedVertically && touchStartX === null) {
+            player.currentImage = playerImages.idle;
+        }
+        
+        if (keys[' '] || keys['z']) {
+            player.shoot();
+        }
+    }
+    
+    // --- 繪製玩家頭像和生命值 ---
+    function drawPlayerInfo() {
+        const avatarSize = Math.max(40, GAME_WIDTH * 0.05);
+        const margin = 10;
+        const startX = margin;
+        const startY = margin;
+    
+        // 繪製生命值
+        const heartSize = Math.max(15, GAME_WIDTH * 0.03);
+        const heartSpacing = Math.max(2, GAME_WIDTH * 0.005);
+        const heartsStartX = startX + avatarSize + margin;
+        const heartsStartY = startY + (avatarSize - heartSize) / 2;
+
+        for (let i = 0; i < MAX_PLAYER_HEALTH; i++) {
+            ctx.fillStyle = (i < player.health) ? 'red' : 'rgba(255, 0, 0, 0.2)';
+            ctx.beginPath();
+            const x = heartsStartX + i * (heartSize + heartSpacing);
+            const y = heartsStartY;
+            
+            // 使用SVG路徑繪製心形，確保在不同解析度下比例正確
+            ctx.moveTo(x + heartSize / 2, y + heartSize / 4);
+            ctx.bezierCurveTo(x + heartSize / 4, y, x, y + heartSize / 2, x + heartSize / 2, y + heartSize);
+            ctx.moveTo(x + heartSize / 2, y + heartSize / 4);
+            ctx.bezierCurveTo(x + heartSize * 0.75, y, x + heartSize, y + heartSize / 2, x + heartSize / 2, y + heartSize);
+            ctx.fill();
+        }
+    }
+
+    // --- 繪製 UI 函式 ---
+    function drawUI() {
+        // 繪製分數 (右上角)
+        ctx.fillStyle = 'white';
+        ctx.font = `${Math.max(16, GAME_WIDTH * 0.025)}px Arial`;
+        ctx.textAlign = 'right';
+        ctx.fillText(`分數: ${score}`, GAME_WIDTH - 10, 30);
+        
+        // 繪製玩家資訊 (左上角)
+        drawPlayerInfo();
+    }
+    
+    function drawGameElements() {
+        // 使用新的遊戲背景圖
+        if (isGameBackgroundLoaded) {
+            ctx.drawImage(gameBackground, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+        } else {
+            // 如果背景圖尚未載入，則使用純色作為備用
+            ctx.fillStyle = '#111';
+            ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+        }
+    
+        if (player) {
+            player.draw();
+            enemies.forEach(enemy => enemy.draw());
+            healItems.forEach(item => item.draw());
+            drawUI();
+        }
+    }
+    
+    function drawStartScreen() {
+        ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+        if (isStartBackgroundLoaded) {
+            const imageRatio = startScreenBackground.width / startScreenBackground.height;
+            const canvasRatio = GAME_WIDTH / GAME_HEIGHT;
+            let drawWidth;
+            let drawHeight;
+            let drawX = 0;
+            let drawY = 0;
+
+            if (imageRatio > canvasRatio) {
+                drawHeight = GAME_HEIGHT;
+                drawWidth = startScreenBackground.width * (GAME_HEIGHT / startScreenBackground.height);
+                drawX = (GAME_WIDTH - drawWidth) / 2;
+            } else {
+                drawWidth = GAME_WIDTH;
+                drawHeight = startScreenBackground.height * (GAME_WIDTH / startScreenBackground.width);
+                drawY = (GAME_HEIGHT - drawHeight) / 2;
+            }
+
+            ctx.drawImage(startScreenBackground, drawX, drawY, drawWidth, drawHeight);
+        } else {
+            ctx.fillStyle = '#333';
+            ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+        }
+        
+        // 繪製開始遊戲按鈕
+        const buttonWidth = Math.max(200, GAME_WIDTH * 0.3);
+        const buttonHeight = Math.max(60, GAME_HEIGHT * 0.1);
+        const buttonX = GAME_WIDTH / 2 - buttonWidth / 2;
+        const buttonY = GAME_HEIGHT / 2 + 20;
+    
+        ctx.fillStyle = '#4CAF50';
+        ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+    
+        ctx.fillStyle = 'white';
+        ctx.font = `${Math.max(18, GAME_WIDTH * 0.03)}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.fillText('開始遊戲', GAME_WIDTH / 2, buttonY + buttonHeight / 2 + 8);
+    
+        startButtonRect = {
+            x: buttonX,
+            y: buttonY,
+            width: buttonWidth,
+            height: buttonHeight
+        };
+    }
+    
+    function drawGameOver() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+        
+        ctx.fillStyle = 'red';
+        ctx.font = `${Math.max(30, GAME_WIDTH * 0.075)}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.fillText('遊戲結束', GAME_WIDTH / 2, GAME_HEIGHT / 2);
+        
+        ctx.font = `${Math.max(18, GAME_WIDTH * 0.04)}px Arial`;
+        ctx.fillText(`最終分數: ${score}`, GAME_WIDTH / 2, GAME_HEIGHT / 2 + 50);
+    
+        const buttonWidth = Math.max(150, GAME_WIDTH * 0.25);
+        const buttonHeight = Math.max(50, GAME_HEIGHT * 0.1);
+        const buttonX = GAME_WIDTH / 2 - buttonWidth / 2;
+        const buttonY = GAME_HEIGHT / 2 + 80;
+    
+        ctx.fillStyle = '#4CAF50';
+        ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+        ctx.fillStyle = 'white';
+        ctx.font = `${Math.max(18, GAME_WIDTH * 0.03)}px Arial`;
+        ctx.fillText('重新開始', GAME_WIDTH / 2, buttonY + buttonHeight / 2 + 8);
+    
+        restartButtonRect = {
+            x: buttonX,
+            y: buttonY,
+            width: buttonWidth,
+            height: buttonHeight
+        };
+    }
+    
+    // --- 遊戲初始化/重置函數 ---
+    function initializeGame() {
+        player = new Player(GAME_WIDTH * 0.08, GAME_HEIGHT / 2 - 32);
+        enemies = [];
+        healItems = [];
+        score = 0;
+        
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+        
+        gameState = 'PLAYING';
+        gameLoop();
+    }
+    
+    // --- Canvas 尺寸調整邏輯 ---
+    function resizeGame() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    
+        GAME_WIDTH = canvas.width;
+        GAME_HEIGHT = canvas.height;
+    
+        if (gameState === 'START_SCREEN') {
+            drawStartScreen();
+        }
+    }
+    
+    // --- 遊戲循環 ---
+    function gameLoop() {
+        if (gameState === 'PLAYING') {
+            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+            if (isShooting) {
+                player.shoot();
+            }
+            
+            handleInput();
+            if (player) player.update();
+    
+            const randomType = ENEMY_TYPES[Math.floor(Math.random() * ENEMY_TYPES.length)];
+            if (Math.random() < 0.02 && enemies.length < 5) {
+                const randomY = Math.random() * (GAME_HEIGHT - randomType.height);
+                enemies.push(new Enemy(GAME_WIDTH, randomY, randomType));
+            }
+    
+            if (Math.random() < 0.005 && healItems.length < 2) {
+                const randomY = Math.random() * (GAME_HEIGHT - 24);
+                healItems.push(new HealItem(GAME_WIDTH, randomY));
+            }
+    
+            enemies = enemies.filter(enemy => {
+                enemy.update();
+                if (player && enemy.collidesWith(player)) {
+                    player.health--;
+                    if (player.health <= 0) {
+                        gameState = 'GAME_OVER';
+                    }
+                    return false;
+                }
+                return enemy.x + enemy.width > 0;
+            });
+    
+            player.bullets = player.bullets.filter(bullet => {
+                bullet.update();
+                let bulletHitEnemy = false;
+                enemies = enemies.filter(enemy => {
+                    if (bullet.collidesWith(enemy)) {
+                        bulletHitEnemy = true;
+                        score += enemy.points;
+                        return false;
+                    }
+                    return true;
+                });
+                return !bulletHitEnemy && bullet.x < GAME_WIDTH;
+            });
+    
+            healItems = healItems.filter(item => {
+                item.update();
+                if (player && item.collidesWith(player)) {
+                    if (player.health < MAX_PLAYER_HEALTH) {
+                        player.health++;
+                    }
+                    return false;
+                }
+                return item.x + item.width > 0;
+            });
+            
+            drawGameElements();
+        } else if (gameState === 'START_SCREEN') {
+            drawStartScreen();
+        } else if (gameState === 'GAME_OVER') {
+            drawGameOver();
+        }
+    
+        animationFrameId = requestAnimationFrame(gameLoop);
+    }
+    
+    // --- 遊戲啟動 ---
+    window.onload = function() {
+        resizeGame();
+        if (!isStartBackgroundLoaded) {
+            drawStartScreen();
+        } else {
+            gameLoop();
+        }
+    }
+    
+    window.addEventListener('resize', () => {
+        resizeGame();
+    });
+</script>
+
+</body>
+</html>
