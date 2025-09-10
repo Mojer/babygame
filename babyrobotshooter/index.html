@@ -62,7 +62,7 @@
 <canvas id="gameCanvas"></canvas>
 
 <script>
-    // 版本號: 20250910
+    // 版本號: 202509102050
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     
@@ -522,12 +522,9 @@
         healItems = [];
         score = 0;
         
-        if (animationFrameId) {
-            cancelAnimationFrame(animationFrameId);
-        }
-        
+        // 修正：取消這裡的 gameLoop() 呼叫，確保只有一個循環在運行。
+        // 當 gameState 被設定為 'PLAYING' 時，主循環會在下一幀自動開始遊戲。
         gameState = 'PLAYING';
-        gameLoop();
     }
     
     // --- Canvas 尺寸調整邏輯 ---
@@ -616,11 +613,8 @@
     // --- 遊戲啟動 ---
     window.onload = function() {
         resizeGame();
-        if (!isStartBackgroundLoaded) {
-            drawStartScreen();
-        } else {
-            gameLoop();
-        }
+        // 遊戲循環只在這裡啟動一次。
+        gameLoop();
     }
     
     window.addEventListener('resize', () => {
