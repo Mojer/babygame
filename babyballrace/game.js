@@ -256,10 +256,10 @@ const state = {
   camY: 0,
   time: 0,
   finished: [],          // 依完成順序的 ball
-  winner: 0,             // 0=未定, 1/2=玩家
+  winnerBall: null,      // 第一顆衝線的球（= 排名第一）
+  winner: 0,             // 0=未定或平手（中立球奪冠）, 1/2=玩家
   boosts: [BOOST_CHARGES, BOOST_CHARGES],
   particles: [],
-  toastShown: { neutral: false },
 };
 
 // ---------- DOM ----------
@@ -323,12 +323,12 @@ function startRace() {
   state.track = buildTrack();
   state.balls = [];
   state.finished = [];
+  state.winnerBall = null;
   state.winner = 0;
   state.time = 0;
   state.camY = 0;
   state.boosts = [BOOST_CHARGES, BOOST_CHARGES];
   state.particles = [];
-  state.toastShown = { neutral: false };
 
   // 5 顆球全部進場：玩家球 + 中立球
   const order = [...SKINS.keys()].sort(() => Math.random() - .5);
@@ -580,34 +580,27 @@ function stepParticles(dt) {
 // ---------- 完賽處理 ----------
 function onBallFinished(b) {
   const rank = state.finished.length;
-  if (b.owner) {
-    $(`hud-p${b.owner}-rank`).textContent = `#${rank}`;
-    if (!state.winner) {
-      state.winner = b.owner;
-      SFX.win();
-      setTimeout(showResult, 1500);
-    }
-  } else if (!state.winner && !state.toastShown.neutral) {
-    state.toastShown.neutral = true;
-    showToast(`中立球「${b.skin.name}」搶先抵達！比賽繼續！`);
+  if (b.owner) $(`hud-p${b.owner}-rank`).textContent = `#${rank}`;
+  // 第一顆衝線的球就是冠軍：玩家球則該玩家獲勝，中立球則平手
+  if (!state.winnerBall) {
+    state.winnerBall = b;
+    state.winner = b.owner;
+    SFX.win();
+    setTimeout(showResult, 1500);
   }
-}
-
-function showToast(msg) {
-  const el = $("race-toast");
-  el.textContent = msg;
-  el.classList.remove("hidden");
-  el.style.animation = "none"; void el.offsetWidth; el.style.animation = "";
-  setTimeout(() => el.classList.add("hidden"), 2300);
 }
 
 function showResult() {
   state.phase = "finish";
   const title = $("result-title");
-  title.textContent = `玩家 ${state.winner} 獲勝！`;
-  title.className = `result-title ${state.winner === 1 ? "p1-text" : "p2-text"}`;
-  const winBall = state.balls.find((b) => b.owner === state.winner);
-  renderBallToCanvas($("result-ball"), winBall.skin, state.winner);
+  if (state.winner) {
+    title.textContent = `玩家 ${state.winner} 獲勝！`;
+    title.className = `result-title ${state.winner === 1 ? "p1-text" : "p2-text"}`;
+  } else {
+    title.textContent = `平手！中立球「${state.winnerBall.skin.name}」奪冠`;
+    title.className = "result-title";
+  }
+  renderBallToCanvas($("result-ball"), state.winnerBall.skin, state.winner);
 
   // 名次表：已完賽依順序，未完賽依進度排
   const rest = state.balls.filter((b) => !b.finished).sort((a, c) => c.y - a.y);
@@ -616,7 +609,7 @@ function showResult() {
   ol.innerHTML = "";
   ordered.forEach((b, i) => {
     const li = document.createElement("li");
-    const isWinner = b.owner === state.winner;
+    const isWinner = b === state.winnerBall;
     if (isWinner) li.classList.add("winner-row");
     const rk = document.createElement("span");
     rk.className = "rk"; rk.textContent = `${i + 1}.`;
@@ -651,6 +644,7 @@ window.addEventListener("resize", resizeCanvas);
 function render() {
   const t = state.track;
   if (!t) return;
+  if (!cssW) { resizeCanvas(); if (!cssW) return; }
   const viewH = cssH / viewScale; // 邏輯視野高度
 
   // 攝影機：跟隨領先的「玩家球」
@@ -838,11 +832,11 @@ function loop(now) {
       b.trail.push({ x: b.x, y: b.y });
       if (b.trail.length > 10) b.trail.shift();
     }
-    // 保險：超時以進度判定
-    if (state.time > RACE_TIMEOUT && !state.winner) {
-      const p1 = state.balls.find((b) => b.owner === 1);
-      const p2 = state.balls.find((b) => b.owner === 2);
-      state.winner = p1.y >= p2.y ? 1 : 2;
+    // 保險：超時以進度判定（進度最前的球視同冠軍，維持「第一名=獲勝者」）
+    if (state.time > RACE_TIMEOUT && !state.winnerBall) {
+      const lead = [...state.balls].sort((a, c) => c.y - a.y)[0];
+      state.winnerBall = lead;
+      state.winner = lead.owner;
       showResult();
     }
   }
