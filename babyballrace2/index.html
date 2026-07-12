@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Ball vs Ball 滾珠大作戰 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 選球畫面 -->
+  <div id="select-screen" class="screen">
+    <h1 class="title">滾珠大作戰 2</h1>
+    <p class="subtitle">BALL vs BALL</p>
+    <div id="pick-prompt" class="pick-prompt p1">玩家 1，請選擇你的球！</div>
+    <div id="ball-list" class="ball-list"></div>
+    <div class="picked-row">
+      <div class="picked-slot" id="picked-p1"><span class="slot-label p1-text">P1</span><canvas width="72" height="72"></canvas></div>
+      <div class="vs">VS</div>
+      <div class="picked-slot" id="picked-p2"><span class="slot-label p2-text">P2</span><canvas width="72" height="72"></canvas></div>
+    </div>
+    <button id="start-btn" class="big-btn" disabled>開始比賽</button>
+    <p class="hint">其餘 3 顆球將成為中立球一同競速，第一顆抵達終點的球獲勝——小心別讓中立球搶走冠軍！</p>
+  </div>
+
+  <!-- 比賽畫面 -->
+  <div id="race-screen" class="screen hidden">
+    <canvas id="game"></canvas>
+    <div id="countdown" class="countdown hidden"></div>
+    <div class="hud-top">
+      <div class="hud-player p1-bg" id="hud-p1"><canvas width="40" height="40"></canvas><span id="hud-p1-rank">-</span></div>
+      <div class="hud-player p2-bg" id="hud-p2"><canvas width="40" height="40"></canvas><span id="hud-p2-rank">-</span></div>
+    </div>
+    <button id="boost-p1" class="boost-btn p1-bg">P1 加速<br><span class="charges">●●●</span></button>
+    <button id="boost-p2" class="boost-btn p2-bg">P2 加速<br><span class="charges">●●●</span></button>
+  </div>
+
+  <!-- 結果畫面 -->
+  <div id="result-screen" class="screen overlay hidden">
+    <div class="result-card">
+      <div id="result-title" class="result-title">玩家 1 獲勝！</div>
+      <canvas id="result-ball" width="120" height="120"></canvas>
+      <ol id="result-ranking" class="ranking"></ol>
+      <button id="rematch-btn" class="big-btn">再來一局</button>
+    </div>
+  </div>
+
+  <script src="maps/overview.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
