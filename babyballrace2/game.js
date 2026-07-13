@@ -181,11 +181,10 @@ const SFX = (() => {
 
 // ---------- 賽道（資料驅動） ----------
 // 地圖資料放在 maps/*.js（window.MAPS 註冊表），引擎只負責讀資料。
-// 網址帶 ?map=名稱 可切換地圖，預設 overview。
+// 選球畫面可切換地圖；網址帶 ?map=名稱 可指定初始地圖，預設 overview。
 function getMapData() {
-  const want = new URLSearchParams(location.search).get("map") || "overview";
   const maps = window.MAPS || {};
-  return maps[want] || maps.overview;
+  return maps[state.mapId] || maps.overview;
 }
 
 function buildTrack() {
@@ -198,6 +197,7 @@ function buildTrack() {
     bumpers: (d.bumpers || []).map((b) => ({ x: b[0], y: b[1], r: b[2] ?? 24, flash: 0 })),
     spinners: (d.spinners || []).map((s) => ({ x: s[0], y: s[1], len: s[2], speed: s[3], angle: Math.random() * 3 })),
     spawnY: d.spawnY,
+    spawnX: d.spawnX || null,
     finishY: d.finishY,
     gravity: d.gravity ?? GRAVITY,
     bg: d.background || null,
@@ -227,7 +227,13 @@ const state = {
   winner: 0,             // 0=未定或平手（中立球奪冠）, 1/2=玩家
   boosts: [BOOST_CHARGES, BOOST_CHARGES],
   particles: [],
+  mapId: "overview",     // 目前選擇的地圖（選球畫面可切換）
 };
+// 網址 ?map=名稱 指定初始地圖
+{
+  const urlMap = new URLSearchParams(location.search).get("map");
+  if (urlMap && window.MAPS && window.MAPS[urlMap]) state.mapId = urlMap;
+}
 
 // ---------- DOM ----------
 const $ = (id) => document.getElementById(id);
@@ -252,7 +258,26 @@ function setupSelect() {
     card.addEventListener("click", () => pickBall(i, card));
     list.appendChild(card);
   });
+  setupMapPicker();
   updatePickUI();
+}
+
+// 地圖選擇器：列出 window.MAPS 的所有地圖
+function setupMapPicker() {
+  const list = $("map-list");
+  list.innerHTML = "";
+  for (const [id, m] of Object.entries(window.MAPS || {})) {
+    const btn = document.createElement("button");
+    btn.className = "map-btn" + (id === state.mapId ? " active" : "");
+    btn.textContent = m.name;
+    btn.addEventListener("click", () => {
+      state.mapId = id;
+      SFX.unlock(); SFX.pick();
+      list.querySelectorAll(".map-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+    });
+    list.appendChild(btn);
+  }
 }
 
 function pickBall(i, card) {
@@ -296,14 +321,16 @@ function startRace() {
   state.boosts = [BOOST_CHARGES, BOOST_CHARGES];
   state.particles = [];
 
-  // 5 顆球全部進場：玩家球 + 中立球
+  // 5 顆球全部進場：玩家球 + 中立球（spawnX 可限制進場區間，例如右上入口）
+  const spawnX1 = state.track.spawnX ? state.track.spawnX[0] : 120;
+  const spawnX2 = state.track.spawnX ? state.track.spawnX[1] : state.track.W - 120;
   const order = [...SKINS.keys()].sort(() => Math.random() - .5);
   order.forEach((skinIdx, i) => {
     const owner = skinIdx === state.picks[0] ? 1 : skinIdx === state.picks[1] ? 2 : 0;
     state.balls.push({
       skin: SKINS[skinIdx],
       owner,
-      x: 120 + i * (state.track.W - 240) / 4 + (Math.random() * 24 - 12),
+      x: spawnX1 + i * (spawnX2 - spawnX1) / 4 + (Math.random() * 24 - 12),
       y: state.track.spawnY + (Math.random() * 30 - 15),
       vx: 0, vy: 0,
       rot: 0,
@@ -380,8 +407,16 @@ function stepPhysics(dt) {
       }
     } else b.stuckTime = 0;
 
-    // 抵達終點
-    if (!b.finished && b.y > t.finishY) {
+    // 逃逸保險：球被擠出地圖外時送回起點重新進場
+    if (b.x < -BALL_R || b.x > t.W + BALL_R || b.y > t.H + 120) {
+      b.x = t.spawnX ? (t.spawnX[0] + t.spawnX[1]) / 2 : t.W / 2;
+      b.y = t.spawnY;
+      b.vx = 0; b.vy = 0;
+      continue;
+    }
+
+    // 抵達終點（需在地圖範圍內，牆外墜落不算）
+    if (!b.finished && b.y > t.finishY && b.x > 0 && b.x < t.W) {
       b.finished = true;
       state.finished.push(b);
       onBallFinished(b);
@@ -659,10 +694,16 @@ function render() {
       ctx.fillStyle = i % 2 ? "#20264e" : "#fff";
       ctx.fillRect(24 + i * sq, t.finishY, Math.min(sq, t.W - 24 - (24 + i * sq)), sq);
     }
-    ctx.fillStyle = "#ffd94d";
-    ctx.font = "900 30px sans-serif";
+    // FINISH 字直接疊在格紋帶上（深色描邊確保各地圖都清晰）
+    ctx.font = "900 26px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("FINISH", t.W / 2, t.finishY - 38);
+    ctx.textBaseline = "middle";
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = "#141a3a";
+    ctx.strokeText("FINISH", t.W / 2, t.finishY);
+    ctx.fillStyle = "#ffd94d";
+    ctx.fillText("FINISH", t.W / 2, t.finishY);
+    ctx.textBaseline = "alphabetic";
   }
 
   // 牆

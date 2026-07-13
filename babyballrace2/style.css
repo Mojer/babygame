@@ -88,6 +88,23 @@ html, body {
 .p1-text { color: #6db4ff; } .p2-text { color: #ff8ba0; }
 .vs { font-size: 20px; font-weight: 900; color: #565f92; font-style: italic; }
 
+/* ---------- 地圖選擇 ---------- */
+.map-pick { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.map-label { font-size: 13px; color: #7d86b8; font-weight: 800; letter-spacing: 2px; }
+#map-list { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.map-btn {
+  font: inherit; font-size: 14px; font-weight: 800;
+  color: #9aa3cf;
+  background: #1b2142;
+  border: 2px solid #2c3567;
+  border-radius: 999px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: transform .15s, border-color .2s, color .2s, background .2s;
+}
+.map-btn:active { transform: scale(.95); }
+.map-btn.active { color: #ffd94d; border-color: #ffd94d; background: rgba(255,217,77,.12); }
+
 .big-btn {
   font: inherit; font-size: 19px; font-weight: 900; letter-spacing: 3px;
   color: #1a1230;
