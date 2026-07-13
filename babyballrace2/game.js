@@ -556,6 +556,8 @@ function collideBalls() {
   for (let i = 0; i < bs.length; i++) {
     for (let j = i + 1; j < bs.length; j++) {
       const a = bs[i], c = bs[j];
+      // 完賽球對未完賽球幽靈化：終點盆地的球堆不能堵住還在比賽的球
+      if (a.finished !== c.finished) continue;
       let nx = c.x - a.x, ny = c.y - a.y;
       const dist2 = nx * nx + ny * ny;
       const minD = BALL_R * 2;
