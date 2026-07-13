@@ -21,97 +21,128 @@ const RACE_TIMEOUT = 120;     // 秒，保險用
 // ---------- 球的造型 ----------
 // 每個造型提供 base 色與 draw(ctx, r, rot)（以球心為原點繪製）
 const SKINS = [
+  // 五顆球造型：依小朋友的表情手繪圖轉製
   {
-    id: "blaze", name: "烈焰", tag: "BLAZE", base: "#ff5233",
+    id: "smile", name: "微笑", tag: "SMILE", base: "#ffcf4a",
     draw(ctx, r, rot) {
       const g = ctx.createRadialGradient(-r * .35, -r * .35, r * .1, 0, 0, r);
-      g.addColorStop(0, "#ffd166"); g.addColorStop(.55, "#ff7a3d"); g.addColorStop(1, "#d92b1e");
+      g.addColorStop(0, "#ffe89a"); g.addColorStop(.55, "#ffd23d"); g.addColorStop(1, "#f0a512");
       ctx.fillStyle = g;
       ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
       ctx.save(); ctx.rotate(rot);
-      ctx.strokeStyle = "rgba(255,230,120,.85)"; ctx.lineWidth = r * .16; ctx.lineCap = "round";
-      for (let i = 0; i < 3; i++) {
+      ctx.strokeStyle = "#5a4300"; ctx.lineWidth = r * .09; ctx.lineCap = "round";
+      // 瞇瞇眼 ^^
+      ctx.beginPath(); ctx.arc(-r * .3, -r * .02, r * .16, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+      ctx.beginPath(); ctx.arc(r * .3, -r * .02, r * .16, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+      // 紅腮紅
+      ctx.fillStyle = "rgba(255,60,60,.75)";
+      ctx.beginPath(); ctx.ellipse(-r * .45, r * .24, r * .16, r * .11, 0, 0, 7); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(r * .45, r * .24, r * .16, r * .11, 0, 0, 7); ctx.fill();
+      // 微笑
+      ctx.beginPath(); ctx.arc(0, r * .2, r * .2, .5, Math.PI - .5); ctx.stroke();
+      ctx.restore();
+    }
+  },
+  {
+    id: "laugh", name: "大笑", tag: "LAUGH", base: "#ffd23d",
+    draw(ctx, r, rot) {
+      const g = ctx.createRadialGradient(-r * .35, -r * .35, r * .1, 0, 0, r);
+      g.addColorStop(0, "#fff0b0"); g.addColorStop(.55, "#ffd23d"); g.addColorStop(1, "#eda50e");
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
+      ctx.save(); ctx.rotate(rot);
+      ctx.strokeStyle = "#5a4300"; ctx.lineWidth = r * .09; ctx.lineCap = "round";
+      // 瞇瞇眼 ^^
+      ctx.beginPath(); ctx.arc(-r * .3, -r * .18, r * .16, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+      ctx.beginPath(); ctx.arc(r * .3, -r * .18, r * .16, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+      // 張大的藍黑嘴巴
+      ctx.fillStyle = "#2f3550";
+      ctx.beginPath(); ctx.ellipse(0, r * .35, r * .3, r * .27, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = "#4a5378";
+      ctx.beginPath(); ctx.ellipse(0, r * .46, r * .16, r * .1, 0, 0, 7); ctx.fill();
+      ctx.restore();
+    }
+  },
+  {
+    id: "star", name: "星星", tag: "STAR", base: "#ffc93d",
+    draw(ctx, r, rot) {
+      const g = ctx.createRadialGradient(-r * .35, -r * .35, r * .1, 0, 0, r);
+      g.addColorStop(0, "#ffe89a"); g.addColorStop(.55, "#ffc93d"); g.addColorStop(1, "#ea9c08");
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
+      ctx.save(); ctx.rotate(rot);
+      // 星星眼（四角星）
+      ctx.fillStyle = "#3d3310";
+      for (const sx of [-r * .3, r * .3]) {
+        const sy = -r * .12, s = r * .22;
         ctx.beginPath();
-        ctx.arc(0, 0, r * .55, i * 2.1, i * 2.1 + 1.1);
-        ctx.stroke();
+        ctx.moveTo(sx, sy - s);
+        ctx.quadraticCurveTo(sx, sy, sx + s, sy);
+        ctx.quadraticCurveTo(sx, sy, sx, sy + s);
+        ctx.quadraticCurveTo(sx, sy, sx - s, sy);
+        ctx.quadraticCurveTo(sx, sy, sx, sy - s);
+        ctx.fill();
       }
-      ctx.fillStyle = "#ffe9a8";
-      ctx.beginPath(); ctx.arc(r * .3, 0, r * .14, 0, 7); ctx.fill();
+      // 開口 + 口水
+      ctx.fillStyle = "#2f3550";
+      ctx.beginPath(); ctx.ellipse(0, r * .42, r * .2, r * .15, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = "#9fd8ff";
+      ctx.beginPath(); ctx.arc(r * .16, r * .56, r * .1, 0, 7); ctx.fill();
+      ctx.beginPath(); ctx.arc(r * .22, r * .7, r * .06, 0, 7); ctx.fill();
       ctx.restore();
     }
   },
   {
-    id: "ocean", name: "深海", tag: "OCEAN", base: "#2e8bff",
+    id: "love", name: "愛心", tag: "LOVE", base: "#ffbe3d",
     draw(ctx, r, rot) {
       const g = ctx.createRadialGradient(-r * .35, -r * .35, r * .1, 0, 0, r);
-      g.addColorStop(0, "#9fd8ff"); g.addColorStop(.55, "#3d9bff"); g.addColorStop(1, "#1b4fd8");
+      g.addColorStop(0, "#ffe08c"); g.addColorStop(.55, "#ffbe3d"); g.addColorStop(1, "#e8940a");
       ctx.fillStyle = g;
       ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
       ctx.save(); ctx.rotate(rot);
-      ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.clip();
-      ctx.strokeStyle = "rgba(230,250,255,.8)"; ctx.lineWidth = r * .13; ctx.lineCap = "round";
-      for (let i = -1; i <= 1; i++) {
+      // 愛心眼
+      ctx.fillStyle = "#e8302f";
+      for (const hx of [-r * .3, r * .3]) {
+        const hy = -r * .1, s = r * .26;
         ctx.beginPath();
-        ctx.moveTo(-r, i * r * .5);
-        ctx.quadraticCurveTo(-r * .4, i * r * .5 - r * .3, 0, i * r * .5);
-        ctx.quadraticCurveTo(r * .4, i * r * .5 + r * .3, r, i * r * .5);
-        ctx.stroke();
+        ctx.moveTo(hx, hy + s * .9);
+        ctx.bezierCurveTo(hx - s * 1.25, hy + s * .1, hx - s * .75, hy - s * .85, hx, hy - s * .2);
+        ctx.bezierCurveTo(hx + s * .75, hy - s * .85, hx + s * 1.25, hy + s * .1, hx, hy + s * .9);
+        ctx.fill();
       }
+      // 驚喜小嘴
+      ctx.fillStyle = "#2f3550";
+      ctx.beginPath(); ctx.ellipse(0, r * .45, r * .14, r * .16, 0, 0, 7); ctx.fill();
       ctx.restore();
     }
   },
   {
-    id: "volt", name: "雷霆", tag: "VOLT", base: "#ffd23d",
+    id: "balloon", name: "氣球", tag: "BALLOON", base: "#ffd85e",
     draw(ctx, r, rot) {
       const g = ctx.createRadialGradient(-r * .35, -r * .35, r * .1, 0, 0, r);
-      g.addColorStop(0, "#fff8c9"); g.addColorStop(.55, "#ffd23d"); g.addColorStop(1, "#e09a00");
+      g.addColorStop(0, "#fff0b0"); g.addColorStop(.55, "#ffd85e"); g.addColorStop(1, "#f0a512");
       ctx.fillStyle = g;
       ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
       ctx.save(); ctx.rotate(rot);
-      ctx.fillStyle = "#fff";
-      ctx.strokeStyle = "rgba(160,100,0,.55)"; ctx.lineWidth = r * .07;
-      ctx.beginPath();
-      ctx.moveTo(r * .15, -r * .62); ctx.lineTo(-r * .3, r * .1); ctx.lineTo(-r * .02, r * .1);
-      ctx.lineTo(-r * .15, r * .62); ctx.lineTo(r * .3, -r * .12); ctx.lineTo(r * .02, -r * .12);
-      ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = "#5a4300"; ctx.lineWidth = r * .09; ctx.lineCap = "round";
+      // 瞇瞇眼 + 微笑（臉稍偏右，留位置給氣球）
+      ctx.beginPath(); ctx.arc(r * .05, -r * .08, r * .15, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+      ctx.beginPath(); ctx.arc(r * .55, -r * .08, r * .15, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+      ctx.beginPath(); ctx.arc(r * .3, r * .22, r * .2, .5, Math.PI - .5); ctx.stroke();
+      // 藍綠雙色小氣球
+      const bx = -r * .5, by = -r * .3, br = r * .28;
+      ctx.save();
+      ctx.beginPath(); ctx.arc(bx, by, br, 0, 7); ctx.clip();
+      ctx.fillStyle = "#6f86d6"; ctx.fillRect(bx - br, by - br, br, br * 2);
+      ctx.fillStyle = "#4e7d4e"; ctx.fillRect(bx, by - br, br, br * 2);
       ctx.restore();
-    }
-  },
-  {
-    id: "ghost", name: "幻影", tag: "GHOST", base: "#a86bff",
-    draw(ctx, r, rot) {
-      const g = ctx.createRadialGradient(-r * .35, -r * .35, r * .1, 0, 0, r);
-      g.addColorStop(0, "#e3ccff"); g.addColorStop(.55, "#a86bff"); g.addColorStop(1, "#5b2bb8");
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
-      ctx.save(); ctx.rotate(rot);
-      ctx.fillStyle = "#2a1650";
-      ctx.beginPath(); ctx.ellipse(-r * .26, -r * .08, r * .11, r * .2, 0, 0, 7); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(r * .26, -r * .08, r * .11, r * .2, 0, 0, 7); ctx.fill();
-      ctx.strokeStyle = "#2a1650"; ctx.lineWidth = r * .09; ctx.lineCap = "round";
-      ctx.beginPath(); ctx.arc(0, r * .28, r * .22, .3, Math.PI - .3); ctx.stroke();
-      ctx.fillStyle = "rgba(255,255,255,.45)";
-      ctx.beginPath(); ctx.arc(-r * .5, r * .45, r * .1, 0, 7); ctx.fill();
-      ctx.beginPath(); ctx.arc(r * .55, -r * .5, r * .08, 0, 7); ctx.fill();
-      ctx.restore();
-    }
-  },
-  {
-    id: "metal", name: "鋼鐵", tag: "METAL", base: "#b9c4d6",
-    draw(ctx, r, rot) {
-      const g = ctx.createRadialGradient(-r * .35, -r * .35, r * .1, 0, 0, r);
-      g.addColorStop(0, "#ffffff"); g.addColorStop(.5, "#b9c4d6"); g.addColorStop(1, "#5c6a82");
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
-      ctx.save(); ctx.rotate(rot);
-      ctx.strokeStyle = "rgba(70,84,106,.7)"; ctx.lineWidth = r * .08;
-      ctx.beginPath(); ctx.arc(0, 0, r * .62, 0, 7); ctx.stroke();
-      ctx.fillStyle = "#46546a";
-      for (let i = 0; i < 6; i++) {
-        const a = i * Math.PI / 3;
-        ctx.beginPath(); ctx.arc(Math.cos(a) * r * .62, Math.sin(a) * r * .62, r * .09, 0, 7); ctx.fill();
+      ctx.lineWidth = r * .06;
+      ctx.beginPath(); ctx.arc(bx, by, br, 0, 7); ctx.stroke();
+      // 小鍊子
+      ctx.lineWidth = r * .05;
+      for (let i = 1; i <= 3; i++) {
+        ctx.beginPath(); ctx.arc(bx + i * r * .09, by + br + i * r * .13, r * .055, 0, 7); ctx.stroke();
       }
-      ctx.beginPath(); ctx.arc(0, 0, r * .16, 0, 7); ctx.fill();
       ctx.restore();
     }
   },
