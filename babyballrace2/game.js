@@ -126,7 +126,7 @@ function drawBall(ctx, skin, r, rot, owner) {
   ctx.fillStyle = hl;
   ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
   ctx.lineWidth = Math.max(1.5, r * .09);
-  ctx.strokeStyle = owner === 1 ? "#4da3ff" : owner === 2 ? "#ff5c78" : "rgba(0,0,0,.35)";
+  ctx.strokeStyle = owner === 1 ? "#2f7fe0" : owner === 2 ? "#ff4d6e" : "rgba(0,0,0,.35)";
   ctx.beginPath(); ctx.arc(0, 0, r - ctx.lineWidth / 2, 0, 7); ctx.stroke();
 }
 
@@ -336,6 +336,8 @@ function startRace() {
       rot: 0,
       finished: false,
       stuckTime: 0,
+      maxY: -1e9,
+      lastProgressT: 0,
       trail: [],
     });
   });
@@ -373,6 +375,7 @@ function startRace() {
 // ---------- 物理 ----------
 function stepPhysics(dt) {
   const t = state.track;
+  state.time += dt;
   const h = dt / SUBSTEPS;
 
   // 更新風車角度
@@ -400,12 +403,22 @@ function stepPhysics(dt) {
     if (b.finished) continue;
     if (b.vx * b.vx + b.vy * b.vy < 30 * 30) {
       b.stuckTime += dt;
-      if (b.stuckTime > 1.4) {
-        b.vx += (t.W / 2 - b.x) * 0.9 + (Math.random() * 120 - 60);
-        b.vy -= 180;
+      if (b.stuckTime > 1.0) {
+        b.vx += (t.W / 2 - b.x) * 0.5 + (Math.random() * 2 - 1) * 220;
+        b.vy -= 240;
         b.stuckTime = 0;
       }
     } else b.stuckTime = 0;
+
+    // 進度救援：太久沒有創新的最深位置（被口袋或風車困住）就強力彈起脫困
+    if (b.y > b.maxY) {
+      b.maxY = b.y;
+      b.lastProgressT = state.time;
+    } else if (state.time - b.lastProgressT > 5) {
+      b.vy -= 520;
+      b.vx += (Math.random() * 2 - 1) * 420;
+      b.lastProgressT = state.time;
+    }
 
     // 逃逸保險：球被擠出地圖外時送回起點重新進場
     if (b.x < -BALL_R || b.x > t.W + BALL_R || b.y > t.H + 120) {
@@ -547,7 +560,7 @@ function useBoost(player) {
     b.vy += BOOST_POWER;
   }
   SFX.boost();
-  spawnBurst(b.x, b.y, b.owner === 1 ? "#4da3ff" : "#ff5c78", 14);
+  spawnBurst(b.x, b.y, b.owner === 1 ? "#2f7fe0" : "#ff4d6e", 14);
   updateBoostBtn(player);
 }
 
@@ -654,7 +667,7 @@ function render() {
 
   // 信箱區（地圖外）底色
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.fillStyle = "#0a0d24";
+  ctx.fillStyle = "#bfdff5";
   ctx.fillRect(0, 0, cssW, cssH);
 
   ctx.setTransform(dpr * fit, 0, 0, dpr * fit, dpr * ox, dpr * oy);
@@ -662,7 +675,7 @@ function render() {
 
   // 地圖背景
   const bg = ctx.createLinearGradient(0, 0, 0, t.H);
-  bg.addColorStop(0, "#151b3d"); bg.addColorStop(1, "#0d1130");
+  bg.addColorStop(0, "#e7f7ff"); bg.addColorStop(1, "#c9e9ff");
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, t.W, t.H);
 
@@ -674,24 +687,24 @@ function render() {
   }
 
   // 背景裝飾點
-  ctx.fillStyle = "rgba(255,255,255,.05)";
+  ctx.fillStyle = "rgba(255,255,255,.55)";
   for (let gy = 0; gy < t.H + 260; gy += 260) {
     for (let gx = 90; gx < t.W; gx += 180) {
       const jitter = ((gx * 7 + gy * 13) % 97) - 48;
-      ctx.beginPath(); ctx.arc(gx + jitter, gy + (jitter % 30), 3, 0, 7); ctx.fill();
+      ctx.beginPath(); ctx.arc(gx + jitter, gy + (jitter % 30), 5, 0, 7); ctx.fill();
     }
   }
 
   // 終點區
   {
-    ctx.fillStyle = "rgba(255,217,77,.10)";
+    ctx.fillStyle = "rgba(255,190,70,.18)";
     ctx.fillRect(24, t.finishY, t.W - 48, t.H - t.finishY);
     // 格紋終點線
     const sq = 24;
     for (let i = 0; (24 + i * sq) < t.W - 24; i++) {
-      ctx.fillStyle = i % 2 ? "#fff" : "#20264e";
+      ctx.fillStyle = i % 2 ? "#fff" : "#3a4666";
       ctx.fillRect(24 + i * sq, t.finishY - sq, Math.min(sq, t.W - 24 - (24 + i * sq)), sq);
-      ctx.fillStyle = i % 2 ? "#20264e" : "#fff";
+      ctx.fillStyle = i % 2 ? "#3a4666" : "#fff";
       ctx.fillRect(24 + i * sq, t.finishY, Math.min(sq, t.W - 24 - (24 + i * sq)), sq);
     }
     // FINISH 字直接疊在格紋帶上（深色描邊確保各地圖都清晰）
@@ -699,7 +712,7 @@ function render() {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.lineWidth = 6;
-    ctx.strokeStyle = "#141a3a";
+    ctx.strokeStyle = "#3a4666";
     ctx.strokeText("FINISH", t.W / 2, t.finishY);
     ctx.fillStyle = "#ffd94d";
     ctx.fillText("FINISH", t.W / 2, t.finishY);
@@ -711,21 +724,21 @@ function render() {
   for (const s of t.segs) {
     if (Math.min(s.y1, s.y2) > camBot + 40 || Math.max(s.y1, s.y2) < camY - 40) continue;
     ctx.lineWidth = s.r * 2 + 6;
-    ctx.strokeStyle = "#2b3468";
+    ctx.strokeStyle = "#e8871e";
     ctx.beginPath(); ctx.moveTo(s.x1, s.y1); ctx.lineTo(s.x2, s.y2); ctx.stroke();
     ctx.lineWidth = s.r * 2;
-    ctx.strokeStyle = "#4a5aa8";
+    ctx.strokeStyle = "#ffab4e";
     ctx.beginPath(); ctx.moveTo(s.x1, s.y1); ctx.lineTo(s.x2, s.y2); ctx.stroke();
   }
 
   // 彈釘
   for (const p of t.pegs) {
     if (p.y > camBot + 30 || p.y < camY - 30) continue;
-    ctx.fillStyle = "#39437e";
+    ctx.fillStyle = "#3aa564";
     ctx.beginPath(); ctx.arc(p.x, p.y, p.r + 2.5, 0, 7); ctx.fill();
-    ctx.fillStyle = "#8f9cd8";
+    ctx.fillStyle = "#7fd8a0";
     ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.fill();
-    ctx.fillStyle = "#c9d2f5";
+    ctx.fillStyle = "#e6ffee";
     ctx.beginPath(); ctx.arc(p.x - p.r * .3, p.y - p.r * .3, p.r * .35, 0, 7); ctx.fill();
   }
 
@@ -733,9 +746,9 @@ function render() {
   for (const bp of t.bumpers) {
     if (bp.y > camBot + 50 || bp.y < camY - 50) continue;
     bp.flash = Math.max(0, bp.flash - 0.05);
-    ctx.fillStyle = "#7a2440";
+    ctx.fillStyle = "#d64f74";
     ctx.beginPath(); ctx.arc(bp.x, bp.y, bp.r + 4, 0, 7); ctx.fill();
-    ctx.fillStyle = bp.flash > 0 ? "#ffe07a" : "#ff5c78";
+    ctx.fillStyle = bp.flash > 0 ? "#ffe07a" : "#ff7d9c";
     ctx.beginPath(); ctx.arc(bp.x, bp.y, bp.r, 0, 7); ctx.fill();
     ctx.fillStyle = "rgba(255,255,255,.85)";
     ctx.font = `900 ${bp.r}px sans-serif`;
@@ -750,14 +763,14 @@ function render() {
     const c = Math.cos(sp.angle), sn = Math.sin(sp.angle);
     const hx = c * sp.len / 2, hy = sn * sp.len / 2;
     ctx.lineWidth = 22;
-    ctx.strokeStyle = "#b8842e";
+    ctx.strokeStyle = "#7c4fd0";
     ctx.beginPath(); ctx.moveTo(sp.x - hx, sp.y - hy); ctx.lineTo(sp.x + hx, sp.y + hy); ctx.stroke();
     ctx.lineWidth = 16;
-    ctx.strokeStyle = "#ffbf47";
+    ctx.strokeStyle = "#a97ff2";
     ctx.beginPath(); ctx.moveTo(sp.x - hx, sp.y - hy); ctx.lineTo(sp.x + hx, sp.y + hy); ctx.stroke();
-    ctx.fillStyle = "#7a5518";
+    ctx.fillStyle = "#5b2bb8";
     ctx.beginPath(); ctx.arc(sp.x, sp.y, 13, 0, 7); ctx.fill();
-    ctx.fillStyle = "#ffe4a8";
+    ctx.fillStyle = "#e8dcff";
     ctx.beginPath(); ctx.arc(sp.x, sp.y, 6, 0, 7); ctx.fill();
   }
 
@@ -772,7 +785,7 @@ function render() {
   // 球尾跡
   for (const b of state.balls) {
     if (!b.owner) continue;
-    const col = b.owner === 1 ? "77,163,255" : "255,92,120";
+    const col = b.owner === 1 ? "47,127,224" : "255,77,110";
     for (let i = 0; i < b.trail.length; i++) {
       const tr = b.trail[i];
       ctx.globalAlpha = (i / b.trail.length) * 0.35;
@@ -787,13 +800,13 @@ function render() {
     ctx.save();
     ctx.translate(b.x, b.y);
     // 陰影
-    ctx.fillStyle = "rgba(0,0,0,.3)";
+    ctx.fillStyle = "rgba(70,100,150,.28)";
     ctx.beginPath(); ctx.arc(3, 5, BALL_R, 0, 7); ctx.fill();
     drawBall(ctx, b.skin, BALL_R, b.rot, b.owner);
     ctx.restore();
     // 玩家標籤
     if (b.owner) {
-      ctx.fillStyle = b.owner === 1 ? "#4da3ff" : "#ff5c78";
+      ctx.fillStyle = b.owner === 1 ? "#2f7fe0" : "#ff4d6e";
       ctx.font = "900 20px sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(`P${b.owner}`, b.x, b.y - BALL_R - 9);
@@ -809,7 +822,6 @@ function loop(now) {
   lastT = now;
 
   if (state.phase === "race") {
-    state.time += dt;
     stepPhysics(dt);
     stepParticles(dt);
     // 尾跡
