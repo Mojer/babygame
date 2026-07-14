@@ -21,136 +21,47 @@ const RACE_TIMEOUT = 120;     // 秒，保險用
 // ---------- 球的造型 ----------
 // 每個造型提供 base 色與 draw(ctx, r, rot)（以球心為原點繪製）
 const SKINS = [
-  // 五顆球造型：依小朋友的表情手繪圖轉製
-  {
-    id: "smile", name: "微笑", tag: "SMILE", base: "#ffcf4a",
-    draw(ctx, r, rot) {
-      const g = ctx.createRadialGradient(-r * .35, -r * .35, r * .1, 0, 0, r);
-      g.addColorStop(0, "#ffe89a"); g.addColorStop(.55, "#ffd23d"); g.addColorStop(1, "#f0a512");
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
-      ctx.save(); ctx.rotate(rot);
-      ctx.strokeStyle = "#5a4300"; ctx.lineWidth = r * .09; ctx.lineCap = "round";
-      // 瞇瞇眼 ^^
-      ctx.beginPath(); ctx.arc(-r * .3, -r * .02, r * .16, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
-      ctx.beginPath(); ctx.arc(r * .3, -r * .02, r * .16, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
-      // 紅腮紅
-      ctx.fillStyle = "rgba(255,60,60,.75)";
-      ctx.beginPath(); ctx.ellipse(-r * .45, r * .24, r * .16, r * .11, 0, 0, 7); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(r * .45, r * .24, r * .16, r * .11, 0, 0, 7); ctx.fill();
-      // 微笑
-      ctx.beginPath(); ctx.arc(0, r * .2, r * .2, .5, Math.PI - .5); ctx.stroke();
-      ctx.restore();
-    }
-  },
-  {
-    id: "laugh", name: "大笑", tag: "LAUGH", base: "#ffd23d",
-    draw(ctx, r, rot) {
-      const g = ctx.createRadialGradient(-r * .35, -r * .35, r * .1, 0, 0, r);
-      g.addColorStop(0, "#fff0b0"); g.addColorStop(.55, "#ffd23d"); g.addColorStop(1, "#eda50e");
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
-      ctx.save(); ctx.rotate(rot);
-      ctx.strokeStyle = "#5a4300"; ctx.lineWidth = r * .09; ctx.lineCap = "round";
-      // 瞇瞇眼 ^^
-      ctx.beginPath(); ctx.arc(-r * .3, -r * .18, r * .16, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
-      ctx.beginPath(); ctx.arc(r * .3, -r * .18, r * .16, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
-      // 張大的藍黑嘴巴
-      ctx.fillStyle = "#2f3550";
-      ctx.beginPath(); ctx.ellipse(0, r * .35, r * .3, r * .27, 0, 0, 7); ctx.fill();
-      ctx.fillStyle = "#4a5378";
-      ctx.beginPath(); ctx.ellipse(0, r * .46, r * .16, r * .1, 0, 0, 7); ctx.fill();
-      ctx.restore();
-    }
-  },
-  {
-    id: "star", name: "星星", tag: "STAR", base: "#ffc93d",
-    draw(ctx, r, rot) {
-      const g = ctx.createRadialGradient(-r * .35, -r * .35, r * .1, 0, 0, r);
-      g.addColorStop(0, "#ffe89a"); g.addColorStop(.55, "#ffc93d"); g.addColorStop(1, "#ea9c08");
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
-      ctx.save(); ctx.rotate(rot);
-      // 星星眼（四角星）
-      ctx.fillStyle = "#3d3310";
-      for (const sx of [-r * .3, r * .3]) {
-        const sy = -r * .12, s = r * .22;
-        ctx.beginPath();
-        ctx.moveTo(sx, sy - s);
-        ctx.quadraticCurveTo(sx, sy, sx + s, sy);
-        ctx.quadraticCurveTo(sx, sy, sx, sy + s);
-        ctx.quadraticCurveTo(sx, sy, sx - s, sy);
-        ctx.quadraticCurveTo(sx, sy, sx, sy - s);
-        ctx.fill();
-      }
-      // 開口 + 口水
-      ctx.fillStyle = "#2f3550";
-      ctx.beginPath(); ctx.ellipse(0, r * .42, r * .2, r * .15, 0, 0, 7); ctx.fill();
-      ctx.fillStyle = "#9fd8ff";
-      ctx.beginPath(); ctx.arc(r * .16, r * .56, r * .1, 0, 7); ctx.fill();
-      ctx.beginPath(); ctx.arc(r * .22, r * .7, r * .06, 0, 7); ctx.fill();
-      ctx.restore();
-    }
-  },
-  {
-    id: "love", name: "愛心", tag: "LOVE", base: "#ffbe3d",
-    draw(ctx, r, rot) {
-      const g = ctx.createRadialGradient(-r * .35, -r * .35, r * .1, 0, 0, r);
-      g.addColorStop(0, "#ffe08c"); g.addColorStop(.55, "#ffbe3d"); g.addColorStop(1, "#e8940a");
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
-      ctx.save(); ctx.rotate(rot);
-      // 愛心眼
-      ctx.fillStyle = "#e8302f";
-      for (const hx of [-r * .3, r * .3]) {
-        const hy = -r * .1, s = r * .26;
-        ctx.beginPath();
-        ctx.moveTo(hx, hy + s * .9);
-        ctx.bezierCurveTo(hx - s * 1.25, hy + s * .1, hx - s * .75, hy - s * .85, hx, hy - s * .2);
-        ctx.bezierCurveTo(hx + s * .75, hy - s * .85, hx + s * 1.25, hy + s * .1, hx, hy + s * .9);
-        ctx.fill();
-      }
-      // 驚喜小嘴
-      ctx.fillStyle = "#2f3550";
-      ctx.beginPath(); ctx.ellipse(0, r * .45, r * .14, r * .16, 0, 0, 7); ctx.fill();
-      ctx.restore();
-    }
-  },
-  {
-    id: "balloon", name: "氣球", tag: "BALLOON", base: "#ffd85e",
-    draw(ctx, r, rot) {
-      const g = ctx.createRadialGradient(-r * .35, -r * .35, r * .1, 0, 0, r);
-      g.addColorStop(0, "#fff0b0"); g.addColorStop(.55, "#ffd85e"); g.addColorStop(1, "#f0a512");
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
-      ctx.save(); ctx.rotate(rot);
-      ctx.strokeStyle = "#5a4300"; ctx.lineWidth = r * .09; ctx.lineCap = "round";
-      // 瞇瞇眼 + 微笑（臉稍偏右，留位置給氣球）
-      ctx.beginPath(); ctx.arc(r * .05, -r * .08, r * .15, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
-      ctx.beginPath(); ctx.arc(r * .55, -r * .08, r * .15, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
-      ctx.beginPath(); ctx.arc(r * .3, r * .22, r * .2, .5, Math.PI - .5); ctx.stroke();
-      // 藍綠雙色小氣球
-      const bx = -r * .5, by = -r * .3, br = r * .28;
-      ctx.save();
-      ctx.beginPath(); ctx.arc(bx, by, br, 0, 7); ctx.clip();
-      ctx.fillStyle = "#6f86d6"; ctx.fillRect(bx - br, by - br, br, br * 2);
-      ctx.fillStyle = "#4e7d4e"; ctx.fillRect(bx, by - br, br, br * 2);
-      ctx.restore();
-      ctx.lineWidth = r * .06;
-      ctx.beginPath(); ctx.arc(bx, by, br, 0, 7); ctx.stroke();
-      // 小鍊子
-      ctx.lineWidth = r * .05;
-      for (let i = 1; i <= 3; i++) {
-        ctx.beginPath(); ctx.arc(bx + i * r * .09, by + br + i * r * .13, r * .055, 0, 7); ctx.stroke();
-      }
-      ctx.restore();
-    }
-  },
+  // 六位角色：小朋友手繪角色圖（assets/，已去背之 256px 版本）
+  { id: "orange",  name: "橘橘", tag: "ORANGE",  base: "#ff5a1f", img: "assets/ch_01_s.png" },
+  { id: "pinky",   name: "桃桃", tag: "PINKY",   base: "#d6199a", img: "assets/ch_02_s.png" },
+  { id: "smiley",  name: "笑笑", tag: "SMILEY",  base: "#3d9bff", img: "assets/ch_03_s.png" },
+  { id: "pudding", name: "布丁", tag: "PUDDING", base: "#ffc93d", img: "assets/ch_04_s.png" },
+  { id: "froggy",  name: "蛙蛙", tag: "FROGGY",  base: "#4caf50", img: "assets/ch_05_s.png" },
+  { id: "shadow",  name: "小黑", tag: "SHADOW",  base: "#3a3a3a", img: "assets/ch_06_s.png" },
 ];
+// 預載角色圖，載入完成後刷新選角畫面的預覽
+for (const s of SKINS) {
+  s.image = new Image();
+  s.image.onload = () => refreshBallArt();
+  s.image.src = s.img;
+}
+function refreshBallArt() {
+  document.querySelectorAll("#ball-list .ball-card").forEach((card, i) =>
+    renderBallToCanvas(card.querySelector("canvas"), SKINS[i], 0));
+  [0, 1].forEach((p) => {
+    if (state.picks[p] != null) {
+      const slot = document.getElementById(p === 0 ? "picked-p1" : "picked-p2");
+      renderBallToCanvas(slot.querySelector("canvas"), SKINS[state.picks[p]], p + 1);
+    }
+  });
+}
 
 // 通用：畫一顆完整的球（含輪廓、光澤、玩家標記）
 function drawBall(ctx, skin, r, rot, owner) {
-  skin.draw(ctx, r, rot);
+  // 白色圓底（角色圖背景已去透明，白底補回紙張感）
+  const base = ctx.createRadialGradient(-r * .35, -r * .35, r * .1, 0, 0, r);
+  base.addColorStop(0, "#ffffff"); base.addColorStop(.75, "#fdfdfa"); base.addColorStop(1, "#e6e6ea");
+  ctx.fillStyle = base;
+  ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
+  // 角色圖：裁成圓形、隨滾動旋轉
+  if (skin.image && skin.image.complete && skin.image.naturalWidth) {
+    ctx.save();
+    ctx.beginPath(); ctx.arc(0, 0, r - 1, 0, 7); ctx.clip();
+    ctx.rotate(rot);
+    const s = r * 2 * 0.98;
+    ctx.drawImage(skin.image, -s / 2, -s / 2, s, s);
+    ctx.restore();
+  }
   // 光澤（不隨滾動旋轉）
   const hl = ctx.createRadialGradient(-r * .4, -r * .45, 0, -r * .4, -r * .45, r * .75);
   hl.addColorStop(0, "rgba(255,255,255,.55)"); hl.addColorStop(.4, "rgba(255,255,255,.12)"); hl.addColorStop(1, "rgba(255,255,255,0)");
@@ -319,21 +230,65 @@ function setupSelect() {
   updatePickUI();
 }
 
-// 地圖選擇器：列出 window.MAPS 的所有地圖
+// 地圖選擇器：以地圖資料即時繪製縮圖卡片
+function renderMapThumb(d, canvas) {
+  const c = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  const fit = Math.min(W / d.width, H / d.height);
+  const ox = (W - d.width * fit) / 2, oy = (H - d.height * fit) / 2;
+  c.setTransform(1, 0, 0, 1, 0, 0);
+  c.clearRect(0, 0, W, H);
+  c.setTransform(fit, 0, 0, fit, ox, oy);
+  const bg = c.createLinearGradient(0, 0, 0, d.height);
+  bg.addColorStop(0, "#e7f7ff"); bg.addColorStop(1, "#c9e9ff");
+  c.fillStyle = bg;
+  c.fillRect(0, 0, d.width, d.height);
+  // 終點格紋帶
+  const sq = 44;
+  for (let i = 0; i * sq < d.width; i++) {
+    c.fillStyle = i % 2 ? "#fff" : "#3a4666";
+    c.fillRect(i * sq, d.finishY - sq / 2, sq, sq);
+  }
+  // 牆
+  c.lineCap = "round";
+  c.strokeStyle = "#f5993d"; c.lineWidth = 28;
+  for (const w of d.walls) {
+    c.beginPath(); c.moveTo(w[0], w[1]); c.lineTo(w[2], w[3]); c.stroke();
+  }
+  // 彈釘
+  c.fillStyle = "#5bbf7e";
+  for (const p of d.pegs || []) { c.beginPath(); c.arc(p[0], p[1], 22, 0, 7); c.fill(); }
+  // 彈力器
+  c.fillStyle = "#ff7d9c";
+  for (const bp of d.bumpers || []) { c.beginPath(); c.arc(bp[0], bp[1], 36, 0, 7); c.fill(); }
+  // 風車（固定斜角示意）
+  c.strokeStyle = "#a97ff2"; c.lineWidth = 26;
+  for (const s of d.spinners || []) {
+    const hx = s[2] * .42, hy = s[2] * .2;
+    c.beginPath(); c.moveTo(s[0] - hx, s[1] - hy); c.lineTo(s[0] + hx, s[1] + hy); c.stroke();
+  }
+}
+
 function setupMapPicker() {
   const list = $("map-list");
   list.innerHTML = "";
   for (const [id, m] of Object.entries(window.MAPS || {})) {
-    const btn = document.createElement("button");
-    btn.className = "map-btn" + (id === state.mapId ? " active" : "");
-    btn.textContent = m.name;
-    btn.addEventListener("click", () => {
+    const card = document.createElement("button");
+    card.className = "map-card" + (id === state.mapId ? " active" : "");
+    const cv = document.createElement("canvas");
+    cv.width = 176; cv.height = 248;
+    renderMapThumb(m, cv);
+    const nm = document.createElement("span");
+    nm.className = "map-name";
+    nm.textContent = m.name;
+    card.append(cv, nm);
+    card.addEventListener("click", () => {
       state.mapId = id;
       SFX.unlock(); SFX.pick();
-      list.querySelectorAll(".map-btn").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
+      list.querySelectorAll(".map-card").forEach((x) => x.classList.remove("active"));
+      card.classList.add("active");
     });
-    list.appendChild(btn);
+    list.appendChild(card);
   }
 }
 
@@ -354,10 +309,10 @@ function pickBall(i, card) {
 function updatePickUI() {
   const prompt = $("pick-prompt");
   if (state.picking === 0) {
-    prompt.textContent = "玩家 1，請選擇你的球！";
+    prompt.textContent = "玩家 1，請選擇你的角色！";
     prompt.className = "pick-prompt p1";
   } else if (state.picking === 1) {
-    prompt.textContent = "玩家 2，請選擇你的球！";
+    prompt.textContent = "玩家 2，請選擇你的角色！";
     prompt.className = "pick-prompt p2";
   } else {
     prompt.textContent = "準備完成，開始比賽！";
@@ -388,7 +343,7 @@ function startRace() {
     state.balls.push({
       skin: SKINS[skinIdx],
       owner,
-      x: spawnX1 + i * (spawnX2 - spawnX1) / 4 + (Math.random() * 24 - 12),
+      x: spawnX1 + i * (spawnX2 - spawnX1) / (SKINS.length - 1) + (Math.random() * 24 - 12),
       y: state.track.spawnY + (Math.random() * 30 - 15),
       vx: 0, vy: 0,
       rot: 0,
@@ -659,6 +614,7 @@ function onBallFinished(b) {
   if (!state.winnerBall) {
     state.winnerBall = b;
     state.winner = b.owner;
+    BGM.fadeOut(); // 比賽結束當下停止配樂
     SFX.win();
     setTimeout(showResult, 1500);
   }
