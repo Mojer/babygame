@@ -210,6 +210,32 @@ const SFX = (() => {
   };
 })();
 
+// ---------- 背景音樂 ----------
+// 「開始比賽」按下後播放（該點擊即為瀏覽器自動播放所需的使用者手勢）
+const BGM = (() => {
+  const audio = new Audio("Chili Gola Game Pop Mix_1.mp3");
+  audio.loop = true;
+  audio.preload = "auto";
+  const VOL = 0.45;
+  let fadeTimer = null;
+  return {
+    start() {
+      clearInterval(fadeTimer);
+      audio.volume = VOL;
+      audio.currentTime = 0;
+      audio.play().catch(() => { /* 自動播放被擋不影響遊戲 */ });
+    },
+    fadeOut() {
+      clearInterval(fadeTimer);
+      fadeTimer = setInterval(() => {
+        if (audio.volume > 0.05) audio.volume = Math.max(0, audio.volume - 0.05);
+        else { clearInterval(fadeTimer); audio.pause(); }
+      }, 80);
+    },
+    get playing() { return !audio.paused; },
+  };
+})();
+
 // ---------- 賽道（資料驅動） ----------
 // 地圖資料放在 maps/*.js（window.MAPS 註冊表），引擎只負責讀資料。
 // 選球畫面可切換地圖；網址帶 ?map=名稱 可指定初始地圖，預設 overview。
@@ -342,6 +368,7 @@ function updatePickUI() {
 
 // ---------- 開始比賽 ----------
 function startRace() {
+  BGM.start();
   state.track = buildTrack();
   loadMapBackground(state.track);
   state.balls = [];
@@ -639,6 +666,7 @@ function onBallFinished(b) {
 
 function showResult() {
   state.phase = "finish";
+  BGM.fadeOut();
   const title = $("result-title");
   if (state.winner) {
     title.textContent = `玩家 ${state.winner} 獲勝！`;
