@@ -211,6 +211,7 @@ const state = {
   time: 0,
   finished: [],          // 依完成順序的 ball
   winnerBall: null,      // 第一顆衝線的球（= 排名第一）
+  raceEnding: false,     // 是否已觸發賽末流程（防止重複觸發）
   winner: 0,             // 0=未定或平手（中立球奪冠）, 1/2=玩家
   boosts: [BOOST_CHARGES, BOOST_CHARGES],
   particles: [],
@@ -349,6 +350,7 @@ function startRace() {
   state.finished = [];
   state.winnerBall = null;
   state.winner = 0;
+  state.raceEnding = false;
   state.time = 0;
   state.boosts = [BOOST_CHARGES, BOOST_CHARGES];
   state.particles = [];
@@ -633,10 +635,18 @@ function onBallFinished(b) {
   if (!state.winnerBall) {
     state.winnerBall = b;
     state.winner = b.owner;
-    BGM.fadeOut(); // 比賽結束當下停止配樂
     SFX.win();
-    setTimeout(showResult, 1500);
   }
+  // 等全部球都抵達終點，比賽才真正結束
+  if (state.finished.length === state.balls.length) endRace();
+}
+
+// 比賽結束流程：配樂淡出、稍作停留後顯示結算畫面
+function endRace() {
+  if (state.raceEnding) return;
+  state.raceEnding = true;
+  BGM.fadeOut();
+  setTimeout(showResult, 900);
 }
 
 function showResult() {
@@ -883,12 +893,15 @@ function loop(now) {
       b.trail.push({ x: b.x, y: b.y });
       if (b.trail.length > 10) b.trail.shift();
     }
-    // 保險：超時以進度判定（進度最前的球視同冠軍，維持「第一名=獲勝者」）
-    if (state.time > RACE_TIMEOUT && !state.winnerBall) {
-      const lead = [...state.balls].sort((a, c) => c.y - a.y)[0];
-      state.winnerBall = lead;
-      state.winner = lead.owner;
-      showResult();
+    // 保險：超時強制結束（例如仍有球卡住怎麼救都出不來），
+    // 若還沒有人衝線就以進度最前的球視同冠軍
+    if (state.time > RACE_TIMEOUT && !state.raceEnding) {
+      if (!state.winnerBall) {
+        const lead = [...state.balls].sort((a, c) => c.y - a.y)[0];
+        state.winnerBall = lead;
+        state.winner = lead.owner;
+      }
+      endRace();
     }
   }
   if (state.phase === "race" || state.phase === "countdown" || state.phase === "finish") {
