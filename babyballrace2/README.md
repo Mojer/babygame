@@ -68,3 +68,10 @@ python3 -m http.server 8642
 - `style.css` — 版面與 UI 樣式
 - `game.js` — 球造型繪製、物理引擎（重力、膠囊/圓形碰撞、風車、彈力器）、音效（WebAudio 合成）與遊戲流程
 - `maps/` — 地圖資料檔（資料驅動，一關一檔）
+- `assets/` — 角色圖（小朋友手繪，去背縮小版）
+- `fonts/` — 辰宇落雁體子集（僅含遊戲用字，約 254KB）
+
+## 授權聲明
+
+- 字體：[辰宇落雁體](https://github.com/Chenyu-otf/chenyuluoyan_thin)，SIL Open Font License 1.1
+- 角色與地圖草稿：小朋友原創手繪

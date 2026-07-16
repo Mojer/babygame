@@ -160,7 +160,11 @@ function buildTrack() {
   return {
     W: d.width,
     H: d.height,
-    segs: d.walls.map((w) => ({ x1: w[0], y1: w[1], x2: w[2], y2: w[3], r: w[4] ?? 7 })),
+    segs: d.walls.map((w, i) => {
+      const s = { x1: w[0], y1: w[1], x2: w[2], y2: w[3], r: w[4] ?? 7 };
+      s.pts = wobblify(s.x1, s.y1, s.x2, s.y2, i); // 手繪抖動線（僅視覺）
+      return s;
+    }),
     pegs: (d.pegs || []).map((p) => ({ x: p[0], y: p[1], r: p[2] ?? 11 })),
     bumpers: (d.bumpers || []).map((b) => ({ x: b[0], y: b[1], r: b[2] ?? 24, flash: 0 })),
     spinners: (d.spinners || []).map((s) => ({ x: s[0], y: s[1], len: s[2], speed: s[3], angle: Math.random() * 3 })),
@@ -170,6 +174,21 @@ function buildTrack() {
     gravity: d.gravity ?? GRAVITY,
     bg: d.background || null,
   };
+}
+
+// 手繪風抖動折線：把直線切段並加上固定的垂直抖動（決定性，不隨幀閃爍）
+function wobblify(x1, y1, x2, y2, seed) {
+  const dx = x2 - x1, dy = y2 - y1;
+  const len = Math.hypot(dx, dy) || 1;
+  const nx = -dy / len, ny = dx / len;
+  const n = Math.max(2, Math.round(len / 55));
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n;
+    const j = (i === 0 || i === n) ? 0 : Math.sin(i * 12.9898 + seed * 78.233) * 3.4;
+    pts.push([x1 + dx * t + nx * j, y1 + dy * t + ny * j]);
+  }
+  return pts;
 }
 
 // 手繪草稿背景圖（地圖資料的 background 欄位）
@@ -246,7 +265,7 @@ function renderMapThumb(d, canvas) {
   // 終點格紋帶
   const sq = 44;
   for (let i = 0; i * sq < d.width; i++) {
-    c.fillStyle = i % 2 ? "#fff" : "#3a4666";
+    c.fillStyle = i % 2 ? "#fffdf7" : "#4a443a";
     c.fillRect(i * sq, d.finishY - sq / 2, sq, sq);
   }
   // 牆
@@ -684,7 +703,7 @@ function render() {
 
   // 信箱區（地圖外）底色
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.fillStyle = "#bfdff5";
+  ctx.fillStyle = "#efe5d0";
   ctx.fillRect(0, 0, cssW, cssH);
 
   ctx.setTransform(dpr * fit, 0, 0, dpr * fit, dpr * ox, dpr * oy);
@@ -692,9 +711,15 @@ function render() {
 
   // 地圖背景
   const bg = ctx.createLinearGradient(0, 0, 0, t.H);
-  bg.addColorStop(0, "#e7f7ff"); bg.addColorStop(1, "#c9e9ff");
+  bg.addColorStop(0, "#fdf9ee"); bg.addColorStop(1, "#f5edd8");
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, t.W, t.H);
+  // 作業簿橫線
+  ctx.strokeStyle = "rgba(110,145,200,.13)";
+  ctx.lineWidth = 2.5;
+  for (let ly = 90; ly < t.H; ly += 90) {
+    ctx.beginPath(); ctx.moveTo(10, ly); ctx.lineTo(t.W - 10, ly); ctx.stroke();
+  }
 
   // 手繪草稿背景圖（若地圖有指定）
   if (mapBgImg) {
@@ -704,11 +729,11 @@ function render() {
   }
 
   // 背景裝飾點
-  ctx.fillStyle = "rgba(255,255,255,.55)";
+  ctx.fillStyle = "rgba(120,105,75,.10)";
   for (let gy = 0; gy < t.H + 260; gy += 260) {
     for (let gx = 90; gx < t.W; gx += 180) {
       const jitter = ((gx * 7 + gy * 13) % 97) - 48;
-      ctx.beginPath(); ctx.arc(gx + jitter, gy + (jitter % 30), 5, 0, 7); ctx.fill();
+      ctx.beginPath(); ctx.arc(gx + jitter, gy + (jitter % 30), 4, 0, 7); ctx.fill();
     }
   }
 
@@ -719,56 +744,67 @@ function render() {
     // 格紋終點線
     const sq = 24;
     for (let i = 0; (24 + i * sq) < t.W - 24; i++) {
-      ctx.fillStyle = i % 2 ? "#fff" : "#3a4666";
+      ctx.fillStyle = i % 2 ? "#fffdf7" : "#4a443a";
       ctx.fillRect(24 + i * sq, t.finishY - sq, Math.min(sq, t.W - 24 - (24 + i * sq)), sq);
-      ctx.fillStyle = i % 2 ? "#3a4666" : "#fff";
+      ctx.fillStyle = i % 2 ? "#4a443a" : "#fffdf7";
       ctx.fillRect(24 + i * sq, t.finishY, Math.min(sq, t.W - 24 - (24 + i * sq)), sq);
     }
     // FINISH 字直接疊在格紋帶上（深色描邊確保各地圖都清晰）
-    ctx.font = "900 26px sans-serif";
+    ctx.font = '34px "ChenYuluoyan", sans-serif';
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.lineWidth = 6;
-    ctx.strokeStyle = "#3a4666";
+    ctx.strokeStyle = "#4a443a";
     ctx.strokeText("FINISH", t.W / 2, t.finishY);
     ctx.fillStyle = "#ffd94d";
     ctx.fillText("FINISH", t.W / 2, t.finishY);
     ctx.textBaseline = "alphabetic";
   }
 
-  // 牆
+  // 牆（手繪抖動筆觸）
   ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  const strokePts = (pts) => {
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+    ctx.stroke();
+  };
   for (const s of t.segs) {
     if (Math.min(s.y1, s.y2) > camBot + 40 || Math.max(s.y1, s.y2) < camY - 40) continue;
     ctx.lineWidth = s.r * 2 + 6;
-    ctx.strokeStyle = "#e8871e";
-    ctx.beginPath(); ctx.moveTo(s.x1, s.y1); ctx.lineTo(s.x2, s.y2); ctx.stroke();
+    ctx.strokeStyle = "#d8862f";
+    strokePts(s.pts);
     ctx.lineWidth = s.r * 2;
     ctx.strokeStyle = "#ffab4e";
-    ctx.beginPath(); ctx.moveTo(s.x1, s.y1); ctx.lineTo(s.x2, s.y2); ctx.stroke();
+    strokePts(s.pts);
   }
 
-  // 彈釘
+  // 彈釘（手畫小圈圈：微橢圓 + 沒接滿的墨線）
   for (const p of t.pegs) {
     if (p.y > camBot + 30 || p.y < camY - 30) continue;
-    ctx.fillStyle = "#3aa564";
-    ctx.beginPath(); ctx.arc(p.x, p.y, p.r + 2.5, 0, 7); ctx.fill();
-    ctx.fillStyle = "#7fd8a0";
-    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.fill();
-    ctx.fillStyle = "#e6ffee";
-    ctx.beginPath(); ctx.arc(p.x - p.r * .3, p.y - p.r * .3, p.r * .35, 0, 7); ctx.fill();
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate((p.x * 7 + p.y * 3) % 6.28);
+    ctx.fillStyle = "#8fdcab";
+    ctx.beginPath(); ctx.ellipse(0, 0, p.r, p.r * .88, 0, 0, 7); ctx.fill();
+    ctx.strokeStyle = "#3f6b4d";
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.ellipse(0, 0, p.r, p.r * .88, 0, .35, 6.4); ctx.stroke();
+    ctx.restore();
   }
 
   // 彈力器
   for (const bp of t.bumpers) {
     if (bp.y > camBot + 50 || bp.y < camY - 50) continue;
     bp.flash = Math.max(0, bp.flash - 0.05);
-    ctx.fillStyle = "#d64f74";
-    ctx.beginPath(); ctx.arc(bp.x, bp.y, bp.r + 4, 0, 7); ctx.fill();
-    ctx.fillStyle = bp.flash > 0 ? "#ffe07a" : "#ff7d9c";
-    ctx.beginPath(); ctx.arc(bp.x, bp.y, bp.r, 0, 7); ctx.fill();
-    ctx.fillStyle = "rgba(255,255,255,.85)";
-    ctx.font = `900 ${bp.r}px sans-serif`;
+    ctx.fillStyle = bp.flash > 0 ? "#ffe07a" : "#ff9db4";
+    ctx.beginPath(); ctx.ellipse(bp.x, bp.y, bp.r, bp.r * .93, .3, 0, 7); ctx.fill();
+    ctx.strokeStyle = "#c04a66";
+    ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.ellipse(bp.x, bp.y, bp.r, bp.r * .93, .3, .4, 6.5); ctx.stroke();
+    ctx.fillStyle = "#8d2c44";
+    ctx.font = `${Math.round(bp.r * 1.3)}px "ChenYuluoyan", sans-serif`;
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.fillText("!", bp.x, bp.y + 2);
     ctx.textBaseline = "alphabetic";
@@ -824,7 +860,7 @@ function render() {
     // 玩家標籤
     if (b.owner) {
       ctx.fillStyle = b.owner === 1 ? "#2f7fe0" : "#ff4d6e";
-      ctx.font = "900 20px sans-serif";
+      ctx.font = '26px "ChenYuluoyan", sans-serif';
       ctx.textAlign = "center";
       ctx.fillText(`P${b.owner}`, b.x, b.y - BALL_R - 9);
     }
@@ -892,6 +928,7 @@ window.addEventListener("keydown", (e) => {
 });
 
 // ---------- 啟動 ----------
+if (document.fonts && document.fonts.load) document.fonts.load('20px "ChenYuluoyan"');
 setupSelect();
 resizeCanvas();
 requestAnimationFrame((t) => { lastT = t; requestAnimationFrame(loop); });
