@@ -239,7 +239,7 @@ html, body {
 .boost-btn.empty { opacity: .4; pointer-events: none; }
 #boost-p1 { left: 14px; transform: rotate(-1.2deg); }
 #boost-p2 { right: 14px; transform: rotate(1.2deg); }
-.charges { font-size: 12px; letter-spacing: 3px; }
+.charges { display: block; font-size: 22px; letter-spacing: 5px; margin-top: 2px; }
 
 /* ---------- 結果畫面 ---------- */
 .overlay {
