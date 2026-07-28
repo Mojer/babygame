@@ -1,0 +1,163 @@
+/* 辰宇落雁體（子集化，SIL OFL 授權） */
+@font-face {
+  font-family: "ChenYuluoyan";
+  src: url("fonts/chenyuluoyan-sub.woff2") format("woff2");
+  font-display: swap;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  /* 紙張底色 + 作業簿橫線 */
+  background-color: #fbf6ea;
+  background-image: linear-gradient(rgba(110, 145, 200, .14) 1.5px, transparent 1.5px);
+  background-size: 100% 36px;
+  font-family: "ChenYuluoyan", "PingFang TC", "Noto Sans TC", sans-serif;
+  color: #3d3a33;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.screen {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px;
+  padding: max(14px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom));
+}
+#start-screen { overflow-y: auto; }
+#start-screen > * { flex-shrink: 0; }
+/* 內容高於視窗時靠上下 auto margin 置中並保持可捲動
+   （塗鴉是 absolute，不能拿來當 auto margin 的錨點） */
+#start-screen > .title { margin-top: auto; }
+#start-screen > .hint { margin-bottom: auto; }
+.hidden { display: none !important; }
+
+/* ---------- 塗鴉裝飾 ---------- */
+.doodle { position: absolute; pointer-events: none; z-index: 0; }
+.doodle-sun { top: 3%; right: 6%; width: 62px; animation: doodle-sway 5s ease-in-out infinite; }
+.doodle-cloud { top: 8%; left: 4%; width: 72px; animation: doodle-sway 7s ease-in-out infinite reverse; }
+.doodle-star { bottom: 10%; right: 5%; width: 42px; animation: doodle-sway 6s ease-in-out infinite; }
+@keyframes doodle-sway {
+  0%, 100% { transform: rotate(-4deg) translateY(0); }
+  50% { transform: rotate(4deg) translateY(-6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .doodle { animation: none !important; }
+}
+
+/* ---------- 開始畫面 ---------- */
+.title {
+  font-size: clamp(40px, 12vw, 62px);
+  line-height: 1.05;
+  letter-spacing: 4px;
+  text-align: center;
+  color: #2f8fc4;
+  transform: rotate(-1.5deg);
+  text-shadow: 2px 3px 0 rgba(30, 70, 100, .16);
+}
+.subtitle {
+  font-size: 15px; letter-spacing: 8px; color: #a89c85;
+  margin-top: -4px;
+  transform: rotate(-1deg);
+}
+
+.howto {
+  display: flex; flex-direction: column; gap: 6px;
+  width: min(90vw, 380px);
+  background: #fffdf7;
+  border: 2.5px solid #57503f;
+  border-radius: 26px 12px 24px 10px / 12px 24px 10px 26px;
+  padding: 12px 16px;
+  box-shadow: 3px 4px 0 rgba(87, 80, 63, .18);
+  transform: rotate(-.5deg);
+}
+.howto-row { display: flex; align-items: center; gap: 10px; font-size: 18px; line-height: 1.4; }
+.howto-row .ico { flex: none; font-size: 22px; width: 26px; text-align: center; }
+.howto-row b { color: #e8871e; font-weight: normal; }
+
+.seat-row {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-size: 17px;
+}
+.seat { display: flex; align-items: center; gap: 4px; letter-spacing: 2px; }
+.seat .arrow { font-size: 20px; }
+.p1-text { color: #2f6fc4; }
+.p2-text { color: #e04a68; }
+
+.big-btn {
+  font: inherit; font-size: 27px; letter-spacing: 6px;
+  color: #5b3200;
+  background: linear-gradient(135deg, #ffd94d, #ffa03d);
+  border: 3px solid #57503f;
+  border-radius: 32px 14px 30px 12px / 14px 30px 12px 32px;
+  padding: 10px 44px;
+  cursor: pointer;
+  box-shadow: 4px 5px 0 rgba(87, 80, 63, .25);
+  transform: rotate(-.8deg);
+  transition: transform .15s, opacity .2s, filter .2s;
+}
+.big-btn:active { transform: rotate(-.8deg) scale(.95); }
+.hint { font-size: 15px; color: #a89c85; text-align: center; max-width: 330px; line-height: 1.55; }
+.hint b { color: #8f836c; font-weight: normal; }
+
+/* ---------- 比賽畫面 ---------- */
+#game-screen { padding: 0; }
+/* 安全區內縮交給外框，canvas 直接填滿內框 → 物理座標即 CSS 座標 */
+#field-wrap {
+  position: absolute; inset: 0;
+  padding: max(4px, env(safe-area-inset-top)) 4px max(4px, env(safe-area-inset-bottom));
+}
+#game {
+  display: block;
+  width: 100%; height: 100%;
+  touch-action: none;        /* 關鍵：關掉捲動／雙擊縮放，多點觸控才穩 */
+}
+
+.countdown {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-size: 120px; color: #f07a2d;
+  text-shadow: 4px 5px 0 rgba(87, 80, 63, .2);
+  pointer-events: none;
+  animation: pop .9s ease both;
+}
+@keyframes pop {
+  0% { transform: translate(-50%,-50%) rotate(-8deg) scale(1.8); opacity: 0; }
+  25% { transform: translate(-50%,-50%) rotate(2deg) scale(1); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translate(-50%,-50%) rotate(-4deg) scale(.8); opacity: 0; }
+}
+
+/* ---------- 結果畫面 ---------- */
+.overlay {
+  background: rgba(120, 105, 75, .35);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+.result-card {
+  background: #fffdf7;
+  border: 3px solid #57503f;
+  border-radius: 30px 14px 28px 12px / 14px 28px 12px 30px;
+  padding: 22px 28px 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  width: min(88vw, 340px);
+  box-shadow: 6px 8px 0 rgba(87, 80, 63, .25);
+  transform: rotate(-.6deg);
+  animation: card-in .45s cubic-bezier(.2, 1.4, .4, 1) both;
+}
+@keyframes card-in {
+  from { transform: translateY(40px) rotate(-3deg) scale(.85); opacity: 0; }
+  to { transform: rotate(-.6deg); opacity: 1; }
+}
+.result-title { font-size: 34px; letter-spacing: 2px; text-align: center; color: #e8871e; }
+.result-title.p1-text { color: #2f6fc4; }
+.result-title.p2-text { color: #e04a68; }
+.result-score { display: flex; align-items: center; gap: 12px; font-size: 54px; line-height: 1; }
+.result-score .s1 { color: #2f6fc4; }
+.result-score .s2 { color: #e04a68; }
+.result-score .dash { color: #b3a88f; font-size: 38px; }
+.result-note { font-size: 17px; color: #a89c85; text-align: center; line-height: 1.5; }

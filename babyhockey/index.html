@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="桌上冰球">
+<title>桌上冰球大亂鬥</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 開始畫面 -->
+  <div id="start-screen" class="screen">
+    <svg class="doodle doodle-sun" viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="50" r="20" fill="#ffd94d" stroke="#e8a13c" stroke-width="4" stroke-linecap="round" stroke-dasharray="118 8"/>
+      <g stroke="#e8a13c" stroke-width="4" stroke-linecap="round">
+        <path d="M50 18 L49 8"/><path d="M50 82 L52 92"/><path d="M18 50 L8 51"/><path d="M82 50 L92 48"/>
+        <path d="M27 27 L20 19"/><path d="M73 27 L81 20"/><path d="M27 73 L19 80"/><path d="M73 73 L80 81"/>
+      </g>
+    </svg>
+    <svg class="doodle doodle-cloud" viewBox="0 0 120 70" fill="none">
+      <path d="M25 55 Q10 55 12 42 Q13 30 27 32 Q30 16 46 19 Q60 8 72 20 Q90 15 92 32 Q108 34 105 46 Q104 57 88 56 Z"
+        fill="#fffdf7" stroke="#8fa8c8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <svg class="doodle doodle-star" viewBox="0 0 80 80" fill="none">
+      <path d="M40 8 Q43 26 48 30 Q64 32 70 35 Q56 45 53 49 Q56 64 58 71 Q45 62 40 61 Q28 68 22 72 Q26 58 26 50 Q14 40 10 35 Q26 32 32 29 Q36 18 40 8 Z"
+        fill="#ffe27a" stroke="#e8b13c" stroke-width="4" stroke-linejoin="round"/>
+    </svg>
+
+    <h1 class="title">桌上冰球<br>大亂鬥</h1>
+    <p class="subtitle">AIR HOCKEY</p>
+
+    <!-- 玩法說明（小圖示化，幼童也看得懂） -->
+    <div class="howto">
+      <div class="howto-row"><span class="ico">👇</span><span>手指按住自己那半邊，<b>拖著擋板</b>移動</span></div>
+      <div class="howto-row"><span class="ico">🏒</span><span>把冰球打進<b>對面球門</b>就得 1 分</span></div>
+      <div class="howto-row"><span class="ico">⏱️</span><span><b>90 秒</b>時間到，分數高的人獲勝</span></div>
+      <div class="howto-row"><span class="ico">❄️</span><span>中央會一直<b>丟出新的冰球</b>，越後面越亂！</span></div>
+    </div>
+
+    <div class="seat-row">
+      <div class="seat p2-text">P2 坐這邊<span class="arrow">↑</span></div>
+      <div class="seat p1-text"><span class="arrow">↓</span>P1 坐這邊</div>
+    </div>
+
+    <button id="start-btn" class="big-btn">開始比賽</button>
+    <p class="hint">建議把平板<b>平放在桌上</b>，兩人各坐一邊。手機也能玩，畫面會自動縮小。</p>
+  </div>
+
+  <!-- 比賽畫面 -->
+  <div id="game-screen" class="screen hidden">
+    <div id="field-wrap"><canvas id="game"></canvas></div>
+    <div id="countdown" class="countdown hidden"></div>
+  </div>
+
+  <!-- 結果畫面 -->
+  <div id="result-screen" class="screen overlay hidden">
+    <div class="result-card">
+      <div id="result-title" class="result-title">玩家 1 獲勝！</div>
+      <div id="result-score" class="result-score"><span class="s1">0</span><span class="dash">–</span><span class="s2">0</span></div>
+      <div id="result-note" class="result-note"></div>
+      <button id="rematch-btn" class="big-btn">再來一局</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
