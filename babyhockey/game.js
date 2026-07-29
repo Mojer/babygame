@@ -813,7 +813,8 @@ function drawScoreboard() {
     const tf = Math.round(Math.min(28, BAND * 0.62));
     ctx.font = `${tf}px "ChenYuluoyan", sans-serif`;
     ctx.fillStyle = secs <= 10 ? "#e04a68" : "#8f836c";
-    ctx.fillText(`${secs}″`, half - Math.max(34, GOAL_HALF * .2), 1);
+    // 用「秒」而不是 ″：手寫字型沒收錄 U+2033，而且中文字對幼童更好認
+    ctx.fillText(`${secs}秒`, half - Math.max(38, GOAL_HALF * .2), 1);
     ctx.restore();
   }
 }

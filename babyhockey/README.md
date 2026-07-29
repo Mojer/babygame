@@ -5,7 +5,7 @@
 - **兩人共用一個螢幕**：畫面上下對分，兩人各坐一邊，各用一根手指直接拖曳自己半場的擋板（絕對定位，手指在哪擋板就在哪）
 - **大量冰球**：中央持續丟出冰球，每 18 秒一次爆量波，最多 30 顆（實際上限依場地面積換算，見下），六位手繪角色（`assets/`）輪流上場
 - **限時 90 秒**：把冰球打進對面球門得 1 分，時間到分數高者獲勝，同分則平手
-- **配樂即時合成**：三種曲風（輕快／電玩／進行曲）全部由 WebAudio 算出來，不放音檔；最後 10 秒自動加快並加上滴答聲
+- **配樂即時合成**：全部由 WebAudio 算出來，不放音檔；最後 10 秒自動加快並加上滴答聲
 - 手繪風介面：辰宇落雁體、筆記本紙張、抖動筆觸的球桌與手畫中圈
 
 ## 玩法
@@ -15,8 +15,6 @@
 3. 冰球圓心越過對面門線才算進球，得分方 +1，該球移出場、中央再補新球。
 4. 把球打進自己的球門也算對手得分，防守時小心別自己推進去。
 5. 90 秒結束顯示結果（兩張卡，上面那張轉 180° 給對面看），可直接「再來一局」。
-
-開始畫面可選配樂曲風，點一下會試聽幾秒，選擇記在 `localStorage`。
 
 桌機測試用鍵盤：**P1 = 方向鍵、P2 = W / A / S / D**。
 
@@ -63,11 +61,29 @@ python3 -m http.server 8642
 
 ## 資源
 
-- 角色圖 `assets/ch_0*_s.png`、字型 `fonts/chenyuluoyan-sub.woff2`（辰宇落雁體子集化，SIL OFL）、
-  以及「原本的歌」選項用的 `Chili Gola Game Pop Mix_1.mp3` 皆與 `babyballrace2` 相同，
-  各自複製一份以維持每款遊戲獨立可部署
-- **音效與配樂都是 WebAudio 即時合成**（`music.js`），無外部檔案、無授權問題。
-  配樂走 I–V–vi–IV 四小節和弦進行，旋律從當下和弦音與五聲音階裡挑，
-  每一圈 loop 換一次亂數種子，所以會一直長出新句子而不會聽到接縫。
+- 角色圖 `assets/ch_0*_s.png` 與 `babyballrace2` 相同，各自複製一份以維持每款遊戲獨立可部署
+
+### 字型（改文案的話請讀這段）
+
+`fonts/chenyuluoyan-sub.woff2` 是[辰宇落雁體 2.0](https://github.com/Chenyu-otf/chenyuluoyan_thin)（SIL OFL 1.1，
+Thin 2.100）的**子集**，只收本遊戲實際用到的 213 個字元，70KB。
+
+子集是「照著文案裁的」，所以**只要改了畫面上的文字，就必須重新產生子集**，
+否則新字會掉回系統字型（PingFang），畫面上會看到一段手寫、一段黑體的混搭。
+初版直接沿用 `babyballrace2` 的子集就踩到這個坑——那份是照那款的文案裁的，
+連本作標題的「冰」「鬥」都缺。重建方式：
+
+```sh
+cd babyhockey
+curl -sLO https://raw.githubusercontent.com/Chenyu-otf/chenyuluoyan_thin/main/ChenYuluoyan-2.0-Thin.ttf
+python3 tools/subset-font.py ChenYuluoyan-2.0-Thin.ttf   # 就地覆蓋 fonts/ 內的子集
+```
+
+工具會自動從 `index.html` 與 `*.js` 的字串字面值收集用字，若有連完整字型都沒有的字會
+明確報出來（例如 `″` U+2033 就不在字型裡，計時因此改用「秒」）。完整字型 9.5MB，不進版控。
+- **音效與配樂都是 WebAudio 即時合成**（`music.js`），整個資料夾沒有任何音檔，無授權問題。
+  配樂走 I–V–vi–IV 四小節和弦進行（126 BPM，三角波主旋律 + 柔和鼓點），
+  旋律從當下和弦音與五聲音階裡挑，每一圈 loop 換一次亂數種子，
+  所以會一直長出新句子而不會聽到接縫。
   排程用 lookahead scheduler（`setInterval` 每 25ms 補排 120ms 內的音），不依賴 `requestAnimationFrame`，
-  分頁掉帧也不會走音。`MUSIC.renderOffline()` 可離線算出音訊做自動化檢查。
+  分頁掉帧也不會走音。`MUSIC.renderOffline(秒數)` 可離線算出音訊做自動化檢查。
