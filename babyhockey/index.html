@@ -54,12 +54,19 @@
   </div>
 
   <!-- 結果畫面 -->
+  <!-- 兩人各坐一邊，所以結果卡也要兩張：上面那張轉 180°，對面才看得正 -->
   <div id="result-screen" class="screen overlay hidden">
+    <div class="result-card flipped">
+      <div class="result-title r-title">玩家 1 獲勝！</div>
+      <div class="result-score"><span class="s1 r-s1">0</span><span class="dash">–</span><span class="s2 r-s2">0</span></div>
+      <div class="result-note r-note"></div>
+      <button class="big-btn r-again">再來一局</button>
+    </div>
     <div class="result-card">
-      <div id="result-title" class="result-title">玩家 1 獲勝！</div>
-      <div id="result-score" class="result-score"><span class="s1">0</span><span class="dash">–</span><span class="s2">0</span></div>
-      <div id="result-note" class="result-note"></div>
-      <button id="rematch-btn" class="big-btn">再來一局</button>
+      <div class="result-title r-title">玩家 1 獲勝！</div>
+      <div class="result-score"><span class="s1 r-s1">0</span><span class="dash">–</span><span class="s2 r-s2">0</span></div>
+      <div class="result-note r-note"></div>
+      <button class="big-btn r-again">再來一局</button>
     </div>
   </div>
 

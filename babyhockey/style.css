@@ -138,20 +138,30 @@ html, body {
   backdrop-filter: blur(4px);
   z-index: 10;
 }
+#result-screen { gap: min(6vh, 40px); }
 .result-card {
   background: #fffdf7;
   border: 3px solid #57503f;
   border-radius: 30px 14px 28px 12px / 14px 28px 12px 30px;
-  padding: 22px 28px 20px;
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 18px 28px 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
   width: min(88vw, 340px);
   box-shadow: 6px 8px 0 rgba(87, 80, 63, .25);
   transform: rotate(-.6deg);
   animation: card-in .45s cubic-bezier(.2, 1.4, .4, 1) both;
 }
+/* 給坐在上方的 P2 看的那張 */
+.result-card.flipped {
+  transform: rotate(179.4deg);
+  animation-name: card-in-flipped;
+}
 @keyframes card-in {
   from { transform: translateY(40px) rotate(-3deg) scale(.85); opacity: 0; }
   to { transform: rotate(-.6deg); opacity: 1; }
+}
+@keyframes card-in-flipped {
+  from { transform: translateY(-40px) rotate(183deg) scale(.85); opacity: 0; }
+  to { transform: rotate(179.4deg); opacity: 1; }
 }
 .result-title { font-size: 34px; letter-spacing: 2px; text-align: center; color: #e8871e; }
 .result-title.p1-text { color: #2f6fc4; }

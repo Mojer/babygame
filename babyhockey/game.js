@@ -13,7 +13,7 @@
 
 // ---------- 規則常數 ----------
 const MATCH_TIME = 90;        // 秒，一局長度
-const MAX_PUCKS = 30;         // 場上冰球上限
+const MAX_PUCKS = 30;         // 場上冰球上限（實際上限依場地面積在 layout 算出）
 const SPAWN_FIRST = 1.0;      // 開局第一顆的延遲
 const SPAWN_START = 2.6;      // 起始生成間隔（秒）
 const SPAWN_END = 1.1;        // 終盤生成間隔（秒）
@@ -32,6 +32,7 @@ const DAMPING = 0.14;         // 冰面阻力（每秒衰減比例，氣墊桌�
 const MAX_SPEED = 1900;       // 速度上限（防穿牆）
 const PAD_MAX_SPEED = 3000;   // 擋板追手指的最大速度（手指瞬移不會把球推穿牆）
 const DRIFT_SPEED = 90;       // 低於此速度時，氣流會輕輕推動冰球（避免整桌變靜物）
+const DRIFT_ACCEL = 9;        // 氣流加速度倍率（越慢推越用力，約 0.2 秒回到 DRIFT_SPEED）
 const SPAWN_SPEED = [240, 420];
 
 // ---------- 角色（冰球圖案） ----------
@@ -148,7 +149,7 @@ const fieldWrap = $("field-wrap");
 // F: 冰面矩形（含牆）。上下各留一條 band 畫球門網與計分板。
 let dpr = 1, cssW = 0, cssH = 0;
 let F = { x0: 0, y0: 0, x1: 0, y1: 0, w: 0, h: 0, cx: 0, cy: 0 };
-let PUCK_R = 18, PAD_R = 34, GOAL_HALF = 90, BAND = 44, CENTER_R = 80;
+let PUCK_R = 18, PAD_R = 34, GOAL_HALF = 90, BAND = 44, CENTER_R = 80, maxPucks = MAX_PUCKS;
 let wobbleCache = null;
 
 function layout() {
@@ -159,7 +160,7 @@ function layout() {
   canvas.height = Math.round(cssH * dpr);
 
   BAND = Math.round(Math.min(56, Math.max(30, cssH * 0.052)));
-  const pad = 6;
+  const pad = WALL_W + 2;   // 留得下畫在場地外側的牆筆觸
   F.x0 = pad; F.x1 = cssW - pad;
   F.y0 = BAND; F.y1 = cssH - BAND;
   F.w = F.x1 - F.x0; F.h = F.y1 - F.y0;
@@ -172,6 +173,10 @@ function layout() {
   // 球門寬同樣夾一次，避免橫向時球門寬到整條底線都是洞
   GOAL_HALF = Math.round(Math.min(F.w * GOAL_RATIO / 2, F.h * 0.25));
   CENTER_R = Math.min(F.w * 0.24, F.h * 0.13);   // 中圈半徑（開球區、氣流範圍）
+  // 冰球上限改看「佔掉多少冰面」而不是固定顆數：橫向場地面積小很多，
+  // 一樣塞 30 顆的話覆蓋率會從 8% 跳到 12%，球擠在一起就開始互相卡。
+  const coverage = Math.PI * PUCK_R * PUCK_R * 12;
+  maxPucks = Math.max(12, Math.min(MAX_PUCKS, Math.floor(F.w * F.h / coverage)));
 
   wobbleCache = null;
   buildPosts();
@@ -286,7 +291,7 @@ function clampPad(pad, snap) {
 }
 
 function spawnPuck(fromBurst) {
-  if (state.pucks.length >= MAX_PUCKS) return;
+  if (state.pucks.length >= maxPucks) return;
   const skin = SKINS[state.skinTurn++ % SKINS.length];
   // 在中圈內挑一個「最空」的位置，避免新球直接疊在別的球或擋板上冒出來
   const ring = CENTER_R * 0.85;
@@ -326,10 +331,16 @@ function puff(x, y, color, n) {
 // ---------- 物理 ----------
 // 一個 step 的順序：
 //   1. 擋板追手指 → 2. 冰球積分 → 3. 碰撞衝量（球球、球板）
-//   → 4. 位置鬆弛迭代（只推位置，不加能量）→ 5. 門柱與牆／進球收束
-// 第 4 步是關鍵：冰球被擋板壓在牆角時，單次解算會讓兩顆球幾乎完全重疊，
-// 迭代幾次才會沿牆面擠開。第 5 步放最後，保證帧結束時冰球一定在場內。
+//   → 4. 位置鬆弛迭代（只推位置，不加能量）→ 4b. 擠爆逃生 → 5. 門柱與牆／進球收束
+// 第 4 步把單次解算會造成的重疊擠開；但實測顯示迭代次數超過 4 次就不再有改善，
+// 因為擋板把兩顆球壓進牆角時「根本沒有可行解」，再多迭代也生不出空間——
+// 那種情況交給 4b 用速度把它們彈開。第 5 步放最後，保證帧結束時冰球一定在場內。
 const RELAX_ITER = 8;
+const JAM_TOLERANCE = 0.5;  // 鬆弛後仍重疊超過這個深度，就判定被擠爆卡住
+const SQUEEZE_KICK = 420;   // 擠爆逃生的分離速度（px/s，正比於重疊深度）
+const WALL_SCATTER = 0.34;  // 撞牆的隨機偏角（rad，約 ±10°）
+const WALL_W = 10;          // 牆的手繪筆觸線寬
+const WALL_HALF = WALL_W / 2;
 
 // 把冰球推到擋板外緣。徑向推出去若會穿牆（擋板正把球壓在牆上），
 // 就沿著牆面找解：列出「x 貼牆」「y 貼牆」共四組圓交點，取離原位最近的可行解。
@@ -371,6 +382,17 @@ function pushOutOfPad(b, pad) {
   return true;
 }
 
+// 撞牆時給一點隨機偏角。牆面反彈只衰減法向分量、切向完全保留，
+// 多撞幾次速度就會收斂成「平行貼著牆滑」，冰球於是全部排到邊上去。
+// 反正這遊戲的牆是手繪歪線，本來就不該反射得那麼精準。
+function scatterOffWall(b) {
+  const a = (Math.random() - 0.5) * WALL_SCATTER;
+  const c = Math.cos(a), s = Math.sin(a);
+  const vx = b.vx * c - b.vy * s;
+  b.vy = b.vx * s + b.vy * c;
+  b.vx = vx;
+}
+
 function stepPhysics(dt) {
   const pucks = state.pucks;
 
@@ -395,14 +417,26 @@ function stepPhysics(dt) {
     b.vx *= damp; b.vy *= damp;
     const sp = Math.hypot(b.vx, b.vy);
     if (sp < DRIFT_SPEED) {
-      // 氣墊桌的氣流：慢下來又離中央太遠的球會被吹回場中（否則球會沿牆堆積，
-      // 兩邊都打不到）；已經在中圈附近的就只給隨機抖動，避免全部擠成一坨
-      const a = Math.random() * 6.28;
-      const tcx = F.cx - b.x, tcy = F.cy - b.y;
-      const td = Math.hypot(tcx, tcy) || 1;
-      const pull = td > CENTER_R * 1.6 ? 0.5 : 0;
-      b.vx += (tcx / td * pull + Math.cos(a) * 0.8) * 340 * dt;
-      b.vy += (tcy / td * pull + Math.sin(a) * 0.8) * 340 * dt;
+      // 氣墊桌的氣流：慢下來的球會被重新吹動，維持在最低速度以上，
+      // 免得停成打不到的死球。方向刻意沿用它自己的行進方向（停死了才隨機），
+      // 不能吹向場中央——那會把所有慢球吸到同一點擠成一坨。
+      let dx, dy;
+      if (sp > 1) { dx = b.vx / sp; dy = b.vy / sp; }
+      else { const a = Math.random() * 6.28; dx = Math.cos(a); dy = Math.sin(a); }
+      // 已經貼在牆邊的慢球，氣流順手往場內吹
+      const near = PUCK_R * 1.5;
+      let ax = 0, ay = 0;
+      if (b.x - PUCK_R < F.x0 + near) ax = 1;
+      else if (b.x + PUCK_R > F.x1 - near) ax = -1;
+      if (b.y - PUCK_R < F.y0 + near) ay = 1;
+      else if (b.y + PUCK_R > F.y1 - near) ay = -1;
+      if (ax || ay) {
+        dx += ax * 0.8; dy += ay * 0.8;
+        const m = Math.hypot(dx, dy) || 1; dx /= m; dy /= m;
+      }
+      const boost = (DRIFT_SPEED - sp) * DRIFT_ACCEL * dt;
+      b.vx += dx * boost + (Math.random() - 0.5) * 90 * dt;
+      b.vy += dy * boost + (Math.random() - 0.5) * 90 * dt;
     }
     if (sp > MAX_SPEED) { b.vx = b.vx / sp * MAX_SPEED; b.vy = b.vy / sp * MAX_SPEED; }
     b.x += b.vx * dt;
@@ -496,6 +530,30 @@ function stepPhysics(dt) {
     if (!moved) break;
   }
 
+  // 4b) 擠爆逃生：鬆弛後仍深度重疊，代表擋板把冰球壓進牆角，幾何上真的塞不下
+  //     （位置解算再多次也無解）。改成補一道分離「速度」，讓這團在幾帧內自己散開，
+  //     就像真的冰球被擠壓後噴出去，而不是黏成一坨慢慢磨。
+  for (let i = 0; i < pucks.length; i++) {
+    const a = pucks[i];
+    for (let j = i + 1; j < pucks.length; j++) {
+      const b = pucks[j];
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const d = Math.hypot(dx, dy), min = PUCK_R * 2;
+      if (d >= min - JAM_TOLERANCE) continue;
+      let nx, ny;
+      if (d < 0.001) { nx = 0.6; ny = 0.8; }
+      else { nx = dx / d; ny = dy / d; }
+      // 越擠越急：分離速度正比於卡住的深度
+      const kick = SQUEEZE_KICK * ((min - d) / min);
+      const vn = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+      if (vn < kick) {
+        const add = (kick - vn) / 2;
+        a.vx -= add * nx; a.vy -= add * ny;
+        b.vx += add * nx; b.vy += add * ny;
+      }
+    }
+  }
+
   // 5) 收束：門柱 → 牆／球門判定（放在最後，保證帧結束時所有冰球都在場內）
   for (let i = pucks.length - 1; i >= 0; i--) {
     const b = pucks[i];
@@ -514,20 +572,20 @@ function stepPhysics(dt) {
     }
 
     // 左右牆
-    if (b.x - PUCK_R < F.x0) { b.x = F.x0 + PUCK_R; b.vx = Math.abs(b.vx) * WALL_REST; SFX.hit(); }
-    else if (b.x + PUCK_R > F.x1) { b.x = F.x1 - PUCK_R; b.vx = -Math.abs(b.vx) * WALL_REST; SFX.hit(); }
+    if (b.x - PUCK_R < F.x0) { b.x = F.x0 + PUCK_R; b.vx = Math.abs(b.vx) * WALL_REST; scatterOffWall(b); SFX.hit(); }
+    else if (b.x + PUCK_R > F.x1) { b.x = F.x1 - PUCK_R; b.vx = -Math.abs(b.vx) * WALL_REST; scatterOffWall(b); SFX.hit(); }
 
     // 上下牆／球門：圓心越過門線才算進球
     if (b.y < F.y0) {
       if (inGoalX(b.x)) { scoreGoal(0, i, b); continue; }   // 上方是 P2 的球門 → P1 得分
-      b.y = F.y0 + PUCK_R; b.vy = Math.abs(b.vy) * WALL_REST; SFX.hit();
+      b.y = F.y0 + PUCK_R; b.vy = Math.abs(b.vy) * WALL_REST; scatterOffWall(b); SFX.hit();
     } else if (b.y > F.y1) {
       if (inGoalX(b.x)) { scoreGoal(1, i, b); continue; }   // 下方是 P1 的球門 → P2 得分
-      b.y = F.y1 - PUCK_R; b.vy = -Math.abs(b.vy) * WALL_REST; SFX.hit();
+      b.y = F.y1 - PUCK_R; b.vy = -Math.abs(b.vy) * WALL_REST; scatterOffWall(b); SFX.hit();
     } else if (!inGoalX(b.x)) {
       // 沒進球門的話，球身也不能穿進牆裡
-      if (b.y - PUCK_R < F.y0) { b.y = F.y0 + PUCK_R; b.vy = Math.abs(b.vy) * WALL_REST; }
-      else if (b.y + PUCK_R > F.y1) { b.y = F.y1 - PUCK_R; b.vy = -Math.abs(b.vy) * WALL_REST; }
+      if (b.y - PUCK_R < F.y0) { b.y = F.y0 + PUCK_R; b.vy = Math.abs(b.vy) * WALL_REST; scatterOffWall(b); }
+      else if (b.y + PUCK_R > F.y1) { b.y = F.y1 - PUCK_R; b.vy = -Math.abs(b.vy) * WALL_REST; scatterOffWall(b); }
     }
 
     // 速度上限（下一帧才會位移，因此不會穿牆；此處先夾好讓數值不失控）
@@ -574,12 +632,16 @@ function wobbleLine(x1, y1, x2, y2, seed, amp = 2.6) {
 
 function buildWobble() {
   const gl = F.cx - GOAL_HALF, gr = F.cx + GOAL_HALF;
+  // 牆的筆觸畫在場地外側半個線寬處，讓「筆觸內緣」正好等於物理邊界；
+  // 否則冰球會停在筆觸中心線上，看起來像壓進牆裡半顆。
+  const h = WALL_HALF;
+  const lx = F.x0 - h, rx = F.x1 + h, ty = F.y0 - h, by = F.y1 + h;
   wobbleCache = {
     // 上牆左右兩段（中間是球門開口）
-    top: [wobbleLine(F.x0, F.y0, gl, F.y0, 1), wobbleLine(gr, F.y0, F.x1, F.y0, 2)],
-    bot: [wobbleLine(F.x0, F.y1, gl, F.y1, 3), wobbleLine(gr, F.y1, F.x1, F.y1, 4)],
-    left: wobbleLine(F.x0, F.y0, F.x0, F.y1, 5),
-    right: wobbleLine(F.x1, F.y0, F.x1, F.y1, 6),
+    top: [wobbleLine(lx, ty, gl, ty, 1), wobbleLine(gr, ty, rx, ty, 2)],
+    bot: [wobbleLine(lx, by, gl, by, 3), wobbleLine(gr, by, rx, by, 4)],
+    left: wobbleLine(lx, ty, lx, by, 5),
+    right: wobbleLine(rx, ty, rx, by, 6),
     mid: wobbleLine(F.x0, F.cy, F.x1, F.cy, 7, 2),
   };
 }
@@ -675,8 +737,8 @@ function render() {
 
   // 場地牆（雙層手繪筆觸）
   const drawWall = (pts) => {
-    ctx.lineWidth = 10; ctx.strokeStyle = "#d8862f"; strokePts(pts);
-    ctx.lineWidth = 5.5; ctx.strokeStyle = "#ffab4e"; strokePts(pts);
+    ctx.lineWidth = WALL_W; ctx.strokeStyle = "#d8862f"; strokePts(pts);
+    ctx.lineWidth = WALL_W * 0.55; ctx.strokeStyle = "#ffab4e"; strokePts(pts);
   };
   drawWall(wb.top[0]); drawWall(wb.top[1]);
   drawWall(wb.bot[0]); drawWall(wb.bot[1]);
@@ -860,22 +922,24 @@ function endMatch() {
   BGM.fadeOut();
   SFX.whistle();
   const [a, b] = state.score;
-  const title = $("result-title");
-  title.className = "result-title";
-  if (a === b) {
-    title.textContent = "平手！";
-  } else {
-    const w = a > b ? 0 : 1;
-    title.textContent = `${P_NAME[w]} 獲勝！`;
-    title.classList.add(w === 0 ? "p1-text" : "p2-text");
-    setTimeout(() => SFX.win(), 500);
-  }
-  resultScreen.querySelector(".s1").textContent = a;
-  resultScreen.querySelector(".s2").textContent = b;
   const diff = Math.abs(a - b);
-  $("result-note").textContent = a === b
+  const tie = a === b;
+  const w = a > b ? 0 : 1;
+  const titleText = tie ? "平手！" : `${P_NAME[w]} 獲勝！`;
+  const noteText = tie
     ? `雙方各進 ${a} 球，勢均力敵！`
     : diff === 1 ? "只差一球，超接近的！" : `贏了 ${diff} 球，帥氣！`;
+  if (!tie) setTimeout(() => SFX.win(), 500);
+
+  // 兩張結果卡（上面那張是給坐對面的 P2 看的）內容一起更新
+  const setAll = (sel, text) => resultScreen.querySelectorAll(sel).forEach((el) => { el.textContent = text; });
+  resultScreen.querySelectorAll(".r-title").forEach((el) => {
+    el.className = "result-title r-title" + (tie ? "" : w === 0 ? " p1-text" : " p2-text");
+    el.textContent = titleText;
+  });
+  setAll(".r-s1", a);
+  setAll(".r-s2", b);
+  setAll(".r-note", noteText);
   setTimeout(() => resultScreen.classList.remove("hidden"), 700);
 }
 
@@ -934,7 +998,8 @@ function loop(now) {
 
 // ---------- 事件 ----------
 $("start-btn").addEventListener("click", startMatch);
-$("rematch-btn").addEventListener("click", startMatch);
+// 兩張結果卡各有一顆「再來一局」，誰按都算
+resultScreen.querySelectorAll(".r-again").forEach((b) => b.addEventListener("click", startMatch));
 
 // ---------- 啟動 ----------
 if (document.fonts && document.fonts.load) document.fonts.load('20px "ChenYuluoyan"');
