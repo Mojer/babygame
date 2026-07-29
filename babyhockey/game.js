@@ -136,15 +136,8 @@ const state = {
   spawnTimer: SPAWN_FIRST,
   burstIndex: 1,
   skinTurn: 0,
-  musicId: "pop",         // 配樂曲風（開始畫面可選，記在 localStorage）
   lastTick: -1,           // 最後 10 秒的每秒滴答
 };
-
-// 讀回上次選的配樂
-try {
-  const saved = localStorage.getItem("babyhockey.music");
-  if (saved && MUSIC.styles.some((s) => s.id === saved)) state.musicId = saved;
-} catch (e) { /* 私密瀏覽模式讀不到就用預設 */ }
 
 // ---------- DOM ----------
 const $ = (id) => document.getElementById(id);
@@ -907,7 +900,7 @@ function startMatch() {
   state.burstIndex = 1;
   state.phase = "countdown";
 
-  MUSIC.start(state.musicId);
+  MUSIC.start();
   state.lastTick = -1;
   const cd = $("countdown");
   const seq = ["3", "2", "1", "開始！"];
@@ -1011,34 +1004,12 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 
-// ---------- 配樂選擇（貼紙感小卡，點一下順便試聽） ----------
-function setupMusicPicker() {
-  const list = $("music-list");
-  list.innerHTML = "";
-  for (const st of MUSIC.styles) {
-    const btn = document.createElement("button");
-    btn.className = "music-card" + (st.id === state.musicId ? " active" : "");
-    btn.innerHTML = `<span class="m-name"></span><span class="m-tag"></span>`;
-    btn.querySelector(".m-name").textContent = st.name;
-    btn.querySelector(".m-tag").textContent = st.tag;
-    btn.addEventListener("click", () => {
-      state.musicId = st.id;
-      try { localStorage.setItem("babyhockey.music", st.id); } catch (e) { /* 存不進去也沒關係 */ }
-      list.querySelectorAll(".music-card").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      MUSIC.preview(st.id);      // 這個 click 就是瀏覽器要的使用者手勢
-    });
-    list.appendChild(btn);
-  }
-}
-
 // ---------- 事件 ----------
-$("start-btn").addEventListener("click", () => { MUSIC.stop(); startMatch(); });
+$("start-btn").addEventListener("click", startMatch);
 // 兩張結果卡各有一顆「再來一局」，誰按都算
 resultScreen.querySelectorAll(".r-again").forEach((b) => b.addEventListener("click", startMatch));
 
 // ---------- 啟動 ----------
 if (document.fonts && document.fonts.load) document.fonts.load('20px "ChenYuluoyan"');
-setupMusicPicker();
 layout();
 requestAnimationFrame((t) => { lastT = t; requestAnimationFrame(loop); });

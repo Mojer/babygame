@@ -1,7 +1,7 @@
 "use strict";
 
 /* =========================================================
- * 程式合成配樂（WebAudio）
+ * 程式合成配樂（WebAudio）— 曲風「輕快」
  * 不放音檔：旋律、和弦、貝斯、鼓組都即時算出來，
  * 所以零下載量、無授權問題，而且長度無限（不會聽到接縫）。
  *
@@ -114,55 +114,41 @@ const MUSIC = (() => {
   ];
   const PENTA = [0, 2, 4, 7, 9];
 
-  const STYLES = {
-    pop: {
-      id: "pop", name: "輕快", tag: "POP", bpm: 126, gain: 0.5,
-      lead: "triangle", bassType: "sine", leadOct: 12, bassOct: -24,
-      melodyRhythm: [1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0],
-      drums: "light",
-    },
-    chip: {
-      id: "chip", name: "電玩", tag: "8BIT", bpm: 140, gain: 0.4,
-      lead: "square", bassType: "square", leadOct: 12, bassOct: -24,
-      melodyRhythm: [1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0],
-      drums: "busy",
-    },
-    march: {
-      id: "march", name: "進行曲", tag: "MARCH", bpm: 116, gain: 0.45,
-      lead: "sawtooth", bassType: "triangle", leadOct: 0, bassOct: -24,
-      melodyRhythm: [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1],
-      drums: "march", cutoff: 2200,
-    },
+  // 曲風「輕快」：三角波主旋律 + 柔和鼓點
+  const STYLE = {
+    bpm: 126, gain: 0.5,
+    lead: "triangle", bassType: "sine", leadOct: 12, bassOct: -24,
+    melodyRhythm: [1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0],
   };
   const ROOT_MIDI = 60;   // C4
 
   // 排一個 16 分音符格點上的所有聲部。可排進真實 context 或 OfflineAudioContext。
-  function scheduleStep(ctx, dest, st, absStep, t, intensity) {
+  function scheduleStep(ctx, dest, absStep, t, intensity) {
     const s = absStep % 16;                     // 小節內的第幾個 16 分音符
     const barIdx = Math.floor(absStep / 16) % 4;
     const loop = Math.floor(absStep / 64);      // 第幾圈（換種子 → 換句子）
     const ch = PROG[barIdx];
-    const beat = 60 / st.bpm;
+    const beat = 60 / STYLE.bpm;
 
     // 貝斯：每小節的 1 與 3 拍踩根音，第 4 拍前給一個經過音
     if (s === 0 || s === 8) {
-      tone(ctx, dest, { t, dur: beat * 0.75, freq: midiFreq(ROOT_MIDI + ch.root + st.bassOct),
-        type: st.bassType, gain: 0.3, cutoff: st.cutoff });
+      tone(ctx, dest, { t, dur: beat * 0.75, freq: midiFreq(ROOT_MIDI + ch.root + STYLE.bassOct),
+        type: STYLE.bassType, gain: 0.3 });
     } else if (s === 14) {
-      tone(ctx, dest, { t, dur: beat * 0.4, freq: midiFreq(ROOT_MIDI + ch.root + st.bassOct + 7),
-        type: st.bassType, gain: 0.2, cutoff: st.cutoff });
+      tone(ctx, dest, { t, dur: beat * 0.4, freq: midiFreq(ROOT_MIDI + ch.root + STYLE.bassOct + 7),
+        type: STYLE.bassType, gain: 0.2 });
     }
 
     // 和弦鋪底：每小節頭與第 3 拍輕輕按一下三和弦
     if (s === 0 || s === 8) {
       for (const iv of ch.tri) {
         tone(ctx, dest, { t: t + 0.01, dur: beat * 1.1, freq: midiFreq(ROOT_MIDI + ch.root + iv),
-          type: "triangle", gain: 0.055, attack: 0.05, cutoff: st.cutoff });
+          type: "triangle", gain: 0.055, attack: 0.05 });
       }
     }
 
     // 旋律：節奏樣板決定哪裡有音，音高從當下和弦音 + 五聲音階挑
-    if (st.melodyRhythm[s]) {
+    if (STYLE.melodyRhythm[s]) {
       const r = rng(loop * 977 + barIdx * 31 + s);
       const pick = r();
       let semi;
@@ -170,21 +156,14 @@ const MUSIC = (() => {
       else semi = PENTA[Math.floor(r() * PENTA.length)];                 // 五聲音階（色彩）
       const up = r() < 0.22 ? 12 : 0;                                   // 偶爾跳高八度
       tone(ctx, dest, { t, dur: beat * (r() < 0.3 ? 0.5 : 0.28),
-        freq: midiFreq(ROOT_MIDI + ch.root + semi + st.leadOct + up),
-        type: st.lead, gain: 0.13, cutoff: st.cutoff });
+        freq: midiFreq(ROOT_MIDI + ch.root + semi + STYLE.leadOct + up),
+        type: STYLE.lead, gain: 0.13 });
     }
 
     // 鼓組
-    const d = st.drums;
-    if (d === "march") {
-      if (s === 0 || s === 4 || s === 8 || s === 12) kick(ctx, dest, t);
-      if (s === 6 || s === 14) snare(ctx, dest, t);
-      if (s === 2 || s === 10) snare(ctx, dest, t, 0.07);
-    } else {
-      if (s === 0 || s === 10) kick(ctx, dest, t);
-      if (s === 4 || s === 12) snare(ctx, dest, t);
-      if (d === "busy" ? s % 2 === 0 : s % 4 === 0) hat(ctx, dest, t);
-    }
+    if (s === 0 || s === 10) kick(ctx, dest, t);
+    if (s === 4 || s === 12) snare(ctx, dest, t);
+    if (s % 4 === 0) hat(ctx, dest, t);
     // 最後衝刺：補 16 分 hi-hat，聽起來就趕起來了
     if (intensity > 0 && s % 2 === 1) hat(ctx, dest, t, 0.05 * intensity);
   }
@@ -192,20 +171,19 @@ const MUSIC = (() => {
   // ---------- 播放 ----------
   const LOOKAHEAD = 0.12, TICK = 25;
   let ctx = null, bus = null, timer = null, fadeTimer = null;
-  let style = null, stepIndex = 0, nextTime = 0, intensity = 0, playing = false;
-  let mp3 = null;   // 「原本的歌」選項
+  let stepIndex = 0, nextTime = 0, intensity = 0, playing = false;
 
   function stepDur() {
     // intensity 會微微加快速度（最後 10 秒用）
-    return 60 / (style.bpm * (1 + 0.07 * intensity)) / 4;
+    return 60 / (STYLE.bpm * (1 + 0.07 * intensity)) / 4;
   }
 
   function pump() {
-    if (!playing || !style) return;
+    if (!playing) return;
     const now = ctx.currentTime;
     let guard = 0;
     while (nextTime < now + LOOKAHEAD && guard++ < 64) {
-      scheduleStep(ctx, bus, style, stepIndex, nextTime, intensity);
+      scheduleStep(ctx, bus, stepIndex, nextTime, intensity);
       nextTime += stepDur();
       stepIndex++;
     }
@@ -214,38 +192,18 @@ const MUSIC = (() => {
   function stopAll() {
     clearInterval(timer); timer = null;
     clearInterval(fadeTimer); fadeTimer = null;
-    playing = false; style = null;
+    playing = false;
     if (bus) { try { bus.disconnect(); } catch (e) { /* 已斷開 */ } bus = null; }
-    if (mp3) { mp3.pause(); }
-  }
-
-  function playMp3() {
-    if (!mp3) {
-      mp3 = new Audio("Chili Gola Game Pop Mix_1.mp3");
-      mp3.loop = true; mp3.preload = "auto";
-    }
-    mp3.volume = 0.4;
-    mp3.currentTime = 0;
-    mp3.play().catch(() => { /* 自動播放被擋不影響遊戲 */ });
   }
 
   return {
-    styles: [
-      ...Object.values(STYLES).map((s) => ({ id: s.id, name: s.name, tag: s.tag })),
-      { id: "mp3", name: "原本的歌", tag: "MP3" },
-      { id: "off", name: "不要音樂", tag: "MUTE" },
-    ],
-
-    start(id) {
+    start() {
       stopAll();
-      if (id === "off") return;
-      if (id === "mp3") { AUDIO.ctx(); playMp3(); return; }
-      const st = STYLES[id] || STYLES.pop;
       ctx = AUDIO.ctx();
       bus = ctx.createGain();
-      bus.gain.value = st.gain;
+      bus.gain.value = STYLE.gain;
       bus.connect(AUDIO.music);
-      style = st; stepIndex = 0; intensity = 0; playing = true;
+      stepIndex = 0; intensity = 0; playing = true;
       nextTime = ctx.currentTime + 0.06;
       pump();
       timer = setInterval(pump, TICK);
@@ -256,13 +214,6 @@ const MUSIC = (() => {
 
     fadeOut() {
       clearInterval(fadeTimer);
-      if (mp3 && !mp3.paused) {
-        fadeTimer = setInterval(() => {
-          if (mp3.volume > 0.05) mp3.volume = Math.max(0, mp3.volume - 0.05);
-          else { clearInterval(fadeTimer); stopAll(); }
-        }, 80);
-        return;
-      }
       if (!playing || !bus) { stopAll(); return; }
       const t = ctx.currentTime;
       bus.gain.cancelScheduledValues(t);
@@ -281,31 +232,21 @@ const MUSIC = (() => {
       if (!bus) return;
       const t = ctx.currentTime;
       const g = bus.gain;
-      const cur = style ? style.gain : g.value;
       g.cancelScheduledValues(t);
-      g.setValueAtTime(cur * depth, t);
-      g.linearRampToValueAtTime(cur, t + dur);
+      g.setValueAtTime(STYLE.gain * depth, t);
+      g.linearRampToValueAtTime(STYLE.gain, t + dur);
     },
 
-    // 試聽：選曲風時放幾秒就淡出
-    preview(id) {
-      this.start(id);
-      clearTimeout(this._pv);
-      this._pv = setTimeout(() => this.fadeOut(), 4200);
-    },
-
-    get playing() { return playing || !!(mp3 && !mp3.paused); },
+    get playing() { return playing; },
 
     // 測試用：把曲子離線算出來，可以檢查有沒有聲音、會不會爆音
-    async renderOffline(id, seconds, sampleRate = 22050) {
-      const st = STYLES[id];
-      if (!st) throw new Error("unknown style " + id);
+    async renderOffline(seconds, sampleRate = 22050) {
       const OC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
       const oc = new OC(1, Math.ceil(seconds * sampleRate), sampleRate);
-      const g = oc.createGain(); g.gain.value = st.gain; g.connect(oc.destination);
-      const dur = 60 / st.bpm / 4;
+      const g = oc.createGain(); g.gain.value = STYLE.gain; g.connect(oc.destination);
+      const dur = 60 / STYLE.bpm / 4;
       let t = 0.02, i = 0;
-      while (t < seconds) { scheduleStep(oc, g, st, i, t, 0); t += dur; i++; }
+      while (t < seconds) { scheduleStep(oc, g, i, t, 0); t += dur; i++; }
       return { buffer: await oc.startRendering(), notes: i };
     },
   };
