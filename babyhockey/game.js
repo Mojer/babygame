@@ -15,8 +15,8 @@
 const MATCH_TIME = 90;        // 秒，一局長度
 const MAX_PUCKS = 30;         // 場上冰球上限（實際上限依場地面積在 layout 算出）
 const SPAWN_FIRST = 1.0;      // 開局第一顆的延遲
-const SPAWN_START = 2.6;      // 起始生成間隔（秒）
-const SPAWN_END = 1.1;        // 終盤生成間隔（秒）
+const SPAWN_START = 1.8;      // 起始生成間隔（秒）
+const SPAWN_END = 0.55;       // 終盤生成間隔（秒）
 const BURST_EVERY = 18;       // 每 N 秒一次爆量波
 const BURST_COUNT = 6;        // 爆量波一次丟幾顆
 const GOAL_RATIO = 0.44;      // 球門寬 = 場地寬 * 此比例
@@ -150,6 +150,7 @@ const fieldWrap = $("field-wrap");
 let dpr = 1, cssW = 0, cssH = 0;
 let F = { x0: 0, y0: 0, x1: 0, y1: 0, w: 0, h: 0, cx: 0, cy: 0 };
 let PUCK_R = 18, PAD_R = 34, GOAL_HALF = 90, BAND = 44, CENTER_R = 80, maxPucks = MAX_PUCKS;
+let WALL_KICK_MIN = 99;   // 撞牆保底離牆速度，layout 依球徑算出
 let wobbleCache = null;
 
 function layout() {
@@ -173,6 +174,7 @@ function layout() {
   // 球門寬同樣夾一次，避免橫向時球門寬到整條底線都是洞
   GOAL_HALF = Math.round(Math.min(F.w * GOAL_RATIO / 2, F.h * 0.25));
   CENTER_R = Math.min(F.w * 0.24, F.h * 0.13);   // 中圈半徑（開球區、氣流範圍）
+  WALL_KICK_MIN = PUCK_R * 5.5;                  // 撞牆後的保底離牆速度（正比於球徑）
   // 冰球上限改看「佔掉多少冰面」而不是固定顆數：橫向場地面積小很多，
   // 一樣塞 30 顆的話覆蓋率會從 8% 跳到 12%，球擠在一起就開始互相卡。
   const coverage = Math.PI * PUCK_R * PUCK_R * 12;
@@ -339,6 +341,7 @@ const RELAX_ITER = 8;
 const JAM_TOLERANCE = 0.5;  // 鬆弛後仍重疊超過這個深度，就判定被擠爆卡住
 const SQUEEZE_KICK = 420;   // 擠爆逃生的分離速度（px/s，正比於重疊深度）
 const WALL_SCATTER = 0.34;  // 撞牆的隨機偏角（rad，約 ±10°）
+const WALL_TOUCH = 0.6;     // 距牆多近算「已貼到牆」（px，位置鬆弛會把球夾到剛好貼齊）
 const WALL_W = 10;          // 牆的手繪筆觸線寬
 const WALL_HALF = WALL_W / 2;
 
@@ -391,6 +394,17 @@ function scatterOffWall(b) {
   const vx = b.vx * c - b.vy * s;
   b.vy = b.vx * s + b.vy * c;
   b.vx = vx;
+}
+
+// 撞牆的完整處理：隨機偏角 → 反彈 → **保底法向速度**。
+// 保底那一步是關鍵：牆面反彈只衰減法向分量、切向完全保留，撞幾次之後軌跡就
+// 貼平在牆上，此時法向速度趨近 0，光靠偏角推不開，球會沿著牆一路滑很久
+// （沒有這道保底時實測平均黏 6～7 秒，最久 26 秒，兩邊玩家都很難救）。
+// axis：撞的是哪一面牆；sign：反彈後該往哪個方向離開（+1 = 往 x/y 增加的方向）。
+function bounceOffWall(b, axis, sign) {
+  scatterOffWall(b);
+  if (axis === "x") b.vx = sign * Math.max(Math.abs(b.vx) * WALL_REST, WALL_KICK_MIN);
+  else b.vy = sign * Math.max(Math.abs(b.vy) * WALL_REST, WALL_KICK_MIN);
 }
 
 function stepPhysics(dt) {
@@ -571,21 +585,27 @@ function stepPhysics(dt) {
       }
     }
 
+    // 判定條件是「已經貼到牆、而且速度還朝著牆」，不是「已經穿進牆裡」。
+    // 這點很重要：第 4 步的位置鬆弛會先把穿牆的球夾回牆面，等跑到這裡時
+    // 已經看不到穿透，速度就永遠不會被反彈 —— 球於是被永久壓在牆上沿牆滑行
+    // （修正前實測有 44% 的時間貼著側牆，平均一次黏 6 秒，最久 26 秒）。
     // 左右牆
-    if (b.x - PUCK_R < F.x0) { b.x = F.x0 + PUCK_R; b.vx = Math.abs(b.vx) * WALL_REST; scatterOffWall(b); SFX.hit(Math.abs(b.vx)); }
-    else if (b.x + PUCK_R > F.x1) { b.x = F.x1 - PUCK_R; b.vx = -Math.abs(b.vx) * WALL_REST; scatterOffWall(b); SFX.hit(Math.abs(b.vx)); }
+    if (b.x - PUCK_R <= F.x0 + WALL_TOUCH && b.vx < 0) {
+      b.x = F.x0 + PUCK_R; bounceOffWall(b, "x", 1); SFX.hit(Math.abs(b.vx));
+    } else if (b.x + PUCK_R >= F.x1 - WALL_TOUCH && b.vx > 0) {
+      b.x = F.x1 - PUCK_R; bounceOffWall(b, "x", -1); SFX.hit(Math.abs(b.vx));
+    }
 
     // 上下牆／球門：圓心越過門線才算進球
-    if (b.y < F.y0) {
-      if (inGoalX(b.x)) { scoreGoal(0, i, b); continue; }   // 上方是 P2 的球門 → P1 得分
-      b.y = F.y0 + PUCK_R; b.vy = Math.abs(b.vy) * WALL_REST; scatterOffWall(b); SFX.hit(Math.abs(b.vy));
-    } else if (b.y > F.y1) {
-      if (inGoalX(b.x)) { scoreGoal(1, i, b); continue; }   // 下方是 P1 的球門 → P2 得分
-      b.y = F.y1 - PUCK_R; b.vy = -Math.abs(b.vy) * WALL_REST; scatterOffWall(b); SFX.hit(Math.abs(b.vy));
-    } else if (!inGoalX(b.x)) {
-      // 沒進球門的話，球身也不能穿進牆裡
-      if (b.y - PUCK_R < F.y0) { b.y = F.y0 + PUCK_R; b.vy = Math.abs(b.vy) * WALL_REST; scatterOffWall(b); }
-      else if (b.y + PUCK_R > F.y1) { b.y = F.y1 - PUCK_R; b.vy = -Math.abs(b.vy) * WALL_REST; scatterOffWall(b); }
+    if (b.y < F.y0 && inGoalX(b.x)) { scoreGoal(0, i, b); continue; }   // 上方是 P2 的球門 → P1 得分
+    if (b.y > F.y1 && inGoalX(b.x)) { scoreGoal(1, i, b); continue; }   // 下方是 P1 的球門 → P2 得分
+    if (!inGoalX(b.x)) {
+      // 沒對到球門開口，球身就不能穿進牆裡
+      if (b.y - PUCK_R <= F.y0 + WALL_TOUCH && b.vy < 0) {
+        b.y = F.y0 + PUCK_R; bounceOffWall(b, "y", 1); SFX.hit(Math.abs(b.vy));
+      } else if (b.y + PUCK_R >= F.y1 - WALL_TOUCH && b.vy > 0) {
+        b.y = F.y1 - PUCK_R; bounceOffWall(b, "y", -1); SFX.hit(Math.abs(b.vy));
+      }
     }
 
     // 速度上限（下一帧才會位移，因此不會穿牆；此處先夾好讓數值不失控）
@@ -954,8 +974,9 @@ function stepSpawner(dt) {
     spawnPuck(false);
     state.spawnTimer = interval;
   }
-  // 場上快清空時趕快補球，別讓畫面空掉
-  if (state.pucks.length <= 3) state.spawnTimer = Math.min(state.spawnTimer, 0.3);
+  // 場上球變少時趕快補，別讓畫面空掉。修掉「球黏在側牆」之後冰球會確實被打進
+  // 球門，消耗比以前快很多（先前場上球多，有一部分其實是靠那個 bug 卡在牆邊不動）
+  if (state.pucks.length <= 6) state.spawnTimer = Math.min(state.spawnTimer, 0.25);
   if (state.time >= BURST_EVERY * state.burstIndex) {
     state.burstIndex++;
     for (let i = 0; i < BURST_COUNT; i++) setTimeout(() => {
