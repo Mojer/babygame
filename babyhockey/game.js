@@ -20,6 +20,7 @@ const SPAWN_END = 1.1;        // 終盤生成間隔（秒）
 const BURST_EVERY = 18;       // 每 N 秒一次爆量波
 const BURST_COUNT = 6;        // 爆量波一次丟幾顆
 const GOAL_RATIO = 0.44;      // 球門寬 = 場地寬 * 此比例
+const FINAL_RUSH = 10;        // 最後 N 秒開始滴答並讓配樂加速
 
 // ---------- 物理常數 ----------
 const FIXED_DT = 1 / 120;     // 固定時間步（ProMotion 120Hz 也一致）
@@ -54,73 +55,71 @@ const P_COLOR = ["#2f6fc4", "#e04a68"];         // P1 藍（下）、P2 紅（�
 const P_COLOR_SOFT = ["#9dc2f2", "#f7aebc"];
 const P_NAME = ["玩家 1", "玩家 2"];
 
-// ---------- 音效（WebAudio 合成，無外部資源） ----------
+// ---------- 音效（WebAudio 合成，無外部資源；context 與配樂共用，見 music.js） ----------
 const SFX = (() => {
-  let ac = null;
-  function ctx() {
-    if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
-    if (ac.state === "suspended") ac.resume();
-    return ac;
-  }
-  function tone(freq, dur, type = "sine", vol = 0.2, slide = 0) {
+  function tone(freq, dur, type = "sine", vol = 0.2, slide = 0, delay = 0) {
     try {
-      const a = ctx(), t = a.currentTime;
+      const a = AUDIO.ctx(), t = a.currentTime + delay;
       const o = a.createOscillator(), g = a.createGain();
       o.type = type; o.frequency.setValueAtTime(freq, t);
       if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, freq + slide), t + dur);
-      g.gain.setValueAtTime(vol, t);
-      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-      o.connect(g).connect(a.destination);
-      o.start(t); o.stop(t + dur);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol, t + 0.006);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g).connect(AUDIO.sfx);
+      o.start(t); o.stop(t + dur + 0.02);
     } catch (e) { /* 音效失敗不影響遊戲 */ }
+  }
+  // 噪音撞擊（冰球互撞的「喀」聲，比純音更像塑膠片相碰）
+  function clack(dur, freq, vol, delay = 0) {
+    try {
+      const a = AUDIO.ctx(), t = a.currentTime + delay;
+      const src = a.createBufferSource();
+      src.buffer = noiseBuffer(a); src.loop = true;
+      const f = a.createBiquadFilter();
+      f.type = "bandpass"; f.frequency.setValueAtTime(freq, t); f.Q.value = 1.6;
+      const g = a.createGain();
+      g.gain.setValueAtTime(vol, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      src.connect(f).connect(g).connect(AUDIO.sfx);
+      src.start(t); src.stop(t + dur + 0.02);
+    } catch (e) { /* 同上 */ }
   }
   let lastHit = 0, lastPad = 0;
   return {
-    unlock: () => ctx(),
+    unlock: () => AUDIO.ctx(),
     count: () => tone(440, .15, "square", .18),
-    go: () => tone(880, .4, "square", .2),
+    go: () => { tone(880, .4, "square", .2); tone(1320, .35, "triangle", .12, 0, .04); },
     spawn: () => tone(760, .09, "sine", .10, -260),
+    tick: (last) => tone(last ? 1200 : 900, last ? .12 : .06, "square", last ? .2 : .12),
     goal() {
-      [660, 880, 1180].forEach((f, i) => setTimeout(() => tone(f, .22, "triangle", .24), i * 90));
+      // 上升三連音 + 一小段歡呼般的噪音掃頻，並把配樂壓低讓它突出
+      [660, 880, 1180].forEach((f, i) => tone(f, .22, "triangle", .24, 0, i * 0.09));
+      clack(.5, 2600, .10, .05);
+      MUSIC.duck();
     },
-    hit() {                                     // 球對球（節流）
+    hit(speed) {                                // 球對球（節流；力道越大越響越亮）
       const now = performance.now();
-      if (now - lastHit > 55) { lastHit = now; tone(220 + Math.random() * 140, .045, "triangle", .06); }
+      if (now - lastHit < 45) return;
+      lastHit = now;
+      const p = Math.min(1, (speed || 200) / 900);
+      clack(.05 + p * .04, 900 + p * 1800, .04 + p * .10);
     },
-    pad() {                                     // 擋板打擊（節流）
+    pad(speed) {                                // 擋板打擊（節流；悶一點的「咚」）
       const now = performance.now();
-      if (now - lastPad > 45) { lastPad = now; tone(150 + Math.random() * 60, .07, "square", .13, 90); }
+      if (now - lastPad < 40) return;
+      lastPad = now;
+      const p = Math.min(1, (speed || 300) / 1400);
+      tone(140 + p * 90, .08 + p * .05, "square", .10 + p * .10, 90);
+      clack(.05, 500 + p * 700, .05 + p * .05);
     },
     whistle() {
       tone(1050, .5, "triangle", .22, -280);
-      setTimeout(() => tone(880, .6, "triangle", .2, -300), 160);
+      tone(880, .6, "triangle", .2, -300, .16);
     },
     win() {
-      [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, .3, "triangle", .25), i * 130));
-    },
-  };
-})();
-
-// ---------- 背景音樂 ----------
-const BGM = (() => {
-  const audio = new Audio("Chili Gola Game Pop Mix_1.mp3");
-  audio.loop = true;
-  audio.preload = "auto";
-  const VOL = 0.4;
-  let fadeTimer = null;
-  return {
-    start() {
-      clearInterval(fadeTimer);
-      audio.volume = VOL;
-      audio.currentTime = 0;
-      audio.play().catch(() => { /* 自動播放被擋不影響遊戲 */ });
-    },
-    fadeOut() {
-      clearInterval(fadeTimer);
-      fadeTimer = setInterval(() => {
-        if (audio.volume > 0.05) audio.volume = Math.max(0, audio.volume - 0.05);
-        else { clearInterval(fadeTimer); audio.pause(); }
-      }, 80);
+      [523, 659, 784, 1047].forEach((f, i) => tone(f, .3, "triangle", .25, 0, i * 0.13));
+      [1047, 1319].forEach((f, i) => tone(f, .5, "square", .12, 0, .55 + i * 0.1));
     },
   };
 })();
@@ -137,7 +136,15 @@ const state = {
   spawnTimer: SPAWN_FIRST,
   burstIndex: 1,
   skinTurn: 0,
+  musicId: "pop",         // 配樂曲風（開始畫面可選，記在 localStorage）
+  lastTick: -1,           // 最後 10 秒的每秒滴答
 };
+
+// 讀回上次選的配樂
+try {
+  const saved = localStorage.getItem("babyhockey.music");
+  if (saved && MUSIC.styles.some((s) => s.id === saved)) state.musicId = saved;
+} catch (e) { /* 私密瀏覽模式讀不到就用預設 */ }
 
 // ---------- DOM ----------
 const $ = (id) => document.getElementById(id);
@@ -460,7 +467,7 @@ function stepPhysics(dt) {
         const jimp = -(1 + PUCK_REST) * vn / 2;
         a.vx -= jimp * nx; a.vy -= jimp * ny;
         b.vx += jimp * nx; b.vy += jimp * ny;
-        if (Math.abs(vn) > 120) SFX.hit();
+        if (Math.abs(vn) > 120) SFX.hit(Math.abs(vn));
       }
     }
   }
@@ -487,7 +494,7 @@ function stepPhysics(dt) {
         b.vy += (PAD_KICK_MIN - outN) * ny;
       }
       b.spin += (pad.vx * ny - pad.vy * nx) * 0.004;
-      SFX.pad();
+      SFX.pad(Math.hypot(pad.vx, pad.vy));
     }
   }
 
@@ -567,21 +574,21 @@ function stepPhysics(dt) {
         b.x = po.x + nx * min; b.y = po.y + ny * min;
         const vn = b.vx * nx + b.vy * ny;
         if (vn < 0) { b.vx -= (1 + WALL_REST) * vn * nx; b.vy -= (1 + WALL_REST) * vn * ny; }
-        SFX.hit();
+        SFX.hit(Math.abs(vn));
       }
     }
 
     // 左右牆
-    if (b.x - PUCK_R < F.x0) { b.x = F.x0 + PUCK_R; b.vx = Math.abs(b.vx) * WALL_REST; scatterOffWall(b); SFX.hit(); }
-    else if (b.x + PUCK_R > F.x1) { b.x = F.x1 - PUCK_R; b.vx = -Math.abs(b.vx) * WALL_REST; scatterOffWall(b); SFX.hit(); }
+    if (b.x - PUCK_R < F.x0) { b.x = F.x0 + PUCK_R; b.vx = Math.abs(b.vx) * WALL_REST; scatterOffWall(b); SFX.hit(Math.abs(b.vx)); }
+    else if (b.x + PUCK_R > F.x1) { b.x = F.x1 - PUCK_R; b.vx = -Math.abs(b.vx) * WALL_REST; scatterOffWall(b); SFX.hit(Math.abs(b.vx)); }
 
     // 上下牆／球門：圓心越過門線才算進球
     if (b.y < F.y0) {
       if (inGoalX(b.x)) { scoreGoal(0, i, b); continue; }   // 上方是 P2 的球門 → P1 得分
-      b.y = F.y0 + PUCK_R; b.vy = Math.abs(b.vy) * WALL_REST; scatterOffWall(b); SFX.hit();
+      b.y = F.y0 + PUCK_R; b.vy = Math.abs(b.vy) * WALL_REST; scatterOffWall(b); SFX.hit(Math.abs(b.vy));
     } else if (b.y > F.y1) {
       if (inGoalX(b.x)) { scoreGoal(1, i, b); continue; }   // 下方是 P1 的球門 → P2 得分
-      b.y = F.y1 - PUCK_R; b.vy = -Math.abs(b.vy) * WALL_REST; scatterOffWall(b); SFX.hit();
+      b.y = F.y1 - PUCK_R; b.vy = -Math.abs(b.vy) * WALL_REST; scatterOffWall(b); SFX.hit(Math.abs(b.vy));
     } else if (!inGoalX(b.x)) {
       // 沒進球門的話，球身也不能穿進牆裡
       if (b.y - PUCK_R < F.y0) { b.y = F.y0 + PUCK_R; b.vy = Math.abs(b.vy) * WALL_REST; scatterOffWall(b); }
@@ -900,7 +907,8 @@ function startMatch() {
   state.burstIndex = 1;
   state.phase = "countdown";
 
-  BGM.start();
+  MUSIC.start(state.musicId);
+  state.lastTick = -1;
   const cd = $("countdown");
   const seq = ["3", "2", "1", "開始！"];
   seq.forEach((s, i) => setTimeout(() => {
@@ -919,7 +927,7 @@ function startMatch() {
 
 function endMatch() {
   state.phase = "finish";
-  BGM.fadeOut();
+  MUSIC.fadeOut();
   SFX.whistle();
   const [a, b] = state.score;
   const diff = Math.abs(a - b);
@@ -978,6 +986,13 @@ function loop(now) {
     while (acc >= FIXED_DT && steps < MAX_STEPS) { stepPhysics(FIXED_DT); acc -= FIXED_DT; steps++; }
     if (steps === MAX_STEPS) acc = 0;
     stepParticles(frame);
+    // 最後 10 秒：每秒一聲滴答，配樂同步加快
+    const left = MATCH_TIME - state.time;
+    if (left <= FINAL_RUSH) {
+      MUSIC.setIntensity(1 - Math.max(0, left) / FINAL_RUSH);
+      const sec = Math.ceil(Math.max(0, left));
+      if (sec !== state.lastTick) { state.lastTick = sec; if (sec > 0) SFX.tick(sec <= 3); }
+    }
     if (state.time >= MATCH_TIME) endMatch();
   } else if (state.phase === "countdown") {
     stepKeyboard(frame);
@@ -996,12 +1011,34 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 
+// ---------- 配樂選擇（貼紙感小卡，點一下順便試聽） ----------
+function setupMusicPicker() {
+  const list = $("music-list");
+  list.innerHTML = "";
+  for (const st of MUSIC.styles) {
+    const btn = document.createElement("button");
+    btn.className = "music-card" + (st.id === state.musicId ? " active" : "");
+    btn.innerHTML = `<span class="m-name"></span><span class="m-tag"></span>`;
+    btn.querySelector(".m-name").textContent = st.name;
+    btn.querySelector(".m-tag").textContent = st.tag;
+    btn.addEventListener("click", () => {
+      state.musicId = st.id;
+      try { localStorage.setItem("babyhockey.music", st.id); } catch (e) { /* 存不進去也沒關係 */ }
+      list.querySelectorAll(".music-card").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      MUSIC.preview(st.id);      // 這個 click 就是瀏覽器要的使用者手勢
+    });
+    list.appendChild(btn);
+  }
+}
+
 // ---------- 事件 ----------
-$("start-btn").addEventListener("click", startMatch);
+$("start-btn").addEventListener("click", () => { MUSIC.stop(); startMatch(); });
 // 兩張結果卡各有一顆「再來一局」，誰按都算
 resultScreen.querySelectorAll(".r-again").forEach((b) => b.addEventListener("click", startMatch));
 
 // ---------- 啟動 ----------
 if (document.fonts && document.fonts.load) document.fonts.load('20px "ChenYuluoyan"');
+setupMusicPicker();
 layout();
 requestAnimationFrame((t) => { lastT = t; requestAnimationFrame(loop); });
