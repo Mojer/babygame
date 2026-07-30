@@ -12,12 +12,12 @@
  * ========================================================= */
 
 // ---------- 規則常數 ----------
-const MATCH_TIME = 90;        // 秒，一局長度
+const MATCH_TIME = 60;        // 秒，一局長度
 const MAX_PUCKS = 30;         // 場上冰球上限（實際上限依場地面積在 layout 算出）
 const SPAWN_FIRST = 1.0;      // 開局第一顆的延遲
-const SPAWN_START = 1.8;      // 起始生成間隔（秒）
-const SPAWN_END = 0.55;       // 終盤生成間隔（秒）
-const BURST_EVERY = 18;       // 每 N 秒一次爆量波
+const SPAWN_START = 1.3;      // 起始生成間隔（秒）
+const SPAWN_END = 0.45;       // 終盤生成間隔（秒）
+const BURST_EVERY = 14;       // 每 N 秒一次爆量波（一分鐘內來 4 次）
 const BURST_COUNT = 6;        // 爆量波一次丟幾顆
 const GOAL_RATIO = 0.44;      // 球門寬 = 場地寬 * 此比例
 const FINAL_RUSH = 10;        // 最後 N 秒開始滴答並讓配樂加速
@@ -54,6 +54,17 @@ for (const s of SKINS) {
 const P_COLOR = ["#2f6fc4", "#e04a68"];         // P1 藍（下）、P2 紅（上）
 const P_COLOR_SOFT = ["#9dc2f2", "#f7aebc"];
 const P_NAME = ["玩家 1", "玩家 2"];
+
+// ---------- 特殊技能 ----------
+// 每人在自己那端的角落固定擁有三顆技能鈕，各自冷卻（不用搶，兩邊永遠公平）。
+// 技能鈕畫在球門兩側的 band 區（冰面之外），所以不會跟拖曳擋板的手指打架。
+const SK_MAGNET = 0, SK_GATE = 1, SK_CLOCK = 2;
+const SKILL_DEFS = [
+  { id: "magnet", name: "吸鐵", icon: "🧲", dur: 3.0, cd: 11, color: "#7c4fd0" },
+  { id: "gate",   name: "關門", icon: "🐕", dur: 4.0, cd: 13, color: "#3f8f57" },
+  { id: "clock",  name: "鬧鐘", icon: "⏰", dur: 2.2, cd: 22, color: "#e8871e" },
+];
+const MAGNET_ACCEL = 1500;    // 吸鐵拉力（px/s²）
 
 // ---------- 音效（WebAudio 合成，無外部資源；context 與配樂共用，見 music.js） ----------
 const SFX = (() => {
@@ -113,6 +124,12 @@ const SFX = (() => {
       tone(140 + p * 90, .08 + p * .05, "square", .10 + p * .10, 90);
       clack(.05, 500 + p * 700, .05 + p * .05);
     },
+    skill(i) {
+      if (i === 0) { [400, 600, 900].forEach((f, k) => tone(f, .16, "sine", .16, 120, k * .05)); }        // 吸鐵：上揚吸氣感
+      else if (i === 1) { tone(320, .18, "square", .2, -140); tone(160, .3, "triangle", .18, -60, .1); }  // 關門：碰一聲關上
+      else { [1400, 1100, 800, 500].forEach((f, k) => tone(f, .18, "triangle", .2, -200, k * .07)); }     // 鬧鐘：時間慢下來
+    },
+    unfreeze() { [500, 800, 1200].forEach((f, k) => tone(f, .14, "triangle", .16, 0, k * .05)); },
     whistle() {
       tone(1050, .5, "triangle", .22, -280);
       tone(880, .6, "triangle", .2, -300, .16);
@@ -137,7 +154,54 @@ const state = {
   burstIndex: 1,
   skinTurn: 0,
   lastTick: -1,           // 最後 10 秒的每秒滴答
+  // 技能：每人三顆，left = 剩餘作用秒數、cd = 剩餘冷卻秒數
+  skills: [SKILL_DEFS.map(() => ({ left: 0, cd: 0 })), SKILL_DEFS.map(() => ({ left: 0, cd: 0 }))],
+  freezeBy: -1,           // 鬧鐘：是誰按的（-1 = 沒人）；凍結期間只有他能動
 };
+
+const skillOn = (p, i) => state.skills[p][i].left > 0;
+
+function resetSkills() {
+  for (const row of state.skills) for (const s of row) { s.left = 0; s.cd = 0; }
+  state.freezeBy = -1;
+}
+
+function activateSkill(p, i) {
+  // 被對手用鬧鐘定住的人不能按技能（他正停在時間裡）
+  if (state.freezeBy >= 0 && state.freezeBy !== p) return false;
+  const s = state.skills[p][i];
+  if (s.left > 0 || s.cd > 0) return false;
+  const def = SKILL_DEFS[i];
+  s.left = def.dur;
+  s.cd = def.cd;                       // 冷卻在效果結束後才開始倒數（見 stepSkills）
+  if (i === SK_CLOCK) state.freezeBy = p;
+  SFX.skill(i);
+  // 技能發動的視覺回饋：從自己的技能鈕噴一圈粒子
+  const btn = skillBtns[p] && skillBtns[p][i];
+  if (btn) puff(btn.x, btn.y, def.color, 14);
+  return true;
+}
+
+function stepSkills(dt) {
+  for (let p = 0; p < 2; p++) {
+    for (let i = 0; i < SKILL_DEFS.length; i++) {
+      const s = state.skills[p][i];
+      if (s.left > 0) {
+        s.left = Math.max(0, s.left - dt);
+        if (s.left === 0 && i === SK_CLOCK && state.freezeBy === p) {
+          state.freezeBy = -1;
+          SFX.unfreeze();
+        }
+      } else if (s.cd > 0) {
+        s.cd = Math.max(0, s.cd - dt);
+      }
+    }
+  }
+}
+
+// 球門是否開著（關門放狗會把自己的球門關起來當牆用）
+// side 0 = 下方（P1 的球門）、1 = 上方（P2 的球門）
+const goalOpen = (side) => !skillOn(side, SK_GATE);
 
 // ---------- DOM ----------
 const $ = (id) => document.getElementById(id);
@@ -151,6 +215,7 @@ let dpr = 1, cssW = 0, cssH = 0;
 let F = { x0: 0, y0: 0, x1: 0, y1: 0, w: 0, h: 0, cx: 0, cy: 0 };
 let PUCK_R = 18, PAD_R = 34, GOAL_HALF = 90, BAND = 44, CENTER_R = 80, maxPucks = MAX_PUCKS;
 let WALL_KICK_MIN = 99;   // 撞牆保底離牆速度，layout 依球徑算出
+let skillBtns = [[], []]; // 技能鈕的位置（layout 時算好）
 let wobbleCache = null;
 
 function layout() {
@@ -160,7 +225,8 @@ function layout() {
   canvas.width = Math.round(cssW * dpr);
   canvas.height = Math.round(cssH * dpr);
 
-  BAND = Math.round(Math.min(56, Math.max(30, cssH * 0.052)));
+  // band 要放得下球門網、計分卡與三顆技能鈕，所以比純計分板時期高一些
+  BAND = Math.round(Math.min(72, Math.max(46, cssH * 0.062)));
   const pad = WALL_W + 2;   // 留得下畫在場地外側的牆筆觸
   F.x0 = pad; F.x1 = cssW - pad;
   F.y0 = BAND; F.y1 = cssH - BAND;
@@ -180,10 +246,39 @@ function layout() {
   const coverage = Math.PI * PUCK_R * PUCK_R * 12;
   maxPucks = Math.max(12, Math.min(MAX_PUCKS, Math.floor(F.w * F.h / coverage)));
 
+  buildSkillButtons();
   wobbleCache = null;
   buildPosts();
   buildSprites();
   for (const p of state.pads) clampPad(p, true);
+}
+
+// 技能鈕：放在自己那端球門的一側（band 區內，冰面之外）。
+// P1 在畫面右側、P2 在畫面左側 —— 兩人坐對面，所以對各自來說都是同一隻手邊。
+function buildSkillButtons() {
+  skillBtns = [[], []];
+  const region = cssW / 2 - GOAL_HALF - 14;          // 球門外側可用的寬度
+  const r = Math.max(13, Math.min(BAND * 0.40, region / 7.2, 30));
+  const step = r * 2.35;
+  for (let p = 0; p < 2; p++) {
+    const y = p === 0 ? cssH - BAND / 2 : BAND / 2;
+    const mid = F.cx + GOAL_HALF + (cssW - F.cx - GOAL_HALF) / 2;   // 右側區塊的中心
+    for (let i = 0; i < SKILL_DEFS.length; i++) {
+      const x1 = mid + (i - 1) * step;
+      skillBtns[p].push({ x: p === 0 ? x1 : 2 * F.cx - x1, y, r, i });
+    }
+  }
+}
+
+// 命中判定放寬到 1.6 倍，手機上按鈕畫得小也不難按
+function hitSkillButton(x, y) {
+  for (let p = 0; p < 2; p++) {
+    for (const b of skillBtns[p]) {
+      const hit = b.r * 1.6;
+      if ((x - b.x) ** 2 + (y - b.y) ** 2 <= hit * hit) return { p, i: b.i };
+    }
+  }
+  return null;
 }
 window.addEventListener("resize", layout);
 window.addEventListener("orientationchange", () => setTimeout(layout, 200));
@@ -409,10 +504,13 @@ function bounceOffWall(b, axis, sign) {
 
 function stepPhysics(dt) {
   const pucks = state.pucks;
+  // 鬧鐘：凍結期間冰球完全不動、對手擋板也定住，只有施放者能推球
+  const frozen = state.freezeBy >= 0;
 
   // 1) 擋板：以最大速度追向手指目標點（不直接瞬移，才不會把球推穿牆）
   for (const pad of state.pads) {
     clampPad(pad, false);
+    if (frozen && pad.p !== state.freezeBy) { pad.vx = pad.vy = 0; continue; }
     const dx = pad.tx - pad.x, dy = pad.ty - pad.y;
     const dist = Math.hypot(dx, dy);
     const step = PAD_MAX_SPEED * dt;
@@ -424,8 +522,23 @@ function stepPhysics(dt) {
     pad.x = nx; pad.y = ny;
   }
 
+  // 吸鐵：把場上所有冰球往施放者的擋板拉（凍結中不生效）
+  if (!frozen) {
+    for (let p = 0; p < 2; p++) {
+      if (!skillOn(p, SK_MAGNET)) continue;
+      const pad = state.pads[p];
+      for (const b of pucks) {
+        const dx = pad.x - b.x, dy = pad.y - b.y;
+        const d = Math.hypot(dx, dy) || 1;
+        b.vx += dx / d * MAGNET_ACCEL * dt;
+        b.vy += dy / d * MAGNET_ACCEL * dt;
+      }
+    }
+  }
+
   // 2) 積分（冰面阻力 + 氣流微擾 + 速度上限）
   for (const b of pucks) {
+    if (frozen) break;           // 凍結：位置與速度都原封不動，解凍後接續原本的運動
     b.born += dt;
     const damp = 1 - DAMPING * dt;
     b.vx *= damp; b.vy *= damp;
@@ -458,8 +571,8 @@ function stepPhysics(dt) {
     b.rot += b.spin * dt;
   }
 
-  // 3a) 冰球互撞（等質量彈性碰撞）
-  for (let i = 0; i < pucks.length; i++) {
+  // 3a) 冰球互撞（等質量彈性碰撞）。凍結中不改速度，推擠交給第 4 步的位置鬆弛
+  for (let i = 0; !frozen && i < pucks.length; i++) {
     const a = pucks[i];
     for (let j = i + 1; j < pucks.length; j++) {
       const b = pucks[j];
@@ -480,7 +593,7 @@ function stepPhysics(dt) {
   }
 
   // 3b) 擋板打擊（視為無限質量的 kinematic 圓）
-  for (const b of pucks) {
+  for (const b of frozen ? [] : pucks) {
     for (const pad of state.pads) {
       const dx = b.x - pad.x, dy = b.y - pad.y;
       let d = Math.hypot(dx, dy);
@@ -514,13 +627,14 @@ function stepPhysics(dt) {
       for (const pad of state.pads) {
         if (pushOutOfPad(b, pad)) moved = true;
       }
-      // 牆面只夾位置（反彈與進球判定留給第 5 步）
+      // 牆面只夾位置（反彈與進球判定留給第 5 步）。
+      // 關門放狗期間，該側的球門開口也要當成牆。
       if (b.x - PUCK_R < F.x0) { b.x = F.x0 + PUCK_R; moved = true; }
       else if (b.x + PUCK_R > F.x1) { b.x = F.x1 - PUCK_R; moved = true; }
-      if (!inGoalX(b.x)) {
-        if (b.y - PUCK_R < F.y0) { b.y = F.y0 + PUCK_R; moved = true; }
-        else if (b.y + PUCK_R > F.y1) { b.y = F.y1 - PUCK_R; moved = true; }
-      }
+      const openTop = inGoalX(b.x) && goalOpen(1);
+      const openBot = inGoalX(b.x) && goalOpen(0);
+      if (!openTop && b.y - PUCK_R < F.y0) { b.y = F.y0 + PUCK_R; moved = true; }
+      else if (!openBot && b.y + PUCK_R > F.y1) { b.y = F.y1 - PUCK_R; moved = true; }
     }
     for (let i = 0; i < pucks.length; i++) {
       const a = pucks[i];
@@ -547,7 +661,7 @@ function stepPhysics(dt) {
   // 4b) 擠爆逃生：鬆弛後仍深度重疊，代表擋板把冰球壓進牆角，幾何上真的塞不下
   //     （位置解算再多次也無解）。改成補一道分離「速度」，讓這團在幾帧內自己散開，
   //     就像真的冰球被擠壓後噴出去，而不是黏成一坨慢慢磨。
-  for (let i = 0; i < pucks.length; i++) {
+  for (let i = 0; !frozen && i < pucks.length; i++) {
     const a = pucks[i];
     for (let j = i + 1; j < pucks.length; j++) {
       const b = pucks[j];
@@ -580,8 +694,7 @@ function stepPhysics(dt) {
         const nx = dx / d, ny = dy / d;
         b.x = po.x + nx * min; b.y = po.y + ny * min;
         const vn = b.vx * nx + b.vy * ny;
-        if (vn < 0) { b.vx -= (1 + WALL_REST) * vn * nx; b.vy -= (1 + WALL_REST) * vn * ny; }
-        SFX.hit(Math.abs(vn));
+        if (!frozen && vn < 0) { b.vx -= (1 + WALL_REST) * vn * nx; b.vy -= (1 + WALL_REST) * vn * ny; SFX.hit(Math.abs(vn)); }
       }
     }
 
@@ -590,21 +703,27 @@ function stepPhysics(dt) {
     // 已經看不到穿透，速度就永遠不會被反彈 —— 球於是被永久壓在牆上沿牆滑行
     // （修正前實測有 44% 的時間貼著側牆，平均一次黏 6 秒，最久 26 秒）。
     // 左右牆
-    if (b.x - PUCK_R <= F.x0 + WALL_TOUCH && b.vx < 0) {
-      b.x = F.x0 + PUCK_R; bounceOffWall(b, "x", 1); SFX.hit(Math.abs(b.vx));
-    } else if (b.x + PUCK_R >= F.x1 - WALL_TOUCH && b.vx > 0) {
-      b.x = F.x1 - PUCK_R; bounceOffWall(b, "x", -1); SFX.hit(Math.abs(b.vx));
+    if (b.x - PUCK_R <= F.x0 + WALL_TOUCH && (frozen || b.vx < 0)) {
+      b.x = F.x0 + PUCK_R;
+      if (!frozen) { bounceOffWall(b, "x", 1); SFX.hit(Math.abs(b.vx)); }
+    } else if (b.x + PUCK_R >= F.x1 - WALL_TOUCH && (frozen || b.vx > 0)) {
+      b.x = F.x1 - PUCK_R;
+      if (!frozen) { bounceOffWall(b, "x", -1); SFX.hit(Math.abs(b.vx)); }
     }
 
-    // 上下牆／球門：圓心越過門線才算進球
-    if (b.y < F.y0 && inGoalX(b.x)) { scoreGoal(0, i, b); continue; }   // 上方是 P2 的球門 → P1 得分
-    if (b.y > F.y1 && inGoalX(b.x)) { scoreGoal(1, i, b); continue; }   // 下方是 P1 的球門 → P2 得分
-    if (!inGoalX(b.x)) {
-      // 沒對到球門開口，球身就不能穿進牆裡
-      if (b.y - PUCK_R <= F.y0 + WALL_TOUCH && b.vy < 0) {
-        b.y = F.y0 + PUCK_R; bounceOffWall(b, "y", 1); SFX.hit(Math.abs(b.vy));
-      } else if (b.y + PUCK_R >= F.y1 - WALL_TOUCH && b.vy > 0) {
-        b.y = F.y1 - PUCK_R; bounceOffWall(b, "y", -1); SFX.hit(Math.abs(b.vy));
+    // 上下牆／球門：圓心越過門線才算進球。關門放狗期間該側的開口當成牆
+    if (b.y < F.y0 && inGoalX(b.x) && goalOpen(1)) { scoreGoal(0, i, b); continue; }   // 上方是 P2 的球門 → P1 得分
+    if (b.y > F.y1 && inGoalX(b.x) && goalOpen(0)) { scoreGoal(1, i, b); continue; }   // 下方是 P1 的球門 → P2 得分
+    {
+      const openTop = inGoalX(b.x) && goalOpen(1);
+      const openBot = inGoalX(b.x) && goalOpen(0);
+      // 沒對到開著的球門，球身就不能穿進牆裡
+      if (!openTop && b.y - PUCK_R <= F.y0 + WALL_TOUCH && (frozen || b.vy < 0)) {
+        b.y = F.y0 + PUCK_R;
+        if (!frozen) { bounceOffWall(b, "y", 1); SFX.hit(Math.abs(b.vy)); }
+      } else if (!openBot && b.y + PUCK_R >= F.y1 - WALL_TOUCH && (frozen || b.vy > 0)) {
+        b.y = F.y1 - PUCK_R;
+        if (!frozen) { bounceOffWall(b, "y", -1); SFX.hit(Math.abs(b.vy)); }
       }
     }
 
@@ -752,6 +871,34 @@ function render() {
     for (const sx of [-1, 1]) {
       ctx.beginPath(); ctx.arc(F.cx + sx * GOAL_HALF, y, POST_R + 1.5, 0, 7); ctx.fill();
     }
+    // 關門放狗：把開口封成柵欄，中間坐一隻狗
+    if (!goalOpen(side)) {
+      const st = state.skills[side][SK_GATE];
+      const gh = Math.min(BAND * 0.5, PUCK_R * 1.5);      // 柵欄往場內的高度
+      const gy = y - dir * gh;                             // 柵欄畫在冰面那一側
+      ctx.save();
+      ctx.globalAlpha = st.left < 0.6 ? st.left / 0.6 : 1; // 快結束時淡出，玩家看得出要開了
+      ctx.fillStyle = "#e6c893";
+      ctx.strokeStyle = "#8a6431";
+      ctx.lineWidth = 3;
+      roundRect(F.cx - GOAL_HALF, Math.min(y, gy), GOAL_HALF * 2, gh, 6);
+      ctx.fill(); ctx.stroke();
+      // 木板紋
+      ctx.lineWidth = 2;
+      for (let k = -3; k <= 3; k++) {
+        const x = F.cx + (GOAL_HALF / 3.6) * k;
+        ctx.beginPath(); ctx.moveTo(x, Math.min(y, gy) + 3); ctx.lineTo(x, Math.min(y, gy) + gh - 3); ctx.stroke();
+      }
+      // 狗（emoji，方向跟著自己那側）
+      ctx.save();
+      ctx.translate(F.cx, Math.min(y, gy) + gh / 2);
+      if (side === 1) ctx.rotate(Math.PI);
+      ctx.font = `${Math.round(gh * 0.86)}px "Apple Color Emoji", sans-serif`;
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("🐕", 0, 0);
+      ctx.restore();
+      ctx.restore();
+    }
     ctx.restore();
   }
 
@@ -772,6 +919,23 @@ function render() {
   }
   ctx.globalAlpha = 1;
 
+  // 吸鐵光環（畫在擋板底下，看起來像吸力場）
+  for (let p = 0; p < 2; p++) {
+    const st = state.skills[p][SK_MAGNET];
+    if (st.left <= 0) continue;
+    const pad = state.pads[p];
+    const def = SKILL_DEFS[SK_MAGNET];
+    const phase = (def.dur - st.left) * 3;
+    for (let k = 0; k < 3; k++) {
+      const t = ((phase + k / 3) % 1);
+      ctx.globalAlpha = (1 - t) * 0.5;
+      ctx.strokeStyle = def.color;
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(pad.x, pad.y, PAD_R + t * PAD_R * 3.2, 0, 7); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
   // 擋板
   for (const pad of state.pads) {
     const spr = padSprite(pad.p);
@@ -791,6 +955,24 @@ function render() {
     ctx.translate(b.x, b.y);
     ctx.rotate(b.rot);
     ctx.drawImage(spr, -size / 2, -size / 2, size, size);
+    ctx.restore();
+  }
+
+  // 鬧鐘：凍結中整片冰面壓上淡藍，並在施放者那側標示
+  if (state.freezeBy >= 0) {
+    ctx.fillStyle = "rgba(150,190,235,.22)";
+    ctx.fillRect(F.x0, F.y0, F.w, F.h);
+    const p = state.freezeBy;
+    ctx.save();
+    ctx.translate(F.cx, p === 0 ? F.y1 - F.h * 0.16 : F.y0 + F.h * 0.16);
+    if (p === 1) ctx.rotate(Math.PI);
+    ctx.globalAlpha = 0.9;
+    ctx.font = `${Math.round(Math.min(40, F.w * 0.06))}px "ChenYuluoyan", sans-serif`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillStyle = "#7c4fd0";
+    ctx.fillText("時間暫停！", 0, 0);
+    ctx.globalAlpha = 1;
+    ctx.textBaseline = "alphabetic";
     ctx.restore();
   }
 
@@ -829,13 +1011,77 @@ function drawScoreboard() {
     ctx.fillText(txt, chipX + 12, 1);
     ctx.restore();
 
-    // 時間（自己那側看得正）
-    const tf = Math.round(Math.min(28, BAND * 0.62));
-    ctx.font = `${tf}px "ChenYuluoyan", sans-serif`;
-    ctx.fillStyle = secs <= 10 ? "#e04a68" : "#8f836c";
-    // 用「秒」而不是 ″：手寫字型沒收錄 U+2033，而且中文字對幼童更好認
-    ctx.fillText(`${secs}秒`, half - Math.max(38, GOAL_HALF * .2), 1);
     ctx.restore();
+  }
+
+  // 時間：改畫在中圈上下（球門外側讓給技能鈕了）。兩份各自朝向一位玩家。
+  const tf = Math.round(Math.min(30, CENTER_R * 0.34));
+  ctx.font = `${tf}px "ChenYuluoyan", sans-serif`;
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  const frozen = state.freezeBy >= 0;
+  for (const p of [0, 1]) {
+    ctx.save();
+    ctx.translate(F.cx, F.cy + (p === 0 ? CENTER_R * 0.55 : -CENTER_R * 0.55));
+    if (p === 1) ctx.rotate(Math.PI);
+    ctx.fillStyle = frozen ? "#7c4fd0" : secs <= 10 ? "#e04a68" : "rgba(120,150,190,.85)";
+    // 用「秒」而不是 ″：手寫字型沒收錄 U+2033，而且中文字對幼童更好認
+    ctx.fillText(frozen ? `${secs}秒 ⏰` : `${secs}秒`, 0, 0);
+    ctx.restore();
+  }
+  ctx.textBaseline = "alphabetic";
+
+  drawSkillButtons();
+}
+
+// 技能鈕：手繪圓章 + 冷卻用扇形遮罩，作用中會發光
+function drawSkillButtons() {
+  for (let p = 0; p < 2; p++) {
+    for (const btn of skillBtns[p]) {
+      const def = SKILL_DEFS[btn.i];
+      const st = state.skills[p][btn.i];
+      const r = btn.r;
+      const ready = st.left === 0 && st.cd === 0;
+      ctx.save();
+      ctx.translate(btn.x, btn.y);
+      if (p === 1) ctx.rotate(Math.PI);
+
+      // 作用中的光環
+      if (st.left > 0) {
+        ctx.strokeStyle = def.color;
+        ctx.globalAlpha = 0.35 + 0.35 * Math.sin(st.left * 12);
+        ctx.lineWidth = 5;
+        ctx.beginPath(); ctx.arc(0, 0, r + 5, 0, 7); ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+      // 底盤
+      ctx.fillStyle = st.left > 0 ? "#fff6db" : ready ? "#fffdf7" : "#efe8d8";
+      ctx.beginPath(); ctx.ellipse(0, 0, r, r * 0.96, 0.08, 0, 7); ctx.fill();
+      ctx.lineWidth = 2.6;
+      ctx.strokeStyle = ready || st.left > 0 ? def.color : "#b3a88f";
+      ctx.beginPath(); ctx.ellipse(0, 0, r - 1.5, r * 0.96 - 1.5, 0.08, 0.3, 6.2); ctx.stroke();
+
+      // 圖示（emoji 交給系統字型畫）
+      ctx.globalAlpha = ready || st.left > 0 ? 1 : 0.4;
+      ctx.font = `${Math.round(r * 1.05)}px "Apple Color Emoji", sans-serif`;
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(def.icon, 0, r * 0.04);
+      ctx.globalAlpha = 1;
+
+      // 冷卻：從 12 點鐘方向掃一圈的半透明遮罩 + 剩餘秒數
+      if (st.cd > 0 && st.left === 0) {
+        const frac = st.cd / def.cd;
+        ctx.fillStyle = "rgba(90,80,60,.42)";
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, r, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#5b5341";
+        ctx.font = `${Math.round(r * 0.82)}px "ChenYuluoyan", sans-serif`;
+        ctx.fillText(String(Math.ceil(st.cd)), 0, r * 0.06);
+      }
+      ctx.textBaseline = "alphabetic";
+      ctx.restore();
+    }
   }
 }
 
@@ -857,6 +1103,10 @@ canvas.addEventListener("pointerdown", (e) => {
   if (state.phase !== "play" && state.phase !== "countdown") return;
   const r = canvas.getBoundingClientRect();
   const x = e.clientX - r.left, y = e.clientY - r.top;
+  // 先看有沒有按到技能鈕（技能鈕在冰面外的 band 區，不會跟擋板搶手指）
+  const hit = hitSkillButton(x, y);
+  if (hit) { if (state.phase === "play") activateSkill(hit.p, hit.i); return; }
+  if (y < F.y0 || y > F.y1) return;   // 點在 band 上不要拉動擋板
   const p = ownerFromY(y);
   const pad = state.pads[p];
   if (pad.pointerId !== null) return;              // 該玩家已有手指在控制，其餘忽略（手掌誤觸）
@@ -902,6 +1152,13 @@ function stepKeyboard(dt) {
   move(state.pads[0], "arrowup", "arrowdown", "arrowleft", "arrowright");
   move(state.pads[1], "w", "s", "a", "d");
 }
+// 桌機測試技能：P1 = , . /  、P2 = 1 2 3
+window.addEventListener("keydown", (e) => {
+  if (e.repeat || state.phase !== "play") return;
+  const map = { ",": [0, 0], ".": [0, 1], "/": [0, 2], "1": [1, 0], "2": [1, 1], "3": [1, 2] };
+  const hit = map[e.key];
+  if (hit) activateSkill(hit[0], hit[1]);
+});
 
 // ---------- 流程 ----------
 function startMatch() {
@@ -919,6 +1176,7 @@ function startMatch() {
   state.time = 0;
   state.spawnTimer = SPAWN_FIRST;
   state.burstIndex = 1;
+  resetSkills();
   state.phase = "countdown";
 
   MUSIC.start();
@@ -993,9 +1251,11 @@ function loop(now) {
   if (!(frame >= 0) || frame > 0.5) frame = 0.016;   // 切到背景再回來時不要爆衝
 
   if (state.phase === "play") {
-    state.time += frame;
+    stepSkills(frame);                 // 技能計時用真實時間，凍結中也要跑完鬧鐘
+    const frozen = state.freezeBy >= 0;
+    if (!frozen) state.time += frame;  // 鬧鐘連比賽計時一起停
     stepKeyboard(frame);
-    stepSpawner(frame);
+    if (!frozen) stepSpawner(frame);
     acc += frame;
     let steps = 0;
     while (acc >= FIXED_DT && steps < MAX_STEPS) { stepPhysics(FIXED_DT); acc -= FIXED_DT; steps++; }

@@ -54,7 +54,9 @@ def wanted_chars() -> set:
     chars = set("".join(text))
     # emoji 由系統字型負責，不需要收進中文字型
     chars = {c for c in chars if c.strip() and not (0x1F000 <= ord(c) <= 0x1FAFF)
-             and not (0x2600 <= ord(c) <= 0x27BF) and ord(c) not in (0xFE0F, 0x20E3, 0x23F1)}
+             and not (0x2600 <= ord(c) <= 0x27BF)
+             and not (0x23E9 <= ord(c) <= 0x23FA)      # ⏰⏱ 這類時鐘符號也是 emoji
+             and ord(c) not in (0xFE0F, 0x20E3)}
     return chars
 
 
