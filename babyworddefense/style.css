@@ -2,3 +2,23 @@
 
 .rotate-notice{display:none}@media(orientation:landscape) and (max-height:599px){.rotate-notice{position:fixed;inset:0;z-index:100;background:#142639;display:flex;flex-direction:column;justify-content:center;align-items:center}.rotate-notice strong{color:#f7cf7b;font-size:24px}.rotate-notice p{color:#b8ccd6}}
 @media(max-width:360px){.overlay{padding:12px}.panel{padding:18px}.grades{gap:4px}.grades button{font-size:11px}.title-star{right:0}.instructions p{font-size:10px}}
+
+/* Children's arcade palette: colorful game objects, consistent ink and rounded controls. */
+:root{color-scheme:light dark;--panel:#f4fcff;--ink:#203f59;--muted:#456579;--edge:#badfeb;--sky-top:#238bb9;--sky-mid:#6ccdcf;--sky-bottom:#b6e9cc;--monster:#266b80;color:var(--ink);background:#d5eff7}
+body{background:#d5eff7}
+#game{background:#6ccdcf}
+header a,header button{width:44px;height:44px;background:#d9f5ff;color:#24445e;border:2px solid #93cee2;box-shadow:0 3px 0 #267197}
+.brand{color:#f4fcff;text-shadow:0 2px 0 #216287}.brand span{color:#fff1b5}
+.hud{gap:16px}.hud>div{padding:9px 13px;background:#e9faff;border:2px solid #b6e9f4;border-radius:16px;box-shadow:0 4px 0 #2d8caa}.hud small{color:#41677a;font-weight:700}.hud strong{color:#215273}.hud .wave{background:#fff0b3;border-color:#ffda70}.wave strong{color:#7a471d}
+.bomb{background:var(--bomb-fill,#ffe28a);border:3px solid var(--bomb-rim,#fff1bc);color:#233b50;box-shadow:0 5px 0 var(--bomb-shadow,#be8538),0 9px 13px #163d582b;border-radius:17px}.bomb:before{border-color:#fff0bd}.bomb:after{color:#ffe578;text-shadow:0 1px 2px #855431}
+.bottom{background:linear-gradient(transparent,#184e6b 18%)}.city-status{color:#eefbff;font-weight:700}.health-track{height:9px;background:#123d57;border:1px solid #67a5b8}#hint{color:#e0f4fc;font-size:11px}
+.controls button{font-size:14px;border:2px solid #d0f8ff;background:#90e4ed;color:#1d4659;box-shadow:0 4px 0 #247f9b}#skill{background:#ffe079;color:#543d21;border:2px solid #fff1b6;box-shadow:0 4px 0 #bd803c}#skill small{font-weight:700}
+.overlay{background:#19536e55;backdrop-filter:blur(3px)}.panel{background:var(--panel);border:3px solid var(--edge);box-shadow:0 8px 0 #27647f55,0 20px 45px #16475e33;border-radius:26px;color:var(--ink)}
+.eyebrow{color:var(--muted);font-weight:800;letter-spacing:2px}h1{color:var(--ink);text-shadow:0 3px 0 #a5dbeb}h1 em{color:#c34c37;text-shadow:0 3px 0 #ffd49b}.title-star{color:#f7bc40;text-shadow:2px 3px 0 #d47b31}
+.intro,.grade-info,.footnote,.compact p{color:var(--muted)}.field-label{color:var(--ink);font-weight:800}.grades button{height:44px;color:#253e53;border:2px solid #a6d9e8;background:#c7eef6;font-weight:800;box-shadow:0 3px 0 #80b9ce}.grades button:nth-child(2){background:#b7ebd3}.grades button:nth-child(3){background:#ffe5a1}.grades button:nth-child(4){background:#ffc9b7}.grades button:nth-child(5){background:#e5d0f6}.grades button:nth-child(6){background:#c3dcff}.grades button[aria-pressed=true]{background:#ffe079;color:#523a20;border-color:#956021;box-shadow:0 3px 0 #956021;outline:2px solid #ffe079;outline-offset:2px}
+.instructions{border-color:var(--edge)}.instructions p{color:var(--ink)}.instructions b{display:inline-grid;place-items:center;width:22px;height:22px;background:#b7ebd3;color:#235044;border-radius:7px}.instructions p:nth-child(2) b{background:#ffc9b7;color:#743a2c}.instructions p:nth-child(3) b{background:#ffe5a1;color:#664617}
+.primary{background:#ffc09e;color:#5c2d22;border:2px solid #ffd9b9;box-shadow:0 5px 0 #c56c48}.secondary{background:#c7eef6;color:#26495b;border:2px solid #a6d9e8}.compact h2{color:var(--ink)}
+button:not(.bomb):not(:disabled):active{transform:translateY(3px);box-shadow:none}button:focus-visible,a:focus-visible{outline:3px solid #da4a36;outline-offset:4px}button:disabled{opacity:.65}
+#announcement{color:#fff2ae;text-shadow:0 2px 0 #763f26,2px 0 0 #763f26,-2px 0 0 #763f26,0 -2px 0 #763f26}
+@media(min-width:700px){body{background:radial-gradient(ellipse at center,#b2e8ec,#dceef9 75%)}#game{border-color:#80bdcd}}
+@media(prefers-color-scheme:dark){:root{--panel:#203e58;--ink:#edfaff;--muted:#c1dce8;--edge:#4a7993;--sky-top:#20518d;--sky-mid:#338d9f;--sky-bottom:#69b5ae;--monster:#204960;background:#102c43}body{background:#102c43}.overlay{background:#15364f66}h1{text-shadow:0 3px 0 #112f44}h1 em{color:#ffbd91;text-shadow:0 3px 0 #833f32}.panel{box-shadow:0 8px 0 #112a3d77,0 20px 45px #112a3d44}}
