@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101c2d"><title>怪獸單字防衛隊 · Word Defense</title>
+<link rel="manifest" href="manifest.json"><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="game">
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <header><a href="../index.html" aria-label="回遊戲選單">‹</a><div class="brand">WORD<span>DEFENSE</span></div><button id="pause" aria-label="暫停遊戲" disabled>Ⅱ</button></header>
+  <section class="hud"><div><small>防衛積分</small><strong id="score">0000</strong></div><div class="wave"><small id="gradeLabel">小一 · 入門</small><strong id="wave">WAVE 01</strong></div></section>
+  <div id="announcement" role="status"></div>
+  <div id="bombs"></div>
+  <section class="bottom"><div class="city-status"><span>城市防護</span><div class="health-track"><div id="health"></div></div><b id="hp">100%</b></div><div class="controls"><button id="listen" disabled><span>◖))</span> 再聽一次</button><button id="skill" disabled><span>ϟ</span><div>閃電連鎖<small id="cooldown">準備就緒</small></div></button></div><p id="hint">戴上耳機，準備守護這座城市。</p></section>
+  <section id="overlay" class="overlay"><div class="panel">
+    <div class="eyebrow">聽見單字，守住城市</div><h1>怪獸單字<br><em>防衛隊</em><span class="title-star">✦</span></h1><p class="intro">怪獸來襲！仔細聽英文廣播，<br>點擊正確的單字炸彈。</p>
+    <label class="field-label">選擇你的年級</label><div id="grades" class="grades" role="group" aria-label="選擇年級"></div><p id="gradeInfo" class="grade-info"></p>
+    <div class="instructions"><p><b>01</b> 聽廣播，點擊同字炸彈得分</p><p><b>02</b> 漏接會炸傷城市，點錯會扣分</p><p><b>03</b> 按閃電，連鎖消除所有正確炸彈</p></div>
+    <button id="start" class="primary">開始守護 <span>→</span></button><p class="footnote" id="audioNote">請開啟音量 · 小一至小六英文聽力練習</p>
+  </div></section>
+  <section id="dialog" class="overlay" hidden><div class="panel compact"><div class="eyebrow" id="resultLabel">MISSION PAUSED</div><h2 id="dialogTitle">休息一下</h2><p id="result"></p><button id="resume" class="primary">繼續守護 →</button><button id="restart" class="secondary">重新挑戰</button><button id="choose" class="secondary">選擇年級</button></div></section>
+</main>
+<div class="rotate-notice"><strong>請將螢幕轉為直式</strong><p>防衛隊需要完整的天空！</p></div>
+<script src="game.js"></script>
+</body></html>
