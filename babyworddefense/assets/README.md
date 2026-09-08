@@ -1,6 +1,6 @@
 # 人物怪獸
 
-monster-girl.png 與 monster-boy.png 為內建 image_gen 編輯工具依使用者提供的兩張蠟筆插圖製作的透明 PNG。原圖保留於 stuff。
+monster-girl.png、monster-boy.png 與 monster-zhi.png 為內建 image_gen 編輯工具依使用者提供的蠟筆插圖製作的透明 PNG。原圖保留於 stuff。
 
 最終提示詞摘要：僅保留人物，移除背景、機車、書包及背帶；保留髮型、臉部表情、服裝與蠟筆筆觸，補繪被遮擋的軀幹和手部，輸出真正透明背景角色。
 
