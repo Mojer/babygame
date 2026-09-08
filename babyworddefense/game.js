@@ -49,7 +49,39 @@ function start(){cancelSpeech();clearBombs();effects=[];fragments=[];score=0;hp=
  if(window.innerWidth<700&&document.documentElement.requestFullscreen){document.documentElement.requestFullscreen().then(()=>{if(screen.orientation&&screen.orientation.lock)return screen.orientation.lock('portrait');}).catch(()=>{});}
 }
 function roar(){roarUntil=elapsed+1.1;sound('roar');announce(wave===1?'怪獸來了，準備聆聽！':'怪獸狂暴！密集轟炸',2);}
-function spawn(){const pool=vocabulary[grade];const words=[];while(words.length<3){const word=pool[Math.floor(Math.random()*pool.length)];if(!words.includes(word))words.push(word);}const burst=wave>1;const count=burst?Math.min(12,5+wave):3;for(let i=0;i<count;i++){const word=words[i%3], w=Math.min(width-20,Math.max(72,word.length*9+22));const lane=i%3;const x=Math.min(width-w-8,Math.max(8,(width/3)*lane+(width/3-w)/2+(burst?(Math.random()-.5)*14:0)));const el=document.createElement('button');el.className='bomb';const candy=candyColors[Math.floor(Math.random()*candyColors.length)];['--bomb-fill','--bomb-rim','--bomb-shadow'].forEach((key,j)=>el.style.setProperty(key,candy[j]));el.textContent=word;el.style.width=w+'px';el.style.fontSize=(word.length>12?14:word.length>8?16:20)+'px';el.setAttribute('aria-label','炸彈 '+word);const b={id:++serial,word,x,y:145-Math.floor(i/3)*58,w,el,speed:(height-340)/(14-grade*.75)*Math.min(1.9,1+(wave-1)*.1)};el.onclick=()=>hit(b);$('bombs').append(el);bombs.push(b);}pickTarget();}
+function fitBombToWord(el,word){
+ let fontSize=word.length>12?14:word.length>8?16:20;
+ const maxWidth=width-16;
+ el.style.fontSize=fontSize+'px';
+ el.style.width='max-content';
+ $('bombs').append(el);
+ while(el.scrollWidth+6>maxWidth&&fontSize>11){
+  fontSize--;
+  el.style.fontSize=fontSize+'px';
+ }
+ const fittedWidth=Math.min(maxWidth,Math.max(72,Math.ceil(el.scrollWidth+6)));
+ el.style.width=fittedWidth+'px';
+ return fittedWidth;
+}
+function spawn(){
+ const pool=vocabulary[grade],words=[];
+ while(words.length<3){const word=pool[Math.floor(Math.random()*pool.length)];if(!words.includes(word))words.push(word);}
+ const burst=wave>1,count=burst?Math.min(12,5+wave):3;
+ for(let i=0;i<count;i++){
+  const word=words[i%3],lane=i%3,el=document.createElement('button');
+  el.className='bomb';
+  const candy=candyColors[Math.floor(Math.random()*candyColors.length)];
+  ['--bomb-fill','--bomb-rim','--bomb-shadow'].forEach((key,j)=>el.style.setProperty(key,candy[j]));
+  el.textContent=word;
+  el.setAttribute('aria-label','炸彈 '+word);
+  const w=fitBombToWord(el,word);
+  const x=Math.min(width-w-8,Math.max(8,(width/3)*lane+(width/3-w)/2+(burst?(Math.random()-.5)*14:0)));
+  const b={id:++serial,word,x,y:145-Math.floor(i/3)*58,w,el,speed:(height-340)/(14-grade*.75)*Math.min(1.9,1+(wave-1)*.1)};
+  el.onclick=()=>hit(b);
+  bombs.push(b);
+ }
+ pickTarget();
+}
 function pickTarget(){const visible=bombs.filter(b=>b.y>=130);if(!visible.length){target='';return;}const choices=[...new Set(visible.map(b=>b.word))];const other=choices.filter(w=>w!==target);target=(other.length?other:choices)[Math.floor(Math.random()*(other.length||choices.length))];speak();}
 function remove(b){b.el.remove();bombs=bombs.filter(x=>x!==b);}
 function particle(x,y,color,label=''){effects.push({x,y,color,label,life:.65});}
