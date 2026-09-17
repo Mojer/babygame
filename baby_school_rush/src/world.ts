@@ -1,0 +1,9 @@
+import { DURATION, PLAYER_X, SPEED } from './model';
+export const FOREGROUND_BASE = 264;
+export const FRONT_WIDTH = 800;
+export const SCHOOL_WIDTH = 704;
+export const SCHOOL_START = PLAYER_X + DURATION * SPEED - SCHOOL_WIDTH / 2;
+export const cameraDistance = (elapsed: number) => elapsed * SPEED;
+export const screenX = (worldX: number, elapsed: number) => worldX - cameraDistance(elapsed);
+export const obstacleWorldX = (at: number) => PLAYER_X + at * SPEED;
+export const landscapeAllowed = (width: number, height: number) => width > height;

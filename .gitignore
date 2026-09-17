@@ -1,4 +1,5 @@
 .claude/
 .DS_Store
+.pnpm-store/
 # 角色原始大圖（1254px，約 10MB）不進 repo，遊戲使用 *_s.png 縮小版
 babyballrace2/assets/ch_0?.png
