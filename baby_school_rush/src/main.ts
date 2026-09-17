@@ -186,7 +186,7 @@ class SchoolScene extends Phaser.Scene {
   inspectMode = '';
 
   preload() {
-    for (const key of ['street', 'park', 'run', 'poses', 'props', 'slide-key', 'front-key', 'school-key']) this.load.image(key, `assets/${key}.png`);
+    for (const key of ['street', 'park', 'fuji-far-v1', 'run', 'poses', 'props', 'slide-key', 'front-key', 'school-key']) this.load.image(key, `assets/${key}.png`);
     this.load.on('loaderror', () => { this.failed = true; });
   }
 
@@ -204,11 +204,19 @@ class SchoolScene extends Phaser.Scene {
     keyedTexture(this, 'slide-key', 'slide');
     keyedTexture(this, 'front-key', 'front');
     keyedTexture(this, 'school-key', 'school-front');
-    this.textures.get('park').add('far', 0, 0, 0, 1672, 510);
+    this.textures.get('fuji-far-v1').add('far', 0, 0, 0, 1672, 944);
     this.textures.get('street').add('ground', 0, 0, 684, 1672, 257);
+    const puddleTexture = this.add.graphics();
+    puddleTexture.fillStyle(0x4eafe3, .9); puddleTexture.fillEllipse(36, 15, 70, 24);
+    puddleTexture.lineStyle(3, 0xb9ecff, .95); puddleTexture.strokeEllipse(36, 15, 60, 17);
+    puddleTexture.fillStyle(0xe4f9ff, .9); puddleTexture.fillEllipse(27, 10, 18, 5); puddleTexture.generateTexture('puddle', 72, 30); puddleTexture.destroy();
+    const ballTexture = this.add.graphics();
+    ballTexture.fillStyle(0xf25c66); ballTexture.fillCircle(18, 18, 16);
+    ballTexture.lineStyle(3, 0xffd5a0); ballTexture.strokeCircle(18, 18, 14);
+    ballTexture.lineStyle(2, 0x5c7ed7); ballTexture.lineBetween(5, 10, 30, 27); ballTexture.generateTexture('ball', 36, 36); ballTexture.destroy();
     this.extensions = this.add.graphics().setDepth(-20);
     for (let i = 0; i < 8; i++) {
-      this.far.push(this.add.image(0, 240, 'park', 'far').setOrigin(0, 1).setDisplaySize(900, 275).setDepth(-15));
+      this.far.push(this.add.image(0, 246, 'fuji-far-v1', 'far').setOrigin(0, 1).setDisplaySize(900, 310).setDepth(-15));
       const fg = this.add.image(0, FOREGROUND_BASE, 'front', 'trim').setOrigin(0, 1).setDepth(-5);
       fg.setScale(FRONT_WIDTH / fg.frame.width); this.fronts.push(fg);
       this.grounds.push(this.add.image(0, FOREGROUND_BASE, 'street', 'ground').setOrigin(0).setDisplaySize(640, 98.37).setDepth(-3));
@@ -220,7 +228,7 @@ class SchoolScene extends Phaser.Scene {
       tail.setScale(FRONT_WIDTH / tail.frame.width); this.tails.push(tail);
     }
     this.distantSchool = this.add.image(0, 200, 'school-front', 'trim').setOrigin(.5, 1).setScale(.13).setDepth(-14);
-    this.obstacles = run.obstacles.map(o => this.add.image(0, GROUND, 'props', o.kind).setOrigin(.5, 1));
+    this.obstacles = run.obstacles.map(o => this.add.image(0, GROUND, o.kind === 'puddle' || o.kind === 'ball' ? o.kind : 'props', o.kind === 'puddle' || o.kind === 'ball' ? undefined : o.kind).setOrigin(.5, 1));
     this.stars = this.add.graphics();
     this.girl = this.add.image(PLAYER_X, GROUND, 'run', 'r0').setOrigin(.5, 1).setDepth(2);
     this.layout();
@@ -308,8 +316,10 @@ class SchoolScene extends Phaser.Scene {
     this.girl.setAlpha(run.invincible > 0 && Math.floor(run.elapsed * 12) % 2 === 0 ? .35 : 1);
     run.obstacles.forEach((obstacle, i) => {
       const sprite = this.obstacles[i], x = screenX(obstacleWorldX(obstacle.at), run.elapsed);
-      sprite.setPosition(x, obstacle.kind === 'branch' ? GROUND - 52 : GROUND);
-      sprite.setDisplaySize(obstacle.kind === 'branch' ? 61 : 35, obstacle.kind === 'branch' ? 44 : 33);
+      const isBranch = obstacle.kind === 'branch';
+      sprite.setPosition(x, isBranch ? GROUND - 44 : GROUND);
+      const size = obstacle.kind === 'puddle' ? [54, 20] : obstacle.kind === 'ball' ? [31, 31] : isBranch ? [76, 56] : [35, 33];
+      sprite.setDisplaySize(size[0], size[1]).setRotation(obstacle.kind === 'ball' ? run.elapsed * 7 : 0);
       sprite.setVisible(x > -60 && x < this.view.worldWidth + 60).setAlpha(obstacle.hit ? .45 : 1);
     });
     this.stars.clear(); this.stars.fillStyle(0xffd36f); this.stars.lineStyle(1, 0x946f36);
@@ -324,8 +334,8 @@ class SchoolScene extends Phaser.Scene {
       this.stars.fillPoints(points, true); this.stars.strokePoints(points, true);
     }
     const sequence = activeSequence(run.elapsed);
-    const upcoming = run.obstacles.find(o => o.at > run.elapsed && o.at - run.elapsed < 2.1);
-    const message = mode === 'play' || this.inspectMode === 'rhythm' ? (run.elapsed > 61 ? '到學校了，再往前一點！' : sequence ? `${sequence.label}　${sequence.steps}` : upcoming ? (upcoming.kind === 'branch' ? '↓ 按住蹲下，穿過樹枝' : '↑ 跳起來！') : '') : '';
+    const upcoming = run.obstacles.find(o => o.at > run.elapsed && o.at - run.elapsed < 2.8);
+    const message = mode === 'play' || this.inspectMode === 'rhythm' ? (run.elapsed > 61 ? '到學校了，再往前一點！' : sequence ? `${sequence.label}　${sequence.steps}` : upcoming ? (upcoming.kind === 'branch' ? '低樹枝來了！↓ 按住蹲下' : upcoming.kind === 'puddle' ? '積水！↑ 跳過去' : upcoming.kind === 'ball' ? '滾球！↑ 跳起來' : '↑ 跳起來！') : '') : '';
     el('hint').textContent = message; el('hint').hidden = !message;
     el('hearts').textContent = run.practice ? '練習 ♥' : '♥ '.repeat(run.health) + '♡ '.repeat(3 - run.health);
     el('stars').textContent = '★ ' + run.collected;
