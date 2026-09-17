@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { cameraDistance, screenX, obstacleWorldX, SCHOOL_START, SCHOOL_WIDTH, landscapeAllowed } from '../src/world.ts';
+import { cameraDistance, screenX, obstacleWorldX, SCHOOL_START, SCHOOL_WIDTH, foregroundVariant, landscapeAllowed } from '../src/world.ts';
 import { PLAYER_X, DURATION } from '../src/model.ts';
 
 test('obstacle stays fixed relative to its ground location across camera movement', () => {
@@ -15,4 +15,10 @@ test('portrait is blocked and landscape is playable', () => {
   assert.equal(landscapeAllowed(390, 844), false);
   assert.equal(landscapeAllowed(844, 390), true);
   assert.equal(landscapeAllowed(1280, 720), true);
+});
+test('foreground art is stable for a world tile when recycled screen slots change', () => {
+  const tile = 5;
+  assert.equal(foregroundVariant(tile), 2);
+  assert.equal(foregroundVariant(tile), foregroundVariant(2 + 3));
+  assert.notEqual(foregroundVariant(tile), foregroundVariant(tile + 1));
 });

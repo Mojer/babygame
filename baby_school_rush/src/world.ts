@@ -6,4 +6,5 @@ export const SCHOOL_START = PLAYER_X + DURATION * SPEED - SCHOOL_WIDTH / 2;
 export const cameraDistance = (elapsed: number) => elapsed * SPEED;
 export const screenX = (worldX: number, elapsed: number) => worldX - cameraDistance(elapsed);
 export const obstacleWorldX = (at: number) => PLAYER_X + at * SPEED;
+export const foregroundVariant = (worldIndex: number, variantCount = 3) => ((worldIndex % variantCount) + variantCount) % variantCount;
 export const landscapeAllowed = (width: number, height: number) => width > height;

@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { Run, GROUND, PLAYER_X, SPEED, DURATION, activeSequence } from './model';
 import { worldLayout } from './layout';
-import { FOREGROUND_BASE, FRONT_WIDTH, SCHOOL_WIDTH, SCHOOL_START, screenX, obstacleWorldX, cameraDistance, landscapeAllowed } from './world';
+import { FOREGROUND_BASE, FRONT_WIDTH, SCHOOL_WIDTH, SCHOOL_START, screenX, obstacleWorldX, cameraDistance, foregroundVariant, landscapeAllowed } from './world';
 import './style.css';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
@@ -195,6 +195,7 @@ class SchoolScene extends Phaser.Scene {
   obstacles: Phaser.GameObjects.Image[] = [];
   stars!: Phaser.GameObjects.Graphics;
   extensions!: Phaser.GameObjects.Graphics;
+  frontKeys = ['front', 'front-residential', 'front-shops'];
   view = worldLayout(640, 360);
   failed = false;
   inspectMode = '';
@@ -229,10 +230,9 @@ class SchoolScene extends Phaser.Scene {
     this.textures.get('fuji-far-v1').add('far', 0, 0, 0, 1672, 944);
     this.textures.get('street').add('ground', 0, 0, 684, 1672, 257);
     this.extensions = this.add.graphics().setDepth(-20);
-    const frontKeys = ['front', 'front-residential', 'front-shops'];
     for (let i = 0; i < 8; i++) {
       this.far.push(this.add.image(0, 246, 'fuji-far-v1', 'far').setOrigin(0, 1).setDisplaySize(900, 310).setDepth(-15));
-      const key = frontKeys[i % frontKeys.length];
+      const key = this.frontKeys[i % this.frontKeys.length];
       const fg = this.add.image(0, FOREGROUND_BASE, key, 'trim').setOrigin(0, 1).setDepth(-5);
       fg.setScale(FRONT_WIDTH / fg.frame.width); this.fronts.push(fg);
       this.grounds.push(this.add.image(0, FOREGROUND_BASE, 'street', 'ground').setOrigin(0).setDisplaySize(640, 98.37).setDepth(-3));
@@ -240,7 +240,7 @@ class SchoolScene extends Phaser.Scene {
     this.school = this.add.image(0, FOREGROUND_BASE, 'school-front', 'trim').setOrigin(0, 1).setDepth(-4);
     this.school.setScale(SCHOOL_WIDTH / this.school.frame.width);
     for (let i = 0; i < 5; i++) {
-      const key = frontKeys[(i + 1) % frontKeys.length];
+      const key = this.frontKeys[(i + 1) % this.frontKeys.length];
       const tail = this.add.image(0, FOREGROUND_BASE, key, 'trim').setOrigin(0, 1).setDepth(-5);
       tail.setScale(FRONT_WIDTH / tail.frame.width); this.tails.push(tail);
     }
@@ -283,9 +283,12 @@ class SchoolScene extends Phaser.Scene {
     for (let i = 0; i < this.fronts.length; i++) {
       const farIndex = farFirst + i;
       this.far[i].setX(farIndex * 900 - farDistance).setFlipX(farIndex % 2 !== 0);
-      const worldX = (first + i) * FRONT_WIDTH;
+      const worldIndex = first + i;
+      const worldX = worldIndex * FRONT_WIDTH;
       const available = Math.min(FRONT_WIDTH, SCHOOL_START - worldX);
       const fg = this.fronts[i];
+      const frontKey = this.frontKeys[foregroundVariant(worldIndex, this.frontKeys.length)];
+      if (fg.texture.key !== frontKey) fg.setTexture(frontKey, 'trim').setScale(FRONT_WIDTH / fg.frame.width);
       fg.setX(screenX(worldX, run.elapsed)).setVisible(available > 0);
       fg.setCrop(0, 0, Math.max(0, available / fg.scaleX), fg.frame.height);
       // Road and every obstacle share exactly the same camera transform.
