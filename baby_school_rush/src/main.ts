@@ -42,7 +42,10 @@ const el = (id: string) => document.getElementById(id)!;
 const frame = document.querySelector<HTMLElement>('.game-frame')!;
 type Mode = 'menu' | 'countdown' | 'play' | 'pause' | 'result';
 let run = new Run(), mode: Mode = 'menu', count = 3, accumulator = 0;
-let muted = false, audio: AudioContext | undefined;
+let muted = false, soundContext: AudioContext | undefined;
+const music = document.createElement('audio');
+music.src = '/assets/audio/Sparkling%20Adventure.mp3'; music.loop = true;
+music.volume = .24; music.preload = 'auto'; music.hidden = true; frame.append(music);
 const duckKeys = new Set<string>();
 const portrait = matchMedia('(orientation: portrait)');
 const isPortrait = () => !landscapeAllowed(frame.clientWidth, frame.clientHeight);
@@ -50,16 +53,20 @@ function setMode(value: Mode) {
   mode = value; frame.dataset.mode = value;
   if (value !== 'result') delete frame.dataset.result;
 }
+function playMusic() {
+  music.muted = muted;
+  if (!muted) void music.play().catch(() => { /* A later user gesture can start playback. */ });
+}
 function tone(freq: number) {
   if (muted) return;
   try {
-    audio ??= new AudioContext(); void audio.resume();
-    const oscillator = audio.createOscillator(), gain = audio.createGain();
+    soundContext ??= new AudioContext(); void soundContext.resume();
+    const oscillator = soundContext.createOscillator(), gain = soundContext.createGain();
     oscillator.frequency.value = freq;
-    gain.gain.setValueAtTime(.05, audio.currentTime);
-    gain.gain.exponentialRampToValueAtTime(.001, audio.currentTime + .15);
-    oscillator.connect(gain); gain.connect(audio.destination);
-    oscillator.start(); oscillator.stop(audio.currentTime + .16);
+    gain.gain.setValueAtTime(.05, soundContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.001, soundContext.currentTime + .15);
+    oscillator.connect(gain); gain.connect(soundContext.destination);
+    oscillator.start(); oscillator.stop(soundContext.currentTime + .16);
   } catch { /* Audio is optional; gameplay stays available. */ }
 }
 function best() {
@@ -75,6 +82,7 @@ function clearInput() {
 }
 function countdown() {
   if (isPortrait()) return;
+  playMusic();
   setMode('countdown'); count = 3; accumulator = 0; clearInput();
   el('overlay').hidden = false;
   el('overlay').innerHTML = '<div class="count" aria-label="倒數三秒">3</div>';
@@ -82,6 +90,7 @@ function countdown() {
 function start(practice = false) { if (isPortrait()) return; run = new Run(practice); countdown(); tone(520); }
 function pause() {
   if (mode !== 'play' && mode !== 'countdown') return;
+  music.pause();
   setMode('pause'); clearInput(); el('overlay').hidden = false;
   el('overlay').innerHTML = `<section class="panel" aria-label="遊戲已暫停"><div class="route-tag">休息一下</div><h2>等你一起出發</h2><p>上學路會在這裡等你。</p><button class="primary" id="resume">繼續冒險</button><button class="secondary" id="restart">重新開始</button></section>`;
   el('resume').onclick = countdown;
@@ -110,6 +119,8 @@ function jump() { if (mode === 'play') { run.jump(); tone(580); } }
 el('pause').onclick = () => mode === 'pause' ? countdown() : pause();
 el('sound').onclick = () => {
   muted = !muted; el('sound').textContent = muted ? '♪' : '♫';
+  music.muted = muted;
+  if (muted) music.pause(); else if (mode !== 'menu' && mode !== 'pause') playMusic();
   el('sound').setAttribute('aria-pressed', String(muted));
   el('sound').setAttribute('aria-label', muted ? '開啟音效' : '關閉音效');
 };
@@ -143,8 +154,8 @@ for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) {
   });
 }
 portrait.addEventListener('change', () => { clearInput(); if (isPortrait()) pause(); });
-window.addEventListener('blur', pause);
-document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+window.addEventListener('blur', () => { music.pause(); pause(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { music.pause(); pause(); } });
 
 /** Trim only transparent frame padding at load time; source images remain untouched. */
 function addFrame(scene: Phaser.Scene, key: string, name: string, x: number, y: number, width: number, height: number) {
@@ -196,7 +207,6 @@ function checkerKeyedTexture(scene: Phaser.Scene, sourceKey: string, targetKey: 
 class SchoolScene extends Phaser.Scene {
   fronts: Phaser.GameObjects.Image[] = [];
   mountain!: Phaser.GameObjects.Image;
-  lake!: Phaser.GameObjects.TileSprite;
   farTrees: Phaser.GameObjects.Image[] = [];
   rooftops: Phaser.GameObjects.Image[] = [];
   tails: Phaser.GameObjects.Image[] = [];
@@ -207,14 +217,14 @@ class SchoolScene extends Phaser.Scene {
   stars!: Phaser.GameObjects.Graphics;
   extensions!: Phaser.GameObjects.Graphics;
   schoolBackdrop!: Phaser.GameObjects.Graphics;
-  vistaRail!: Phaser.GameObjects.Graphics;
   frontKeys = ['front', 'front-residential', 'front-shops'];
   view = worldLayout(640, 360);
   failed = false;
   inspectMode = '';
 
   preload() {
-    for (const key of ['street', 'park', 'fuji-far-v1', 'mid-trees-v1', 'mid-rooftops-v1', 'run', 'poses', 'props', 'obstacles-v2', 'slide-key', 'front-key', 'front-residential-v2', 'front-shops-v2', 'school-key']) this.load.image(key, `assets/${key}.png`);
+    this.load.image('run', 'assets/run-v2.png');
+    for (const key of ['street', 'park', 'fuji-far-v1', 'mid-trees-v1', 'mid-rooftops-v1', 'poses', 'props', 'obstacles-v2', 'slide-key', 'front-key', 'front-residential-v2', 'front-shops-v2', 'school-key']) this.load.image(key, `assets/${key}.png`);
     this.load.on('loaderror', () => { this.failed = true; });
   }
 
@@ -240,17 +250,13 @@ class SchoolScene extends Phaser.Scene {
       ['box', 0, 512], ['ball', 512, 512], ['branch', 1024, 512]
     ];
     for (const [name, x, y] of obstacleFrames) addFrame(this, 'obstacles', name, x, y, 512, 512);
-    // The mountain is a single landmark; the calm lake is a separate subtle band.
+    // The mountain stays a single landmark instead of repeating with the other layers.
     this.textures.get('fuji-far-v1').add('far', 0, 0, 0, 1672, 660);
-    this.textures.get('fuji-far-v1').add('lake', 0, 0, 650, 1672, 140);
     addFrame(this, 'mid-trees-v1', 'strip', 0, 0, 2172, 724);
     addFrame(this, 'mid-rooftops-v1', 'strip', 0, 0, 2172, 724);
     this.textures.get('street').add('ground', 0, 0, 684, 1672, 257);
     this.extensions = this.add.graphics().setDepth(-20);
-    this.vistaRail = this.add.graphics().setDepth(-4.7);
     this.mountain = this.add.image(0, 242, 'fuji-far-v1', 'far').setOrigin(0, 1).setDisplaySize(1100, 276).setDepth(-18);
-    // Water sits in front of the distant shore but behind all playable foreground art.
-    this.lake = this.add.tileSprite(0, 203, 640, 42, 'fuji-far-v1', 'lake').setOrigin(0).setDepth(-8).setAlpha(.78);
     for (let i = 0; i < 8; i++) {
       const trees = this.add.image(0, 258, 'mid-trees-v1', 'strip').setOrigin(0, 1).setDepth(-14);
       trees.setScale(820 / trees.frame.width); this.farTrees.push(trees);
@@ -294,14 +300,12 @@ class SchoolScene extends Phaser.Scene {
     this.view = worldLayout(this.scale.width, this.scale.height);
     const { zoom, worldWidth, worldHeight, top } = this.view;
     this.cameras.main.setZoom(zoom).centerOn(worldWidth / 2, top + worldHeight / 2);
-    if (this.lake) this.lake.setSize(worldWidth + 4, 42);
   }
 
   drawEnvironment() {
     const { worldWidth, worldHeight, top } = this.view;
     const distance = cameraDistance(run.elapsed), g = this.extensions;
     g.clear(); g.fillStyle(0x86c4ef); g.fillRect(0, top - 5, worldWidth, worldHeight + 10);
-    this.vistaRail.clear();
     g.fillStyle(0x777983); g.fillRect(0, FOREGROUND_BASE, worldWidth, Math.max(100, top + worldHeight - FOREGROUND_BASE));
     const mountainDistance = distance * .06;
     const treeDistance = distance * .12;
@@ -311,7 +315,6 @@ class SchoolScene extends Phaser.Scene {
     const first = Math.floor(distance / FRONT_WIDTH);
     const groundFirst = Math.floor(distance / 640);
     this.mountain.setX(worldWidth * .32 - mountainDistance * .45);
-    this.lake.setTilePosition(distance * .08, 0);
     for (let i = 0; i < this.fronts.length; i++) {
       const treeIndex = treeFirst + i;
       const roofIndex = roofFirst + i;
@@ -320,23 +323,12 @@ class SchoolScene extends Phaser.Scene {
       const worldIndex = first + i;
       const worldX = worldIndex * FRONT_WIDTH;
       const available = Math.min(FRONT_WIDTH, SCHOOL_START - worldX);
-      const lakeVista = foregroundVariant(worldIndex, 7) === 3;
       const fg = this.fronts[i];
       const frontKey = this.frontKeys[foregroundVariant(worldIndex, this.frontKeys.length)];
       if (fg.texture.key !== frontKey) fg.setTexture(frontKey, 'trim').setScale(FRONT_WIDTH / fg.frame.width);
       const frontX = screenX(worldX, run.elapsed);
-      fg.setX(frontX).setVisible(available > 0 && !lakeVista);
+      fg.setX(frontX).setVisible(available > 0);
       fg.setCrop(0, 0, Math.max(0, available / fg.scaleX), fg.frame.height);
-      if (lakeVista && available > 0) {
-        const railWidth = Math.max(0, Math.min(available, worldWidth - frontX));
-        this.vistaRail.fillStyle(0xc9bea8); this.vistaRail.fillRect(frontX, FOREGROUND_BASE - 8, railWidth, 8);
-        this.vistaRail.fillStyle(0x8c887d); this.vistaRail.fillRect(frontX, FOREGROUND_BASE - 2, railWidth, 2);
-        this.vistaRail.lineStyle(4, 0xe8e2ca); this.vistaRail.lineBetween(frontX, FOREGROUND_BASE - 43, frontX + railWidth, FOREGROUND_BASE - 43);
-        this.vistaRail.lineStyle(3, 0x66806f); this.vistaRail.lineBetween(frontX, FOREGROUND_BASE - 28, frontX + railWidth, FOREGROUND_BASE - 28);
-        for (let postX = frontX + 16; postX < frontX + railWidth; postX += 74) {
-          this.vistaRail.fillStyle(0xe4ddc7); this.vistaRail.fillRect(postX, FOREGROUND_BASE - 47, 7, 47);
-        }
-      }
       // Road and every obstacle share exactly the same camera transform.
       const groundIndex = groundFirst + i;
       this.grounds[i].setX(screenX(groundIndex * 640, run.elapsed)).setFlipX(groundIndex % 2 !== 0);
