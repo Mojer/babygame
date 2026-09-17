@@ -170,6 +170,20 @@ function keyedTexture(scene: Phaser.Scene, sourceKey: string, targetKey: string)
   addFrame(scene, targetKey, 'trim', 0, 0, source.width, source.height);
 }
 
+/** Remove the neutral checkerboard from generated sprite sheets without touching bright whites or dark outlines. */
+function checkerKeyedTexture(scene: Phaser.Scene, sourceKey: string, targetKey: string) {
+  const source = scene.textures.get(sourceKey).getSourceImage() as HTMLImageElement;
+  const texture = scene.textures.createCanvas(targetKey, source.width, source.height)!;
+  const ctx = texture.getContext(); ctx.drawImage(source, 0, 0);
+  const data = ctx.getImageData(0, 0, source.width, source.height);
+  for (let i = 0; i < data.data.length; i += 4) {
+    const r = data.data[i], g = data.data[i + 1], b = data.data[i + 2];
+    const spread = Math.max(r, g, b) - Math.min(r, g, b), light = (r + g + b) / 3;
+    if (spread < 13 && light > 105 && light < 225) data.data[i + 3] = 0;
+  }
+  ctx.putImageData(data, 0, 0); texture.refresh();
+}
+
 class SchoolScene extends Phaser.Scene {
   fronts: Phaser.GameObjects.Image[] = [];
   far: Phaser.GameObjects.Image[] = [];
@@ -186,7 +200,7 @@ class SchoolScene extends Phaser.Scene {
   inspectMode = '';
 
   preload() {
-    for (const key of ['street', 'park', 'fuji-far-v1', 'run', 'poses', 'props', 'slide-key', 'front-key', 'school-key']) this.load.image(key, `assets/${key}.png`);
+    for (const key of ['street', 'park', 'fuji-far-v1', 'run', 'poses', 'props', 'obstacles-v2', 'slide-key', 'front-key', 'front-residential-v2', 'front-shops-v2', 'school-key']) this.load.image(key, `assets/${key}.png`);
     this.load.on('loaderror', () => { this.failed = true; });
   }
 
@@ -203,32 +217,35 @@ class SchoolScene extends Phaser.Scene {
     addFrame(this, 'props', 'branch', 480, 686, 150, 153);
     keyedTexture(this, 'slide-key', 'slide');
     keyedTexture(this, 'front-key', 'front');
+    keyedTexture(this, 'front-residential-v2', 'front-residential');
+    keyedTexture(this, 'front-shops-v2', 'front-shops');
     keyedTexture(this, 'school-key', 'school-front');
+    checkerKeyedTexture(this, 'obstacles-v2', 'obstacles');
+    const obstacleFrames: [string, number, number][] = [
+      ['pot', 0, 0], ['cone', 512, 0], ['puddle', 1024, 0],
+      ['box', 0, 512], ['ball', 512, 512], ['branch', 1024, 512]
+    ];
+    for (const [name, x, y] of obstacleFrames) addFrame(this, 'obstacles', name, x, y, 512, 512);
     this.textures.get('fuji-far-v1').add('far', 0, 0, 0, 1672, 944);
     this.textures.get('street').add('ground', 0, 0, 684, 1672, 257);
-    const puddleTexture = this.add.graphics();
-    puddleTexture.fillStyle(0x4eafe3, .9); puddleTexture.fillEllipse(36, 15, 70, 24);
-    puddleTexture.lineStyle(3, 0xb9ecff, .95); puddleTexture.strokeEllipse(36, 15, 60, 17);
-    puddleTexture.fillStyle(0xe4f9ff, .9); puddleTexture.fillEllipse(27, 10, 18, 5); puddleTexture.generateTexture('puddle', 72, 30); puddleTexture.destroy();
-    const ballTexture = this.add.graphics();
-    ballTexture.fillStyle(0xf25c66); ballTexture.fillCircle(18, 18, 16);
-    ballTexture.lineStyle(3, 0xffd5a0); ballTexture.strokeCircle(18, 18, 14);
-    ballTexture.lineStyle(2, 0x5c7ed7); ballTexture.lineBetween(5, 10, 30, 27); ballTexture.generateTexture('ball', 36, 36); ballTexture.destroy();
     this.extensions = this.add.graphics().setDepth(-20);
+    const frontKeys = ['front', 'front-residential', 'front-shops'];
     for (let i = 0; i < 8; i++) {
       this.far.push(this.add.image(0, 246, 'fuji-far-v1', 'far').setOrigin(0, 1).setDisplaySize(900, 310).setDepth(-15));
-      const fg = this.add.image(0, FOREGROUND_BASE, 'front', 'trim').setOrigin(0, 1).setDepth(-5);
+      const key = frontKeys[i % frontKeys.length];
+      const fg = this.add.image(0, FOREGROUND_BASE, key, 'trim').setOrigin(0, 1).setDepth(-5);
       fg.setScale(FRONT_WIDTH / fg.frame.width); this.fronts.push(fg);
       this.grounds.push(this.add.image(0, FOREGROUND_BASE, 'street', 'ground').setOrigin(0).setDisplaySize(640, 98.37).setDepth(-3));
     }
     this.school = this.add.image(0, FOREGROUND_BASE, 'school-front', 'trim').setOrigin(0, 1).setDepth(-4);
     this.school.setScale(SCHOOL_WIDTH / this.school.frame.width);
     for (let i = 0; i < 5; i++) {
-      const tail = this.add.image(0, FOREGROUND_BASE, 'front', 'trim').setOrigin(0, 1).setDepth(-5);
+      const key = frontKeys[(i + 1) % frontKeys.length];
+      const tail = this.add.image(0, FOREGROUND_BASE, key, 'trim').setOrigin(0, 1).setDepth(-5);
       tail.setScale(FRONT_WIDTH / tail.frame.width); this.tails.push(tail);
     }
     this.distantSchool = this.add.image(0, 200, 'school-front', 'trim').setOrigin(.5, 1).setScale(.13).setDepth(-14);
-    this.obstacles = run.obstacles.map(o => this.add.image(0, GROUND, o.kind === 'puddle' || o.kind === 'ball' ? o.kind : 'props', o.kind === 'puddle' || o.kind === 'ball' ? undefined : o.kind).setOrigin(.5, 1));
+    this.obstacles = run.obstacles.map(o => this.add.image(0, GROUND, 'obstacles', o.kind).setOrigin(.5, 1));
     this.stars = this.add.graphics();
     this.girl = this.add.image(PLAYER_X, GROUND, 'run', 'r0').setOrigin(.5, 1).setDepth(2);
     this.layout();
@@ -318,7 +335,7 @@ class SchoolScene extends Phaser.Scene {
       const sprite = this.obstacles[i], x = screenX(obstacleWorldX(obstacle.at), run.elapsed);
       const isBranch = obstacle.kind === 'branch';
       sprite.setPosition(x, isBranch ? GROUND - 44 : GROUND);
-      const size = obstacle.kind === 'puddle' ? [54, 20] : obstacle.kind === 'ball' ? [31, 31] : isBranch ? [76, 56] : [35, 33];
+      const size = obstacle.kind === 'puddle' ? [58, 22] : obstacle.kind === 'ball' ? [34, 34] : obstacle.kind === 'box' ? [39, 37] : isBranch ? [82, 60] : obstacle.kind === 'pot' ? [42, 35] : [35, 38];
       sprite.setDisplaySize(size[0], size[1]).setRotation(obstacle.kind === 'ball' ? run.elapsed * 7 : 0);
       sprite.setVisible(x > -60 && x < this.view.worldWidth + 60).setAlpha(obstacle.hit ? .45 : 1);
     });
@@ -335,7 +352,7 @@ class SchoolScene extends Phaser.Scene {
     }
     const sequence = activeSequence(run.elapsed);
     const upcoming = run.obstacles.find(o => o.at > run.elapsed && o.at - run.elapsed < 2.8);
-    const message = mode === 'play' || this.inspectMode === 'rhythm' ? (run.elapsed > 61 ? '到學校了，再往前一點！' : sequence ? `${sequence.label}　${sequence.steps}` : upcoming ? (upcoming.kind === 'branch' ? '低樹枝來了！↓ 按住蹲下' : upcoming.kind === 'puddle' ? '積水！↑ 跳過去' : upcoming.kind === 'ball' ? '滾球！↑ 跳起來' : '↑ 跳起來！') : '') : '';
+    const message = mode === 'play' || this.inspectMode === 'rhythm' ? (run.elapsed > 61 ? '到學校了，再往前一點！' : sequence ? `${sequence.label}　${sequence.steps}` : upcoming ? (upcoming.kind === 'branch' ? '低樹枝來了！↓ 按住蹲下' : upcoming.kind === 'puddle' ? '積水！↑ 跳過去' : upcoming.kind === 'ball' ? '滾球！↑ 跳起來' : upcoming.kind === 'box' ? '紙箱！↑ 跳過去' : '↑ 跳起來！') : '') : '';
     el('hint').textContent = message; el('hint').hidden = !message;
     el('hearts').textContent = run.practice ? '練習 ♥' : '♥ '.repeat(run.health) + '♡ '.repeat(3 - run.health);
     el('stars').textContent = '★ ' + run.collected;

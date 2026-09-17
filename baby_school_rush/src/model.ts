@@ -1,5 +1,5 @@
 export const DURATION = 65, SPEED = 220, PLAYER_X = 178, GROUND = 292;
-export type ObstacleKind = 'cone'|'pot'|'branch'|'puddle'|'ball';
+export type ObstacleKind = 'cone'|'pot'|'branch'|'puddle'|'ball'|'box';
 export type Obstacle = {at:number; kind:ObstacleKind; hit:boolean; cleared?:boolean; group?:string};
 export type Star = {at:number; height:number; collected:boolean};
 export const schedule: [number,ObstacleKind,string?][] = [
@@ -9,7 +9,7 @@ export const schedule: [number,ObstacleKind,string?][] = [
  [32,'cone','double-jump'],[33.15,'puddle','double-jump'],
  [40,'ball','jump-duck-2'],[41.15,'branch','jump-duck-2'],
  [47,'branch','duck-jump-2'],[48.15,'cone','duck-jump-2'],
- [55,'puddle','final-beat'],[56.15,'branch','final-beat'],[60,'ball']
+ [55,'puddle','final-beat'],[56.15,'branch','final-beat'],[60,'box']
 ];
 export const sequences = [
  {from:16.2,to:19.6,label:'跳 → 蹲',steps:'↑　↓'},
@@ -37,7 +37,7 @@ export class Run {
   const height=this.duck&&this.y===0?48:60;
   for(const o of this.obstacles){
    const dx=(o.at-this.elapsed)*SPEED;
-   const bottom=o.kind==='branch'?52:0, top=o.kind==='branch'?96:o.kind==='puddle'?24:o.kind==='ball'?34:32;
+   const bottom=o.kind==='branch'?52:0, top=o.kind==='branch'?96:o.kind==='puddle'?24:o.kind==='ball'?34:o.kind==='box'?38:32;
    if(!o.hit&&Math.abs(dx)<29&&this.y<top&&this.y+height>bottom&&this.elapsed<61&&this.invincible===0){o.hit=true;this.hits++;this.combo=0;this.invincible=1.5;if(!this.practice)this.health--;}
    if(!o.cleared&&dx < -34){o.cleared=true;if(!o.hit){this.combo++;this.bestCombo=Math.max(this.bestCombo,this.combo);}}
   }
