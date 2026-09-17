@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
-import { Run, GROUND, PLAYER_X, SPEED, DURATION, activeSequence } from './model';
+import { Run, GROUND, PLAYER_X, SPEED, DURATION, activeSequence, obstacleDistance } from './model';
 import { worldLayout } from './layout';
-import { FOREGROUND_BASE, FRONT_WIDTH, SCHOOL_WIDTH, SCHOOL_START, screenX, obstacleWorldX, cameraDistance, foregroundVariant, landscapeAllowed } from './world';
+import { FOREGROUND_BASE, FRONT_WIDTH, SCHOOL_WIDTH, SCHOOL_START, screenX, cameraDistance, foregroundVariant, landscapeAllowed, parallaxFirstTile } from './world';
 import './style.css';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
@@ -186,9 +186,10 @@ function checkerKeyedTexture(scene: Phaser.Scene, sourceKey: string, targetKey: 
 
 class SchoolScene extends Phaser.Scene {
   fronts: Phaser.GameObjects.Image[] = [];
-  far: Phaser.GameObjects.Image[] = [];
+  mountains: Phaser.GameObjects.Image[] = [];
+  farTrees: Phaser.GameObjects.Image[] = [];
+  rooftops: Phaser.GameObjects.Image[] = [];
   tails: Phaser.GameObjects.Image[] = [];
-  distantSchool!: Phaser.GameObjects.Image;
   grounds: Phaser.GameObjects.Image[] = [];
   school!: Phaser.GameObjects.Image;
   girl!: Phaser.GameObjects.Image;
@@ -201,7 +202,7 @@ class SchoolScene extends Phaser.Scene {
   inspectMode = '';
 
   preload() {
-    for (const key of ['street', 'park', 'fuji-far-v1', 'run', 'poses', 'props', 'obstacles-v2', 'slide-key', 'front-key', 'front-residential-v2', 'front-shops-v2', 'school-key']) this.load.image(key, `assets/${key}.png`);
+    for (const key of ['street', 'park', 'fuji-far-v1', 'mid-trees-v1', 'mid-rooftops-v1', 'run', 'poses', 'props', 'obstacles-v2', 'slide-key', 'front-key', 'front-residential-v2', 'front-shops-v2', 'school-key']) this.load.image(key, `assets/${key}.png`);
     this.load.on('loaderror', () => { this.failed = true; });
   }
 
@@ -227,11 +228,18 @@ class SchoolScene extends Phaser.Scene {
       ['box', 0, 512], ['ball', 512, 512], ['branch', 1024, 512]
     ];
     for (const [name, x, y] of obstacleFrames) addFrame(this, 'obstacles', name, x, y, 512, 512);
-    this.textures.get('fuji-far-v1').add('far', 0, 0, 0, 1672, 944);
+    // Crop the lake out of the Fuji source and layer opaque scenery over the horizon.
+    this.textures.get('fuji-far-v1').add('far', 0, 0, 0, 1672, 660);
+    addFrame(this, 'mid-trees-v1', 'strip', 0, 0, 2172, 724);
+    addFrame(this, 'mid-rooftops-v1', 'strip', 0, 0, 2172, 724);
     this.textures.get('street').add('ground', 0, 0, 684, 1672, 257);
     this.extensions = this.add.graphics().setDepth(-20);
     for (let i = 0; i < 8; i++) {
-      this.far.push(this.add.image(0, 246, 'fuji-far-v1', 'far').setOrigin(0, 1).setDisplaySize(900, 310).setDepth(-15));
+      this.mountains.push(this.add.image(0, 242, 'fuji-far-v1', 'far').setOrigin(0, 1).setDisplaySize(900, 276).setDepth(-18));
+      const trees = this.add.image(0, 258, 'mid-trees-v1', 'strip').setOrigin(0, 1).setDepth(-14);
+      trees.setScale(820 / trees.frame.width); this.farTrees.push(trees);
+      const roofs = this.add.image(0, 264, 'mid-rooftops-v1', 'strip').setOrigin(0, 1).setDepth(-10);
+      roofs.setScale(820 / roofs.frame.width); this.rooftops.push(roofs);
       const key = this.frontKeys[i % this.frontKeys.length];
       const fg = this.add.image(0, FOREGROUND_BASE, key, 'trim').setOrigin(0, 1).setDepth(-5);
       fg.setScale(FRONT_WIDTH / fg.frame.width); this.fronts.push(fg);
@@ -244,7 +252,6 @@ class SchoolScene extends Phaser.Scene {
       const tail = this.add.image(0, FOREGROUND_BASE, key, 'trim').setOrigin(0, 1).setDepth(-5);
       tail.setScale(FRONT_WIDTH / tail.frame.width); this.tails.push(tail);
     }
-    this.distantSchool = this.add.image(0, 200, 'school-front', 'trim').setOrigin(.5, 1).setScale(.13).setDepth(-14);
     this.obstacles = run.obstacles.map(o => this.add.image(0, GROUND, 'obstacles', o.kind).setOrigin(.5, 1));
     this.stars = this.add.graphics();
     this.girl = this.add.image(PLAYER_X, GROUND, 'run', 'r0').setOrigin(.5, 1).setDepth(2);
@@ -276,13 +283,21 @@ class SchoolScene extends Phaser.Scene {
     const distance = cameraDistance(run.elapsed), g = this.extensions;
     g.clear(); g.fillStyle(0x86c4ef); g.fillRect(0, top - 5, worldWidth, worldHeight + 10);
     g.fillStyle(0x777983); g.fillRect(0, FOREGROUND_BASE, worldWidth, Math.max(100, top + worldHeight - FOREGROUND_BASE));
-    const farDistance = distance * .18;
-    const farFirst = Math.floor(farDistance / 900);
+    const mountainDistance = distance * .06;
+    const treeDistance = distance * .12;
+    const roofDistance = distance * .22;
+    const mountainFirst = parallaxFirstTile(mountainDistance, 900);
+    const treeFirst = parallaxFirstTile(treeDistance, 820);
+    const roofFirst = parallaxFirstTile(roofDistance, 820);
     const first = Math.floor(distance / FRONT_WIDTH);
     const groundFirst = Math.floor(distance / 640);
     for (let i = 0; i < this.fronts.length; i++) {
-      const farIndex = farFirst + i;
-      this.far[i].setX(farIndex * 900 - farDistance).setFlipX(farIndex % 2 !== 0);
+      const mountainIndex = mountainFirst + i;
+      const treeIndex = treeFirst + i;
+      const roofIndex = roofFirst + i;
+      this.mountains[i].setX(mountainIndex * 900 - mountainDistance).setFlipX(mountainIndex % 2 !== 0);
+      this.farTrees[i].setX(treeIndex * 820 - treeDistance).setFlipX(treeIndex % 2 !== 0);
+      this.rooftops[i].setX(roofIndex * 820 - roofDistance).setFlipX(roofIndex % 2 !== 0);
       const worldIndex = first + i;
       const worldX = worldIndex * FRONT_WIDTH;
       const available = Math.min(FRONT_WIDTH, SCHOOL_START - worldX);
@@ -296,8 +311,6 @@ class SchoolScene extends Phaser.Scene {
       this.grounds[i].setX(screenX(groundIndex * 640, run.elapsed)).setFlipX(groundIndex % 2 !== 0);
     }
     this.tails.forEach((tile, i) => tile.setX(screenX(SCHOOL_START + SCHOOL_WIDTH + i * FRONT_WIDTH, run.elapsed)));
-    this.distantSchool.setVisible(run.elapsed >= 53 && run.elapsed < 63)
-      .setX(PLAYER_X + (DURATION - run.elapsed) * SPEED * .18);
     const sx = screenX(SCHOOL_START, run.elapsed);
     this.school.setX(sx).setVisible(sx < worldWidth && sx + SCHOOL_WIDTH > 0);
     // Campus paving behind the open doorway, attached to the same world location.
@@ -335,11 +348,11 @@ class SchoolScene extends Phaser.Scene {
     this.girl.setTexture(key, pose).setScale(scale).setPosition(PLAYER_X, GROUND - run.y);
     this.girl.setAlpha(run.invincible > 0 && Math.floor(run.elapsed * 12) % 2 === 0 ? .35 : 1);
     run.obstacles.forEach((obstacle, i) => {
-      const sprite = this.obstacles[i], x = screenX(obstacleWorldX(obstacle.at), run.elapsed);
+      const sprite = this.obstacles[i], x = PLAYER_X + obstacleDistance(obstacle.at, obstacle.kind, run.elapsed);
       const isBranch = obstacle.kind === 'branch';
       sprite.setPosition(x, isBranch ? GROUND - 44 : GROUND);
       const size = obstacle.kind === 'puddle' ? [58, 22] : obstacle.kind === 'ball' ? [34, 34] : obstacle.kind === 'box' ? [39, 37] : isBranch ? [82, 60] : obstacle.kind === 'pot' ? [42, 35] : [35, 38];
-      sprite.setDisplaySize(size[0], size[1]).setRotation(obstacle.kind === 'ball' ? run.elapsed * 7 : 0);
+      sprite.setDisplaySize(size[0], size[1]).setRotation(obstacle.kind === 'ball' ? -run.elapsed * 12 : 0);
       sprite.setVisible(x > -60 && x < this.view.worldWidth + 60).setAlpha(obstacle.hit ? .45 : 1);
     });
     this.stars.clear(); this.stars.fillStyle(0xffd36f); this.stars.lineStyle(1, 0x946f36);

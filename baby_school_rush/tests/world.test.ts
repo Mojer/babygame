@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { cameraDistance, screenX, obstacleWorldX, SCHOOL_START, SCHOOL_WIDTH, foregroundVariant, landscapeAllowed } from '../src/world.ts';
+import { cameraDistance, screenX, obstacleWorldX, SCHOOL_START, SCHOOL_WIDTH, foregroundVariant, landscapeAllowed, parallaxFirstTile } from '../src/world.ts';
 import { PLAYER_X, DURATION } from '../src/model.ts';
 
 test('obstacle stays fixed relative to its ground location across camera movement', () => {
@@ -21,4 +21,9 @@ test('foreground art is stable for a world tile when recycled screen slots chang
   assert.equal(foregroundVariant(tile), 2);
   assert.equal(foregroundVariant(tile), foregroundVariant(2 + 3));
   assert.notEqual(foregroundVariant(tile), foregroundVariant(tile + 1));
+});
+test('parallax tile recycling always starts one tile before the viewport', () => {
+  assert.equal(parallaxFirstTile(0, 820), -1);
+  assert.equal(parallaxFirstTile(819, 820), -1);
+  assert.equal(parallaxFirstTile(820, 820), 0);
 });

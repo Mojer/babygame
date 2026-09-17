@@ -1,5 +1,8 @@
 export const DURATION = 65, SPEED = 220, PLAYER_X = 178, GROUND = 292;
 export type ObstacleKind = 'cone'|'pot'|'branch'|'puddle'|'ball'|'box';
+export const BALL_ROLL_SPEED = 120;
+export const obstacleDistance = (at:number, kind:ObstacleKind, elapsed:number) =>
+ (at-elapsed)*(SPEED+(kind==='ball'?BALL_ROLL_SPEED:0));
 export type Obstacle = {at:number; kind:ObstacleKind; hit:boolean; cleared?:boolean; group?:string};
 export type Star = {at:number; height:number; collected:boolean};
 export const schedule: [number,ObstacleKind,string?][] = [
@@ -36,7 +39,7 @@ export class Run {
   this.elapsed=Math.min(DURATION,this.elapsed+dt);
   const height=this.duck&&this.y===0?48:60;
   for(const o of this.obstacles){
-   const dx=(o.at-this.elapsed)*SPEED;
+   const dx=obstacleDistance(o.at,o.kind,this.elapsed);
    const bottom=o.kind==='branch'?52:0, top=o.kind==='branch'?96:o.kind==='puddle'?24:o.kind==='ball'?34:o.kind==='box'?38:32;
    if(!o.hit&&Math.abs(dx)<29&&this.y<top&&this.y+height>bottom&&this.elapsed<61&&this.invincible===0){o.hit=true;this.hits++;this.combo=0;this.invincible=1.5;if(!this.practice)this.health--;}
    if(!o.cleared&&dx < -34){o.cleared=true;if(!o.hit){this.combo++;this.bestCombo=Math.max(this.bestCombo,this.combo);}}
