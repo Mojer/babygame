@@ -59,9 +59,23 @@ canvas { display: block; image-rendering: pixelated; }
 .secondary { margin-top: 10px; color: #7b886d; background: transparent; }
 .panel .micro { font-size: 10px; margin: 12px 0 0; color: #a1a28b; }
 .rating { color: #c59b50; letter-spacing: 6px; }
+.game-frame[data-mode='result'] .overlay { place-items: center end; background: linear-gradient(90deg, transparent 0 46%, #28463a18 62%, #28463a70 100%); backdrop-filter: none; }
+.result-panel { width: min(380px, 42vw); min-width: 300px; text-align: left; padding: 24px; border-color: #fffdf2; background: #fffdf3f2; box-shadow: 0 7px 0 #35554430, 0 18px 55px #1a3b3b36; }
+.result-heading { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 3px 14px; }
+.result-heading .route-tag { grid-column: 1 / -1; }
+.result-heading h2 { margin: 4px 0 8px; font-size: 30px; }
+.result-heading .rating { padding-bottom: 12px; font-size: 20px; white-space: nowrap; }
+.result-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 8px 0 12px; }
+.result-stats div { min-width: 0; padding: 11px 8px 9px; border-radius: 12px; background: #e9eddd; text-align: center; }
+.result-stats b { display: block; color: #567250; font-size: 18px; }
+.result-stats span { display: block; margin-top: 3px; color: #849078; font-size: 9px; white-space: nowrap; }
+.panel .result-note { margin: 8px 2px 14px; line-height: 1.65; }
+.result-actions { display: grid; grid-template-columns: 1.25fr .9fr; gap: 9px; }
+.result-actions .secondary { margin: 0; border: 1px solid #d8ddcb; background: #f7f6eb; }
 .count { color: white; font-size: 90px; font-weight: 800; text-shadow: 0 5px #415e46; }
 .game-frame[data-mode='menu'] .controls, .game-frame[data-mode='countdown'] .controls,
-.game-frame[data-mode='pause'] .controls, .game-frame[data-mode='result'] .controls { opacity: .4; }
+.game-frame[data-mode='pause'] .controls { opacity: .4; }
+.game-frame[data-mode='result'] .controls { opacity: 0; pointer-events: none; }
 @media (max-width: 600px) and (orientation: portrait) {
   .hud { grid-template-columns: 1fr auto; gap: 12px 8px; }
   .identity { font-size: 17px; margin-bottom: 10px; }
@@ -97,6 +111,14 @@ canvas { display: block; image-rendering: pixelated; }
   .primary, .secondary { padding: 10px; font-size: 12px; }
   .secondary { margin-top: 5px; }
   .panel .micro { margin-top: 7px; }
+  .result-panel { width: min(350px, 43vw); min-width: 285px; padding: 16px 18px 14px; }
+  .result-heading h2 { font-size: 23px; margin: 2px 0 4px; }
+  .result-heading .rating { padding-bottom: 7px; font-size: 16px; }
+  .result-stats { margin: 5px 0 7px; }
+  .result-stats div { padding: 7px 5px 6px; }
+  .result-stats b { font-size: 15px; }
+  .panel .result-note { margin: 5px 2px 8px; line-height: 1.45; }
+  .result-actions .primary, .result-actions .secondary { padding: 9px 7px; }
 }
 @media (prefers-reduced-motion: reduce) { .control:active, .control.pressed { transform: none; } }
 @media (max-width: 360px) and (orientation: portrait) {

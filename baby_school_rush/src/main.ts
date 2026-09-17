@@ -46,7 +46,10 @@ let muted = false, audio: AudioContext | undefined;
 const duckKeys = new Set<string>();
 const portrait = matchMedia('(orientation: portrait)');
 const isPortrait = () => !landscapeAllowed(frame.clientWidth, frame.clientHeight);
-function setMode(value: Mode) { mode = value; frame.dataset.mode = value; }
+function setMode(value: Mode) {
+  mode = value; frame.dataset.mode = value;
+  if (value !== 'result') delete frame.dataset.result;
+}
 function tone(freq: number) {
   if (muted) return;
   try {
@@ -87,12 +90,18 @@ function pause() {
 function finish() {
   setMode('result'); clearInput();
   const won = run.state === 'won';
+  frame.dataset.result = won ? 'won' : 'lost';
   if (won && !run.practice) {
     try { localStorage.setItem('school-rush-best-v1', String(Math.max(run.rating, Number(localStorage.getItem('school-rush-best-v1')) || 0))); } catch { /* Best score is optional. */ }
     best();
   }
   el('overlay').hidden = false;
-  el('overlay').innerHTML = `<section class="panel" aria-label="遊戲結算"><div class="route-tag">${won ? '今天的上學任務完成！' : '再試一次，你可以的！'}</div><h2>${won ? '到校啦！' : '拍拍書包，再出發'}</h2><h2 class="rating">${won ? '★'.repeat(run.rating) + '☆'.repeat(3 - run.rating) : '♡'}</h2><p>收集 ${run.collected} / ${run.stars.length} 顆星星 · 最佳連擊 ${run.bestCombo}<br>碰撞 ${run.hits} 次${run.practice ? ' · 練習模式不儲存成績' : ''}</p><button class="primary" id="again">${run.practice ? '挑戰正式路線' : '再跑一次'}</button><button class="secondary" id="retry-practice">輕鬆練習 · 不扣愛心</button></section>`;
+  el('overlay').innerHTML = `<section class="panel result-panel" aria-label="遊戲結算">
+    <div class="result-heading"><div class="route-tag">${won ? 'SCHOOL ARRIVAL' : 'TRY AGAIN'}</div><h2>${won ? '到校啦！' : '拍拍書包，再出發'}</h2><div class="rating" aria-label="${run.rating} 星評價">${won ? '★'.repeat(run.rating) + '☆'.repeat(3 - run.rating) : '♡'}</div></div>
+    <div class="result-stats"><div><b>★ ${run.collected}</b><span>收集星星</span></div><div><b>${run.bestCombo}</b><span>最佳連擊</span></div><div><b>${run.hits}</b><span>碰撞次數</span></div></div>
+    <p class="result-note">${won ? '準時抵達！角色會在校門口替今天的冒險歡呼。' : '休息一下，再抓準跳躍與蹲下的節奏。'}${run.practice ? '<br>本次為練習模式，成績不會儲存。' : ''}</p>
+    <div class="result-actions"><button class="primary" id="again">${run.practice ? '挑戰正式路線' : '再跑一次'}</button><button class="secondary" id="retry-practice">輕鬆練習</button></div>
+  </section>`;
   el('again').onclick = () => start(false);
   el('retry-practice').onclick = () => start(true);
   tone(won ? 880 : 220);
@@ -186,7 +195,8 @@ function checkerKeyedTexture(scene: Phaser.Scene, sourceKey: string, targetKey: 
 
 class SchoolScene extends Phaser.Scene {
   fronts: Phaser.GameObjects.Image[] = [];
-  mountains: Phaser.GameObjects.Image[] = [];
+  mountain!: Phaser.GameObjects.Image;
+  lake!: Phaser.GameObjects.TileSprite;
   farTrees: Phaser.GameObjects.Image[] = [];
   rooftops: Phaser.GameObjects.Image[] = [];
   tails: Phaser.GameObjects.Image[] = [];
@@ -196,6 +206,8 @@ class SchoolScene extends Phaser.Scene {
   obstacles: Phaser.GameObjects.Image[] = [];
   stars!: Phaser.GameObjects.Graphics;
   extensions!: Phaser.GameObjects.Graphics;
+  schoolBackdrop!: Phaser.GameObjects.Graphics;
+  vistaRail!: Phaser.GameObjects.Graphics;
   frontKeys = ['front', 'front-residential', 'front-shops'];
   view = worldLayout(640, 360);
   failed = false;
@@ -228,14 +240,18 @@ class SchoolScene extends Phaser.Scene {
       ['box', 0, 512], ['ball', 512, 512], ['branch', 1024, 512]
     ];
     for (const [name, x, y] of obstacleFrames) addFrame(this, 'obstacles', name, x, y, 512, 512);
-    // Crop the lake out of the Fuji source and layer opaque scenery over the horizon.
+    // The mountain is a single landmark; the calm lake is a separate subtle band.
     this.textures.get('fuji-far-v1').add('far', 0, 0, 0, 1672, 660);
+    this.textures.get('fuji-far-v1').add('lake', 0, 0, 650, 1672, 140);
     addFrame(this, 'mid-trees-v1', 'strip', 0, 0, 2172, 724);
     addFrame(this, 'mid-rooftops-v1', 'strip', 0, 0, 2172, 724);
     this.textures.get('street').add('ground', 0, 0, 684, 1672, 257);
     this.extensions = this.add.graphics().setDepth(-20);
+    this.vistaRail = this.add.graphics().setDepth(-4.7);
+    this.mountain = this.add.image(0, 242, 'fuji-far-v1', 'far').setOrigin(0, 1).setDisplaySize(1100, 276).setDepth(-18);
+    // Water sits in front of the distant shore but behind all playable foreground art.
+    this.lake = this.add.tileSprite(0, 203, 640, 42, 'fuji-far-v1', 'lake').setOrigin(0).setDepth(-8).setAlpha(.78);
     for (let i = 0; i < 8; i++) {
-      this.mountains.push(this.add.image(0, 242, 'fuji-far-v1', 'far').setOrigin(0, 1).setDisplaySize(900, 276).setDepth(-18));
       const trees = this.add.image(0, 258, 'mid-trees-v1', 'strip').setOrigin(0, 1).setDepth(-14);
       trees.setScale(820 / trees.frame.width); this.farTrees.push(trees);
       const roofs = this.add.image(0, 264, 'mid-rooftops-v1', 'strip').setOrigin(0, 1).setDepth(-10);
@@ -245,6 +261,7 @@ class SchoolScene extends Phaser.Scene {
       fg.setScale(FRONT_WIDTH / fg.frame.width); this.fronts.push(fg);
       this.grounds.push(this.add.image(0, FOREGROUND_BASE, 'street', 'ground').setOrigin(0).setDisplaySize(640, 98.37).setDepth(-3));
     }
+    this.schoolBackdrop = this.add.graphics().setDepth(-4.5);
     this.school = this.add.image(0, FOREGROUND_BASE, 'school-front', 'trim').setOrigin(0, 1).setDepth(-4);
     this.school.setScale(SCHOOL_WIDTH / this.school.frame.width);
     for (let i = 0; i < 5; i++) {
@@ -263,11 +280,12 @@ class SchoolScene extends Phaser.Scene {
     // Read-only visual inspection routes exist only in the local development build.
     if ((import.meta as ImportMeta & { env: { DEV: boolean } }).env.DEV) {
       const inspect = new URLSearchParams(location.search).get('inspect');
-      if (inspect && ['run', 'slide', 'school', 'rhythm'].includes(inspect)) {
+      if (inspect && ['run', 'slide', 'school', 'rhythm', 'result'].includes(inspect)) {
         this.inspectMode = inspect;
         setMode('pause'); el('overlay').hidden = true;
         run.duck = inspect === 'slide';
-        run.elapsed = inspect === 'school' ? 65 : inspect === 'rhythm' ? 17.5 : 11.5;
+        run.elapsed = inspect === 'school' || inspect === 'result' ? 65 : inspect === 'rhythm' ? 17.5 : 11.5;
+        if (inspect === 'result') { run.state = 'won'; run.collected = run.stars.length; run.bestCombo = 8; finish(); }
       }
     }
   }
@@ -276,48 +294,69 @@ class SchoolScene extends Phaser.Scene {
     this.view = worldLayout(this.scale.width, this.scale.height);
     const { zoom, worldWidth, worldHeight, top } = this.view;
     this.cameras.main.setZoom(zoom).centerOn(worldWidth / 2, top + worldHeight / 2);
+    if (this.lake) this.lake.setSize(worldWidth + 4, 42);
   }
 
   drawEnvironment() {
     const { worldWidth, worldHeight, top } = this.view;
     const distance = cameraDistance(run.elapsed), g = this.extensions;
     g.clear(); g.fillStyle(0x86c4ef); g.fillRect(0, top - 5, worldWidth, worldHeight + 10);
+    this.vistaRail.clear();
     g.fillStyle(0x777983); g.fillRect(0, FOREGROUND_BASE, worldWidth, Math.max(100, top + worldHeight - FOREGROUND_BASE));
     const mountainDistance = distance * .06;
     const treeDistance = distance * .12;
     const roofDistance = distance * .22;
-    const mountainFirst = parallaxFirstTile(mountainDistance, 900);
     const treeFirst = parallaxFirstTile(treeDistance, 820);
     const roofFirst = parallaxFirstTile(roofDistance, 820);
     const first = Math.floor(distance / FRONT_WIDTH);
     const groundFirst = Math.floor(distance / 640);
+    this.mountain.setX(worldWidth * .32 - mountainDistance * .45);
+    this.lake.setTilePosition(distance * .08, 0);
     for (let i = 0; i < this.fronts.length; i++) {
-      const mountainIndex = mountainFirst + i;
       const treeIndex = treeFirst + i;
       const roofIndex = roofFirst + i;
-      this.mountains[i].setX(mountainIndex * 900 - mountainDistance).setFlipX(mountainIndex % 2 !== 0);
       this.farTrees[i].setX(treeIndex * 820 - treeDistance).setFlipX(treeIndex % 2 !== 0);
       this.rooftops[i].setX(roofIndex * 820 - roofDistance).setFlipX(roofIndex % 2 !== 0);
       const worldIndex = first + i;
       const worldX = worldIndex * FRONT_WIDTH;
       const available = Math.min(FRONT_WIDTH, SCHOOL_START - worldX);
+      const lakeVista = foregroundVariant(worldIndex, 7) === 3;
       const fg = this.fronts[i];
       const frontKey = this.frontKeys[foregroundVariant(worldIndex, this.frontKeys.length)];
       if (fg.texture.key !== frontKey) fg.setTexture(frontKey, 'trim').setScale(FRONT_WIDTH / fg.frame.width);
-      fg.setX(screenX(worldX, run.elapsed)).setVisible(available > 0);
+      const frontX = screenX(worldX, run.elapsed);
+      fg.setX(frontX).setVisible(available > 0 && !lakeVista);
       fg.setCrop(0, 0, Math.max(0, available / fg.scaleX), fg.frame.height);
+      if (lakeVista && available > 0) {
+        const railWidth = Math.max(0, Math.min(available, worldWidth - frontX));
+        this.vistaRail.fillStyle(0xc9bea8); this.vistaRail.fillRect(frontX, FOREGROUND_BASE - 8, railWidth, 8);
+        this.vistaRail.fillStyle(0x8c887d); this.vistaRail.fillRect(frontX, FOREGROUND_BASE - 2, railWidth, 2);
+        this.vistaRail.lineStyle(4, 0xe8e2ca); this.vistaRail.lineBetween(frontX, FOREGROUND_BASE - 43, frontX + railWidth, FOREGROUND_BASE - 43);
+        this.vistaRail.lineStyle(3, 0x66806f); this.vistaRail.lineBetween(frontX, FOREGROUND_BASE - 28, frontX + railWidth, FOREGROUND_BASE - 28);
+        for (let postX = frontX + 16; postX < frontX + railWidth; postX += 74) {
+          this.vistaRail.fillStyle(0xe4ddc7); this.vistaRail.fillRect(postX, FOREGROUND_BASE - 47, 7, 47);
+        }
+      }
       // Road and every obstacle share exactly the same camera transform.
       const groundIndex = groundFirst + i;
       this.grounds[i].setX(screenX(groundIndex * 640, run.elapsed)).setFlipX(groundIndex % 2 !== 0);
     }
     this.tails.forEach((tile, i) => tile.setX(screenX(SCHOOL_START + SCHOOL_WIDTH + i * FRONT_WIDTH, run.elapsed)));
     const sx = screenX(SCHOOL_START, run.elapsed);
-    this.school.setX(sx).setVisible(sx < worldWidth && sx + SCHOOL_WIDTH > 0);
-    // Campus paving behind the open doorway, attached to the same world location.
-    g.fillStyle(0xd5c6a7); g.fillRect(sx + SCHOOL_WIDTH * .42, FOREGROUND_BASE - 38, SCHOOL_WIDTH * .16, 39);
+    const schoolVisible = sx < worldWidth && sx + SCHOOL_WIDTH > 0;
+    this.schoolBackdrop.clear();
+    if (schoolVisible) {
+      const gateX = sx + SCHOOL_WIDTH * .445, gateW = SCHOOL_WIDTH * .118;
+      this.schoolBackdrop.fillStyle(0xeadfbd); this.schoolBackdrop.fillRect(gateX, FOREGROUND_BASE - 90, gateW, 90);
+      this.schoolBackdrop.fillStyle(0x6f8f95); this.schoolBackdrop.fillRect(gateX + gateW * .18, FOREGROUND_BASE - 82, gateW * .64, 47);
+      this.schoolBackdrop.lineStyle(2, 0x526e72); this.schoolBackdrop.strokeRect(gateX + gateW * .18, FOREGROUND_BASE - 82, gateW * .64, 47);
+      this.schoolBackdrop.fillStyle(0xd5c6a7); this.schoolBackdrop.fillRect(gateX, FOREGROUND_BASE - 35, gateW, 36);
+      this.schoolBackdrop.fillStyle(0x819b68); this.schoolBackdrop.fillCircle(gateX + 8, FOREGROUND_BASE - 39, 11); this.schoolBackdrop.fillCircle(gateX + gateW - 8, FOREGROUND_BASE - 39, 11);
+    }
+    this.school.setX(sx).setVisible(schoolVisible);
   }
 
-  update(_time: number, delta: number) {
+  update(time: number, delta: number) {
     if (this.failed || !this.girl) return;
     if (isPortrait() && (mode === 'play' || mode === 'countdown')) pause();
     const dt = Math.min(delta / 1000, .05);
@@ -345,7 +384,9 @@ class SchoolScene extends Phaser.Scene {
     if (crouch) { key = 'slide'; pose = 'trim'; scale = .063; }
     else if (run.y > 0) { key = 'poses'; pose = 'jump'; scale = .235; }
     else if (run.state === 'won') { key = 'poses'; pose = 'arrive'; scale = .205; }
-    this.girl.setTexture(key, pose).setScale(scale).setPosition(PLAYER_X, GROUND - run.y);
+    const cheering = run.state === 'won';
+    const cheer = cheering ? Math.abs(Math.sin(time * .007)) : 0;
+    this.girl.setTexture(key, pose).setScale(scale * (1 + cheer * .025)).setPosition(PLAYER_X, GROUND - run.y - cheer * 6).setAngle(cheering ? Math.sin(time * .009) * 2.5 : 0);
     this.girl.setAlpha(run.invincible > 0 && Math.floor(run.elapsed * 12) % 2 === 0 ? .35 : 1);
     run.obstacles.forEach((obstacle, i) => {
       const sprite = this.obstacles[i], x = PLAYER_X + obstacleDistance(obstacle.at, obstacle.kind, run.elapsed);
