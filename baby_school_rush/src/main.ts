@@ -44,7 +44,7 @@ type Mode = 'menu' | 'countdown' | 'play' | 'pause' | 'result';
 let run = new Run(), mode: Mode = 'menu', count = 3, accumulator = 0;
 let muted = false, soundContext: AudioContext | undefined;
 const music = document.createElement('audio');
-music.src = '/assets/audio/Sparkling%20Adventure.mp3'; music.loop = true;
+music.src = new URL('assets/audio/Sparkling Adventure.mp3', document.baseURI).href; music.loop = true;
 music.volume = .24; music.preload = 'auto'; music.hidden = true; frame.append(music);
 const duckKeys = new Set<string>();
 const portrait = matchMedia('(orientation: portrait)');
