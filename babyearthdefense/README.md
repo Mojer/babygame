@@ -40,7 +40,7 @@ pnpm spec     # 由 src/game/assets.ts 重新產生 ASSET_SPEC.md
 
 ## 音樂與 Motion Graphic
 
-- `src/audio/music.ts`：WebAudio 即時合成 140 BPM 配樂（底鼓、軍鼓、Hi-hat、側鏈抽吸貝斯、琶音、Pad、Boss 主旋律），依段落切換：選單／波次／喘息／警報／Boss／弱點暴露／結算。擊破音沿 A 小調五聲音階依連擊上升。
+- `src/audio/music.ts`：WebAudio 即時合成配樂，致敬 Gyruss——以巴哈《D 小調觸技曲與賦格》BWV 565 為素材的 150 BPM 電子編曲（四拍底鼓、疊層拍手、八度奔馳貝斯、Supersaw、側鏈抽吸、彈跳延遲、Crash／滾奏／上升音效），8 小節樂句，依段落切換：選單／波次／喘息／警報／Boss／弱點暴露／結算。擊破音沿 D 小調五聲音階依連擊上升。
 - 音樂時鐘同時驅動畫面：`pollBeats()` 回傳已響起的拍子，`src/fx/motion.ts` 用它讓網格、波紋、軌道刻度、敵人、地球與 HUD 同步脈動。
 - 打擊感：hit-stop（瞬間停格）、相機縮放衝擊、震動、斜條紋橫幅標題。
 

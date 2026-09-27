@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { BPM } from '../audio/music';
 import { ORBIT_RADIUS } from '../game/model';
 
 // Motion graphic 圖層：全部以程式向量繪製，跟著音樂節拍脈動。
@@ -22,7 +23,7 @@ export class MotionLayer {
   /** 0–1，每拍瞬間拉高後衰減；其他模組可用來做縮放脈動。 */
   energy = 0;
   private barStart = 0;
-  private barLength = 60 / 140 * 4;
+  private barLength = 60 / BPM * 4;
   private intensity = 0;
   private intensityTarget = 0;
   private palette: Palette = 'calm';
