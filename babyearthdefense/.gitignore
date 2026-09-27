@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+# 原始美術／參考圖不進 repo
+stuff/
+備份/
