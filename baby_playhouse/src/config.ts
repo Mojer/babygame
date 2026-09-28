@@ -16,14 +16,20 @@ export const CHARACTERS: CharacterDef[] = [
   { key: 'cat', label: '貓咪', icon: '🐱', spawn: [2.2, -0.55], facing: Math.PI / 4 + 0.35, voice: 470 },
 ];
 
-export const ROOMS = {
-  cafe: { model: 'models/room_cafe.glb' },
+export interface RoomDef {
+  model: string;
+  label: string;
+}
+
+export const ROOMS: Record<string, RoomDef> = {
+  cafe: { model: 'models/room_cafe.glb', label: '☕ 咖啡廳' },
+  bathroom: { model: 'models/room_bathroom.glb', label: '🛁 浴室' },
 };
 
+export const START_ROOM = 'cafe';
+
 /** Messages for doors leading to rooms that are not built yet. */
-export const COMING_SOON: Record<string, string> = {
-  bathroom: '🛁 浴室蓋房子中…',
-};
+export const COMING_SOON: Record<string, string> = {};
 
 export const WALK_SPEED = 1.3; // m/s
 export const CHAR_RADIUS = 0.16;

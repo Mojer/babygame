@@ -24,6 +24,7 @@ PALETTE = [
     ("pink", "F7A8B8"), ("blush", "FFB7B2"), ("red", "E8665A"), ("orange", "F5A45D"),
     ("yellow", "FFE08A"), ("bulb", "FFF2B0"), ("brown", "7A5240"), ("choco", "5A3B2E"),
     ("lilac", "C9B8E8"), ("cat_grey", "B3AEC6"), ("sand", "EED9B5"), ("teal", "5FB3A8"),
+    ("tile_blue", "BCDDF3"), ("lemon", "FFF3C4"),
 ]
 GRID = 8
 CELL = 32
@@ -147,6 +148,31 @@ class Builder:
         bmesh.ops.scale(bm, vec=Vector(size), verts=bm.verts)
         bevel = min(bevel, min(size) * 0.45) if bevel else 0
         return self._finish(name, bm, color, loc, rot, False, glow, bevel, parent, props)
+
+    def multi_box(self, name, boxes, color, bevel=0, parent=None, props=None):
+        """Many boxes merged into one mesh (one draw call). boxes = [(size, centre), ...]."""
+        bm = bmesh.new()
+        for size, centre in boxes:
+            geom = bmesh.ops.create_cube(bm, size=1.0)
+            verts = geom["verts"]
+            bmesh.ops.scale(bm, vec=Vector(size), verts=verts)
+            bmesh.ops.translate(bm, vec=Vector(centre), verts=verts)
+        return self._finish(name, bm, color, (0, 0, 0), (0, 0, 0), False, False, bevel, parent, props)
+
+    def cut(self, target, cutter):
+        """Boolean-subtract `cutter` from `target` (applied on export). Cutter is hidden, not exported."""
+        mod = target.modifiers.new("Cut", "BOOLEAN")
+        mod.operation = "DIFFERENCE"
+        mod.solver = "EXACT"
+        mod.object = cutter
+        cutter.display_type = "WIRE"
+        cutter.hide_render = True
+        for c in list(cutter.users_collection):
+            c.objects.unlink(cutter)
+        cutters = bpy.data.collections.get("Cutters") or collection("Cutters")
+        cutters.objects.link(cutter)
+        cutters.hide_render = True
+        return mod
 
     def cyl(self, name, r, h, loc, color, rot=(0, 0, 0), seg=24, r2=None, bevel=0.01,
             glow=False, parent=None, props=None):

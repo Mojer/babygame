@@ -9,7 +9,8 @@ art/
   scripts/     Blender 建模與匯出腳本（可重複執行）
     pb_lib.py        共用工具：色票貼圖、基本形狀、匯出
     build_cafe.py    建立咖啡廳場景與 3 隻角色
-    export_all.py    存 .blend，並匯出 room_*.glb / char_*.glb
+    build_bathroom.py 建立浴室場景
+    export_all.py    存 .blend，並匯出目前場景的 room_*.glb（有角色時也匯出 char_*.glb）
   blender/     .blend 原始檔
   textures/    palette.png（全遊戲共用色票）
   export/      Blender 直接匯出的 GLB（未壓縮）
@@ -18,8 +19,8 @@ public/models/ 壓縮後、給遊戲載入的 GLB
 
 ## 重建流程
 
-1. 在 Blender 的 Scripting 分頁執行 `art/scripts/build_cafe.py`
-2. 執行 `art/scripts/export_all.py`
+1. 在 Blender 的 Scripting 分頁執行 `art/scripts/build_cafe.py` 或 `build_bathroom.py`
+2. 執行 `art/scripts/export_all.py`（每個房間各做一次）
 3. 壓縮（需要 Node 18 以上；關閉合併和清理，否則 `INT_` / `SNAP_` 等節點會被合併或刪掉）：
    ```bash
    for f in art/export/*.glb; do npx -y -p @gltf-transform/cli@4 gltf-transform optimize "$f" "public/models/$(basename $f)" --compress draco --texture-compress webp --join false --flatten false --instance false --simplify false --prune false; done
@@ -47,15 +48,21 @@ npm run build    # 輸出到 dist/，選單連結 ./baby_playhouse/dist/
 
 新增互動物件時，只要在 Blender 取 `INT_` 開頭的名字，並加上 `action`，程式會自動抓到它。
 名稱以同樣前綴開頭的零件會自動歸成一組；前綴對不上的，加到 `room.ts` 的 `ALIASES`。
-目前支援的 `action`：`sit`、`brew`、`toggle_lights`、`glow`、`ding`、`eat`、`flicker`。
-其他值會套用預設的彈跳加星星效果。
+目前支援的 `action`：
+- 咖啡廳：`sit`、`brew`、`toggle_lights`、`glow`、`ding`、`eat`、`flicker`
+- 浴室：`bath`、`shower`、`wash`、`squeak`、`sparkle`、`bubbles`、`swing`、`toot`
+- 其他值會套用預設的彈跳加星星效果
+
+有 `SNAP_` 定位點的物件都可以坐；定位點的 `pose` 設成 `bath` 時，角色會泡進去。
+`FX_` 開頭的 Empty 是特效發射點（`fx` 屬性），例如蓮蓬頭和水龍頭的出水位置。
+新增房間的步驟：在 `config.ts` 的 `ROOMS` 登記，門的 `to` 填房間名稱，`spawn` 填對方房間的門名稱。
 
 ## 美術規格（Q 版）
 
 - 1 Blender 單位 = 1 m，Z 軸朝上（匯出時自動轉成 Y 軸朝上）
 - 房間 6×6 m。北牆、西牆為全高牆（1.5 m），南牆、東牆為矮牆（0.25 m）。鏡頭從東南方以 45° 俯視
 - 角色 2 頭身，身高約 0.7 m，正面朝 -Y（在 glTF 中為 +Z），原點在腳底
-- 家具以角色為基準：椅座 0.30 m、吧台 0.45 m、浴缸 0.30 m、門寬 1.0–1.2 m
+- 家具以角色為基準：椅座 0.30 m、吧台 0.45 m、浴缸邊緣 0.42 m、門寬 1.0–1.2 m
 - 材質只用 `M_Palette`（和發光用的 `M_PaletteGlow`）。每個物件的 UV 全部落在一個色塊中心；新增顏色請加到 `pb_lib.PALETTE`
 
 ## 命名規則（遊戲讀取 `object.userData`）
@@ -65,7 +72,8 @@ npm run build    # 輸出到 dist/，選單連結 ./baby_playhouse/dist/
 | `INT_` | 可點擊的互動物件 | `action`, `sfx` |
 | `SNAP_` | 坐、站、泡澡的定位點（Empty） | `pose`, `owner` |
 | `NAV_` | 可行走的地面（遊戲中隱藏） | — |
-| `DOOR_` | 房間出入口（Empty） | `to`, `spawn` |
+| `DOOR_` | 房間出入口（Empty） | `to`（房間）, `spawn`（對方的門） |
+| `FX_` | 特效發射點（Empty） | `fx` |
 | `SPAWN_` | 角色出生點（Empty） | — |
 | `COL_` | 阻擋範圍（遊戲中隱藏） | — |
 | `CHAR_` | 角色根節點 | `character` |

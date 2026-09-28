@@ -84,6 +84,24 @@ const SOUNDS: Record<string, (pitch?: number) => void> = {
   },
   whoosh: () => noise(0.5, { freq: 400, to: 2400, q: 0.8, vol: 0.3 }),
   boing: () => tone(160, 0.45, { to: 520, type: 'sine', vol: 0.3 }),
+  squeak: () => {
+    tone(1100, 0.09, { to: 1700, type: 'square', vol: 0.12 });
+    tone(1700, 0.12, { to: 900, type: 'square', delay: 0.09, vol: 0.1 });
+  },
+  splash: () => {
+    noise(0.6, { freq: 1800, to: 500, q: 0.7, vol: 0.35 });
+    tone(500, 0.2, { to: 180, delay: 0.05, vol: 0.12 });
+  },
+  water: () => noise(1.2, { freq: 2600, to: 2000, q: 0.5, vol: 0.14, wobble: 7 }),
+  bloop: () => [0, 0.12, 0.22].forEach((d, i) => tone(300 + i * 160, 0.12, { to: 700 + i * 200, delay: d, vol: 0.18 })),
+  toot: () => {
+    tone(392, 0.22, { type: 'square', vol: 0.1 });
+    tone(523, 0.3, { type: 'square', delay: 0.24, vol: 0.1 });
+  },
+  door: () => {
+    noise(0.35, { freq: 600, to: 1800, q: 0.8, vol: 0.22 });
+    [72, 76, 79].forEach((n, i) => tone(NOTE(n), 0.3, { type: 'triangle', delay: 0.1 + i * 0.08, vol: 0.14 }));
+  },
   hi: (p = 440) => {
     tone(p, 0.12, { to: p * 1.35, type: 'triangle', vol: 0.3 });
     tone(p * 1.35, 0.16, { to: p * 1.1, type: 'triangle', delay: 0.12, vol: 0.28 });

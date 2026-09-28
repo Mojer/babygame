@@ -48,7 +48,42 @@ export class NavGrid {
         }
       }
     }
+    g.keepLargestRegion();
     return g;
+  }
+
+  /** Block every walkable pocket that is not connected to the main floor area. */
+  private keepLargestRegion() {
+    const n = this.cols * this.rows;
+    const region = new Int32Array(n).fill(-1);
+    const sizes: number[] = [];
+    const stack: number[] = [];
+    for (let start = 0; start < n; start++) {
+      if (this.blocked[start] || region[start] >= 0) continue;
+      const id = sizes.length;
+      let size = 0;
+      stack.push(start);
+      region[start] = id;
+      while (stack.length) {
+        const i = stack.pop()!;
+        size++;
+        const c = i % this.cols;
+        const r = (i / this.cols) | 0;
+        for (const [dc, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const nc = c + dc;
+          const nr = r + dr;
+          if (!this.freeCell(nc, nr)) continue;
+          const ni = this.idx(nc, nr);
+          if (region[ni] < 0) {
+            region[ni] = id;
+            stack.push(ni);
+          }
+        }
+      }
+      sizes.push(size);
+    }
+    const main = sizes.indexOf(Math.max(...sizes));
+    for (let i = 0; i < n; i++) if (region[i] >= 0 && region[i] !== main) this.blocked[i] = 1;
   }
 
   private idx(c: number, r: number) {

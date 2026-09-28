@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OutlineEffect } from 'three/examples/jsm/effects/OutlineEffect.js';
-import { CHARACTERS, COMING_SOON, ROOMS } from './config';
+import { CHARACTERS, COMING_SOON, ROOMS, START_ROOM } from './config';
 import { sfx, unlockAudio } from './core/audio';
 import { Character } from './entities/character';
 import { Room, type Door, type Interactable } from './scene/room';
@@ -13,6 +13,16 @@ export interface GameHooks {
 
 const CAM_DIR = new THREE.Vector3(0.5, Math.SQRT1_2, 0.5).normalize(); // 45° down, from south-east
 const NO_OUTLINE = { visible: false };
+const FADE_MS = 320;
+
+interface Emitter {
+  at: THREE.Vector3;
+  kind: 'drop' | 'bubble';
+  every: number;
+  acc: number;
+  left: number;
+  sound?: { name: string; every: number; acc: number };
+}
 
 export class Game {
   readonly renderer: THREE.WebGLRenderer;
@@ -22,6 +32,7 @@ export class Game {
   private readonly timer = new THREE.Timer();
   private readonly fx: Fx;
   private readonly ray = new THREE.Raycaster();
+  private readonly rooms = new Map<string, Promise<Room>>();
   private room!: Room;
   private chars: Character[] = [];
   private selected!: Character;
@@ -31,6 +42,9 @@ export class Game {
   private zoom = 1;
   private lightsOn = true;
   private candleLight = new THREE.PointLight(0xffb45a, 0, 2.5);
+  private emitters = new Map<string, Emitter>();
+  private busy = false;
+  private readonly fade: HTMLDivElement;
 
   constructor(
     private readonly container: HTMLElement,
@@ -70,6 +84,10 @@ export class Game {
     this.selRing.position.y = 0.015;
     this.selRing.renderOrder = 1;
 
+    this.fade = document.createElement('div');
+    this.fade.className = 'fade';
+    document.body.appendChild(this.fade);
+
     window.addEventListener('resize', () => this.resize());
     this.bindInput();
   }
@@ -79,19 +97,47 @@ export class Game {
     const total = 1 + CHARACTERS.length;
     const tick = <T>(p: Promise<T>) => p.then((v) => (onProgress(++done / total), v));
     const [room, ...chars] = await Promise.all([
-      tick(Room.load(ROOMS.cafe.model)),
+      tick(this.getRoom(START_ROOM)),
       ...CHARACTERS.map((d) => tick(Character.load(d))),
     ]);
-    this.room = room;
     this.chars = chars;
-    this.scene.add(room.root);
     chars.forEach((c) => this.scene.add(c.root));
-    const candle = room.interactables.find((i) => i.action === 'flicker');
-    if (candle) this.candleLight.position.copy(candle.pivot.position).add(new THREE.Vector3(0, 0.25, 0));
+    this.activateRoom(room);
     this.select(chars.find((c) => c.def.key === 'bunny') ?? chars[0], false);
     this.resize();
     this.snapCamera();
     this.renderer.setAnimationLoop((ts) => this.frame(ts));
+    // Warm up the other rooms so doors open instantly.
+    for (const key of Object.keys(ROOMS)) if (key !== START_ROOM) void this.getRoom(key);
+  }
+
+  private getRoom(key: string): Promise<Room> {
+    let p = this.rooms.get(key);
+    if (!p) {
+      p = Room.load(ROOMS[key].model).then((room) => {
+        // Foam only appears once someone takes a bath.
+        for (const it of room.interactables) {
+          for (const part of it.parts) if (part.name.includes('_foam')) part.scale.setScalar(0.001);
+        }
+        return room;
+      });
+      this.rooms.set(key, p);
+    }
+    return p;
+  }
+
+  private activateRoom(room: Room) {
+    if (this.room) {
+      this.scene.remove(this.room.root);
+      for (const it of this.room.interactables) it.occupant = undefined;
+    }
+    this.seats.clear();
+    this.emitters.clear();
+    this.room = room;
+    this.scene.add(room.root);
+    const candle = room.interactables.find((i) => i.action === 'flicker');
+    this.candleLight.intensity = 0;
+    if (candle) this.candleLight.position.copy(candle.pivot.position).add(new THREE.Vector3(0, 0.25, 0));
   }
 
   select(c: Character, greet = true) {
@@ -166,7 +212,7 @@ export class Game {
   }
 
   private tap(x: number, y: number) {
-    if (!this.room) return;
+    if (!this.room || this.busy) return;
     const rect = this.renderer.domElement.getBoundingClientRect();
     const ndc = new THREE.Vector2(((x - rect.left) / rect.width) * 2 - 1, -((y - rect.top) / rect.height) * 2 + 1);
     this.ray.setFromCamera(ndc, this.camera);
@@ -184,6 +230,49 @@ export class Game {
     if (door) return this.useDoor(door);
 
     this.walkTo(hit.point, true);
+  }
+
+  // ------------------------------------------------------------------ rooms
+  private useDoor(door: Door) {
+    this.walkTo(door.position, true, () => {
+      if (ROOMS[door.to]) return void this.enterRoom(door);
+      sfx('boing');
+      this.selected.happy();
+      this.hooks.toast(COMING_SOON[door.to] ?? '🚪 這扇門還沒開喔');
+    });
+  }
+
+  private async enterRoom(from: Door) {
+    if (this.busy) return;
+    this.busy = true;
+    sfx('door');
+    this.fade.classList.add('on');
+    const [room] = await Promise.all([this.getRoom(from.to), new Promise((r) => setTimeout(r, FADE_MS))]);
+    this.activateRoom(room);
+
+    // Arrive at the matching door, everyone steps a little into the room.
+    const door = room.door(from.spawn) ?? room.doors[0];
+    const base = door ? door.position.clone() : room.spawn.clone();
+    const inward = new THREE.Vector3(-base.x, 0, -base.z).normalize();
+    const side = new THREE.Vector3(-inward.z, 0, inward.x);
+    const yaw = Math.atan2(inward.x, inward.z);
+    const spots = [
+      base.clone().addScaledVector(inward, 0.35),
+      base.clone().addScaledVector(inward, 0.95).addScaledVector(side, 0.45),
+      base.clone().addScaledVector(inward, 0.95).addScaledVector(side, -0.45),
+    ];
+    const order = [this.selected, ...this.chars.filter((c) => c !== this.selected)];
+    order.forEach((c, i) => {
+      const p = spots[i] ?? spots[0];
+      c.teleport(room.nav.nearestFree(p.x, p.z) ?? p, yaw);
+    });
+    this.snapCamera();
+    this.hooks.toast(ROOMS[from.to].label);
+    setTimeout(() => this.fade.classList.remove('on'), 40);
+    setTimeout(() => {
+      this.busy = false;
+      this.selected.happy();
+    }, FADE_MS);
   }
 
   // ------------------------------------------------------------------ actions
@@ -210,17 +299,9 @@ export class Game {
     }
   }
 
-  private useDoor(door: Door) {
-    this.walkTo(door.position, true, () => {
-      sfx('boing');
-      this.selected.happy();
-      this.hooks.toast(COMING_SOON[door.to] ?? '🚪 這扇門還沒開喔');
-    });
-  }
-
   private interact(it: Interactable) {
     const c = this.selected;
-    if (it.action === 'sit') return this.sit(c, it);
+    if (it.snap) return this.sit(c, it);
 
     this.react(it);
     this.walkTo(it.approach, false, () => {
@@ -229,18 +310,16 @@ export class Game {
     });
   }
 
+  /** Stools, benches and the bathtub: walk over, hop on, occupy. */
   private sit(c: Character, it: Interactable) {
-    if (!it.snap) return;
+    const snap = it.snap!;
+    const pose = snap.userData.pose === 'bath' ? 'bath' : 'sit';
     const occ = it.occupant as Character | undefined;
-    if (occ && occ !== c) {
+    if (occ) {
       occ.happy();
-      sfx('hi', occ.def.voice);
-      this.fx.jelly(it.pivot, 0.1);
-      return;
-    }
-    if (occ === c) {
-      c.happy();
-      sfx('hi', c.def.voice);
+      sfx(occ === c && pose === 'bath' ? 'splash' : 'hi', occ.def.voice);
+      if (pose === 'bath') this.bubbles(it);
+      else this.fx.jelly(it.pivot, 0.1);
       return;
     }
     this.fx.jelly(it.pivot, 0.12);
@@ -249,17 +328,65 @@ export class Game {
       if (it.occupant) return c.happy();
       it.occupant = c;
       this.seats.set(c, it);
-      c.face(this.camera.position); // sit facing the player so the face stays visible
-      c.sitOn(it.snap!);
+      c.face(this.camera.position); // face the player so the face stays visible
+      c.sitOn(snap, pose);
       this.fx.jelly(it.pivot, 0.15);
       sfx(it.sfx);
+      if (pose === 'bath') setTimeout(() => this.bubbles(it), 350);
     });
+  }
+
+  private bubbles(tub: Interactable) {
+    const foam = tub.parts.filter((p) => p.name.includes('_foam'));
+    foam.forEach((f, i) => {
+      const from = f.scale.x;
+      this.fx.tween(0.5 + i * 0.05, (k) => f.scale.setScalar(THREE.MathUtils.lerp(from, 1, k) * (1 + Math.sin(k * Math.PI) * 0.25)));
+    });
+    const top = new THREE.Box3().setFromObject(tub.pivot).max.y;
+    this.fx.burst('bubble', new THREE.Vector3(tub.pivot.position.x, top, tub.pivot.position.z), 12, {
+      spread: 0.35,
+      up: 0.35,
+      size: 0.12,
+      life: 2.2,
+      jitter: 0.9,
+    });
+  }
+
+  private emit(key: string, at: THREE.Vector3 | undefined, e: Partial<Emitter> & Pick<Emitter, 'kind' | 'left'>) {
+    if (!at) return;
+    this.emitters.set(key, { at, every: 0.04, acc: 0, ...e });
   }
 
   /** Immediate visual + audio feedback when an object is tapped. */
   private react(it: Interactable) {
     const top = new THREE.Box3().setFromObject(it.pivot).max.y;
     const at = new THREE.Vector3(it.pivot.position.x, top + 0.05, it.pivot.position.z);
+    switch (it.action) {
+      case 'shower': {
+        this.fx.jelly(it.pivot, 0.05);
+        if (this.emitters.has('shower')) {
+          this.emitters.delete('shower');
+          sfx('tap');
+        } else {
+          sfx('water');
+          this.emit('shower', this.room.fxPoints.get('shower'), {
+            kind: 'drop',
+            left: 8,
+            every: 0.03,
+            sound: { name: 'water', every: 1.1, acc: 0 },
+          });
+          const tub = this.room.interactables.find((i) => i.action === 'bath');
+          if (tub) setTimeout(() => this.bubbles(tub), 900);
+        }
+        return;
+      }
+      case 'wash':
+        sfx(it.sfx);
+        this.fx.jelly(it.pivot, 0.1);
+        this.emit('sink', this.room.fxPoints.get('sink'), { kind: 'drop', left: 2, every: 0.05 });
+        setTimeout(() => this.fx.burst('bubble', at, 6, { spread: 0.2, up: 0.3, size: 0.08, life: 1.6 }), 600);
+        return;
+    }
     sfx(it.sfx);
     switch (it.action) {
       case 'brew': {
@@ -293,12 +420,14 @@ export class Game {
         this.fx.burst('star', at.setY(at.y - 0.2), 6);
         break;
       }
-      case 'glow': {
+      case 'glow':
+      case 'sparkle': {
         this.fx.jelly(it.pivot, 0.08);
         const mats = it.parts.map((p) => p.material as THREE.MeshToonMaterial);
         mats.forEach((m) => m.emissive.set(0xfff2b0));
         this.fx.tween(1.6, (k) => mats.forEach((m) => (m.emissiveIntensity = Math.sin(k * Math.PI) * 0.9)));
-        this.fx.burst('note', at, 4, { spread: 0.6 });
+        if (it.action === 'glow') this.fx.burst('note', at, 4, { spread: 0.6 });
+        else this.fx.burst('star', at.setY(at.y - 0.3), 8, { spread: 0.5, up: 0.4 });
         break;
       }
       case 'ding':
@@ -320,6 +449,24 @@ export class Game {
         this.fx.burst('star', at, 3, { size: 0.1 });
         break;
       }
+      case 'squeak':
+        this.fx.jelly(it.pivot, 0.45);
+        this.fx.burst('heart', at, 3, { size: 0.1 });
+        this.fx.burst('note', at, 2, { size: 0.1 });
+        break;
+      case 'bubbles':
+        this.fx.jelly(it.pivot, 0.2);
+        this.fx.burst('bubble', at, 10, { spread: 0.45, up: 0.4, size: 0.1, life: 2 });
+        break;
+      case 'swing':
+        this.fx.tween(1.2, (k) => (it.pivot.rotation.x = Math.sin(k * Math.PI * 6) * (1 - k) * 0.25));
+        this.fx.burst('star', at, 3, { size: 0.1 });
+        break;
+      case 'toot':
+        this.fx.jelly(it.pivot, 0.25);
+        this.fx.burst('note', at, 4, { spread: 0.5 });
+        this.fx.burst('star', at, 3);
+        break;
       default:
         this.fx.jelly(it.pivot);
         this.fx.burst('star', at, 5);
@@ -357,11 +504,34 @@ export class Game {
     this.camera.lookAt(this.camTarget);
   }
 
+  private updateEmitters(dt: number) {
+    for (const [key, e] of this.emitters) {
+      e.left -= dt;
+      if (e.left <= 0) {
+        this.emitters.delete(key);
+        continue;
+      }
+      e.acc += dt;
+      while (e.acc >= e.every) {
+        e.acc -= e.every;
+        this.fx.burst(e.kind, e.at, 1, { spread: 0.05, up: -0.6, size: 0.08, life: 0.42, jitter: 0.2 });
+      }
+      if (e.sound) {
+        e.sound.acc += dt;
+        if (e.sound.acc >= e.sound.every) {
+          e.sound.acc = 0;
+          sfx(e.sound.name);
+        }
+      }
+    }
+  }
+
   private frame(ts: number) {
     this.timer.update(ts);
     const dt = Math.min(this.timer.getDelta(), 1 / 20);
     const t = this.timer.getElapsed();
     for (const c of this.chars) c.update(dt, t);
+    this.updateEmitters(dt);
     this.fx.update(dt);
     const s = 1 + Math.sin(t * 4) * 0.06;
     this.selRing.scale.set(s, s, s);

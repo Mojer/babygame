@@ -115,6 +115,19 @@ body {
   transform: translate(-50%, 0);
 }
 
+.fade {
+  position: fixed;
+  inset: 0;
+  background: #fff8ee;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.32s ease;
+}
+
+.fade.on {
+  opacity: 1;
+}
+
 .loading {
   position: fixed;
   inset: 0;

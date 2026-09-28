@@ -18,7 +18,10 @@ export interface Interactable {
 
 export interface Door {
   name: string;
+  /** Room key this door leads to. */
   to: string;
+  /** Name of the door in the target room where characters arrive. */
+  spawn: string;
   position: THREE.Vector3;
 }
 
@@ -38,6 +41,8 @@ export class Room {
   readonly doors: Door[] = [];
   readonly doorParts = new Map<THREE.Object3D, Door>();
   readonly pickables: THREE.Object3D[] = [];
+  /** Effect emit points from FX_* empties, keyed by their `fx` property. */
+  readonly fxPoints = new Map<string, THREE.Vector3>();
   nav!: NavGrid;
   spawn = new THREE.Vector3();
 
@@ -51,8 +56,6 @@ export class Room {
 
   private parse(scene: THREE.Object3D) {
     scene.updateMatrixWorld(true);
-    const byName = new Map<string, THREE.Object3D>();
-    scene.traverse((o) => byName.set(o.name, o));
 
     let navMesh: THREE.Object3D | undefined;
     const snaps: THREE.Object3D[] = [];
@@ -62,8 +65,14 @@ export class Room {
       else if (o.name.startsWith('SNAP_')) snaps.push(o);
       else if (o.name.startsWith('SPAWN_')) o.getWorldPosition(this.spawn);
       else if (o.name.startsWith('DOOR_')) {
-        const d: Door = { name: o.name, to: String(o.userData.to ?? ''), position: o.getWorldPosition(new THREE.Vector3()) };
-        this.doors.push(d);
+        this.doors.push({
+          name: o.name,
+          to: String(o.userData.to ?? ''),
+          spawn: String(o.userData.spawn ?? ''),
+          position: o.getWorldPosition(new THREE.Vector3()),
+        });
+      } else if (o.name.startsWith('FX_')) {
+        this.fxPoints.set(String(o.userData.fx ?? o.name.slice(3)), o.getWorldPosition(new THREE.Vector3()));
       }
       if ((o as THREE.Mesh).isMesh) meshes.push(o as THREE.Mesh);
     });
@@ -117,7 +126,7 @@ export class Room {
     }
 
     for (const m of meshes) {
-      if (m.name.startsWith('doormat') && this.doors[0]) this.doorParts.set(m, this.doors[0]);
+      if (/^door(mat|way)/.test(m.name) && this.doors.length) this.doorParts.set(m, this.nearestDoor(m.getWorldPosition(new THREE.Vector3())));
       if (m.visible) this.pickables.push(m);
     }
 
@@ -134,5 +143,13 @@ export class Room {
       const p = this.nav.nearestFree(d.position.x, d.position.z);
       if (p) d.position.copy(p);
     }
+  }
+
+  private nearestDoor(p: THREE.Vector3): Door {
+    return this.doors.reduce((a, b) => (a.position.distanceTo(p) <= b.position.distanceTo(p) ? a : b));
+  }
+
+  door(name: string): Door | undefined {
+    return this.doors.find((d) => d.name === name);
   }
 }
