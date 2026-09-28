@@ -48,28 +48,37 @@
 <link rel="apple-touch-startup-image" href="splash/launch-1290x2796.png"
   media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
+  <link rel="preload" as="image" href="thumbs/earth.jpg">
   <style>
+    /* 形狀規則：大卡片 24px、圖片磚 18px、按鈕與標籤全圓角 */
     :root {
-      --bg: #f4f6fb;
+      --bg: #f3f5fa;
       --surface: #ffffff;
       --text: #1c2130;
-      --text-soft: #6b7288;
-      --line: rgba(28, 33, 48, .07);
+      --text-soft: #5f667c;
+      --line: rgba(28, 33, 48, .08);
       --accent: #ff6b4a;
+      --accent-ink: #b8341a;
+      --accent-soft: #ffe7e0;
       --accent-text: #ffffff;
-      --shadow: 0 10px 30px rgba(46, 60, 100, .10);
-      --radius-card: 22px;
-      --radius-tile: 16px;
+      --shadow: 0 1px 2px rgba(46, 60, 100, .06), 0 10px 28px rgba(46, 60, 100, .09);
+      --r-card: 24px;
+      --r-tile: 18px;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #12141c;
-        --surface: #1c1f2b;
+        --bg: #11131a;
+        --surface: #1b1e29;
         --text: #f0f2f8;
-        --text-soft: #9aa1b8;
-        --line: rgba(255, 255, 255, .07);
+        --text-soft: #a2a9bf;
+        --line: rgba(255, 255, 255, .08);
         --accent: #ff7757;
-        --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+        --accent-ink: #ffb19c;
+        --accent-soft: #3d2019;
+        --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 12px 30px rgba(0, 0, 0, .35);
       }
     }
 
@@ -78,90 +87,172 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      font-family: "Huninn", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
       min-height: 100dvh;
-      padding: max(20px, env(safe-area-inset-top)) 20px calc(96px + env(safe-area-inset-bottom));
+      padding: max(16px, env(safe-area-inset-top)) 16px calc(100px + env(safe-area-inset-bottom));
       -webkit-tap-highlight-color: transparent;
     }
+    img { display: block; }
+    a { color: inherit; text-decoration: none; }
 
-    .shell { max-width: 480px; margin: 0 auto; }
+    .shell { max-width: 560px; margin: 0 auto; }
 
     /* ---------- 頁首 ---------- */
-    header { padding: 18px 4px 26px; }
-    .hello { font-size: 14px; font-weight: 600; color: var(--text-soft); margin-bottom: 6px; }
-    h1 { font-size: 30px; font-weight: 800; letter-spacing: 1px; line-height: 1.2; }
-    h1 .wave { display: inline-block; margin-left: 6px; }
+    header { padding: 14px 4px 20px; }
+    .hello { font-size: 15px; font-weight: 700; color: var(--text-soft); }
+    h1 { font-size: 30px; font-weight: 900; letter-spacing: .5px; line-height: 1.25; margin-top: 4px; }
 
-    /* ---------- 遊戲卡片 ---------- */
-    .games { display: grid; gap: 14px; list-style: none; }
-    .game {
-      display: flex; align-items: center; gap: 16px;
+    /* ---------- 共用：可點的卡 ---------- */
+    .card {
+      position: relative;
+      display: block;
       background: var(--surface);
-      border-radius: var(--radius-card);
-      padding: 16px;
-      text-decoration: none;
-      color: var(--text);
-      box-shadow: var(--shadow);
       border: 1px solid var(--line);
-      transition: transform .18s cubic-bezier(.16, 1, .3, 1), box-shadow .18s;
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow);
+      transition: transform .22s cubic-bezier(.16, 1, .3, 1);
     }
-    .game:active { transform: scale(.97); }
-    @media (hover: hover) {
-      .game:hover { transform: translateY(-2px); }
-    }
-    .game:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    .card:active { transform: scale(.97); }
+    @media (hover: hover) { .card:hover { transform: translateY(-3px); } }
+    .card:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 
-    .tile {
+    /* ---------- 最新遊戲大卡 ---------- */
+    .feature {
+      display: grid;
+      grid-template-columns: 1fr;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+    .feature .shot {
+      height: 220px;
+      background: #0a1030;
+      overflow: hidden;
+    }
+    .feature .shot img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: 50% 42%;
+    }
+    .feature .body {
+      display: flex; flex-direction: column; gap: 14px;
+      padding: 16px 18px 18px;
+    }
+    .feature .txt { min-width: 0; }
+    .feature .txt > span { display: block; }
+    .feature .txt > .tag { display: inline-block; }
+    .tag {
+      display: inline-block;
+      font-size: 12px; font-weight: 800;
+      color: var(--accent-ink);
+      background: var(--accent-soft);
+      border-radius: 999px;
+      padding: 3px 10px;
+      margin-bottom: 6px;
+    }
+    .feature .name { font-size: 22px; font-weight: 900; line-height: 1.3; }
+    .feature .desc { font-size: 14px; color: var(--text-soft); margin-top: 2px; }
+    .actions { display: flex; gap: 10px; }
+    .play, .trailer {
       flex: none;
-      width: 58px; height: 58px;
-      border-radius: var(--radius-tile);
+      font-size: 16px; font-weight: 800;
+      border-radius: 999px;
+      padding: 12px 20px;
+      white-space: nowrap;
+    }
+    .play { color: var(--accent-text); background: var(--accent); }
+    /* 整張卡都能點進遊戲，預告片按鈕疊在上層 */
+    .play::after { content: ""; position: absolute; inset: 0; }
+    .play::after { border-radius: var(--r-card); }
+    .trailer {
+      position: relative; z-index: 1;
+      color: var(--accent-ink);
+      background: var(--accent-soft);
+    }
+    .play:focus-visible, .trailer:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+    /* ---------- 分區 ---------- */
+    section + section { margin-top: 30px; }
+    h2 {
+      display: flex; align-items: baseline; gap: 8px;
+      font-size: 19px; font-weight: 900;
+      padding: 0 4px 12px;
+    }
+    h2 small { font-size: 13px; font-weight: 700; color: var(--text-soft); }
+
+    /* ---------- 遊戲磚格 ---------- */
+    .grid {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .grid .wide { grid-column: 1 / -1; }
+    .tile { padding: 8px 8px 12px; height: 100%; }
+    .art {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      border-radius: var(--r-tile);
+      background: var(--art-bg, var(--bg));
+      overflow: hidden;
       display: grid; place-items: center;
-      font-size: 30px;
-      background: var(--tile-bg);
     }
-    .meta { flex: 1; min-width: 0; }
-    .meta .name { font-size: 17px; font-weight: 800; }
-    .meta .desc { font-size: 13px; color: var(--text-soft); margin-top: 3px; display: block; }
-    .go {
-      flex: none;
-      font-size: 22px; font-weight: 700;
-      color: var(--text-soft);
-      opacity: .55;
+    .wide .art { aspect-ratio: 16 / 7; }
+    .art img { width: 100%; height: 100%; object-fit: cover; }
+    .art .emoji { font-size: 58px; line-height: 1; }
+    .art.word img { object-fit: contain; height: 118%; margin-top: 12%; }
+    .art.faces { display: flex; align-items: center; justify-content: center; gap: 6%; }
+    .art.faces img { width: 38%; max-width: 128px; height: auto; }
+    .wide .art.faces img { width: 26%; }
+    .art.faces .vs { font-size: 15px; font-weight: 900; color: var(--text-soft); }
+    .tile .desc, .tile .name { display: block; }
+    .tile .name { font-size: 16px; font-weight: 900; line-height: 1.35; padding: 10px 6px 0; }
+    .tile .desc { font-size: 13px; color: var(--text-soft); line-height: 1.45; padding: 2px 6px 0; }
+    .last {
+      display: none;
+      font-size: 11px; font-weight: 800;
+      color: var(--accent-ink); background: var(--accent-soft);
+      border-radius: 999px; padding: 2px 8px;
+      margin-left: 6px; vertical-align: 2px;
+    }
+    .is-last .last { display: inline-block; }
+
+    /* 圖片磚底色（淺色 / 深色各一組） */
+    .c-red    { --art-bg: #ffe4de; }
+    .c-green  { --art-bg: #dcf2df; }
+    .c-orange { --art-bg: #ffecd0; }
+    .c-blue   { --art-bg: #dce9ff; }
+    .c-gold   { --art-bg: #fff1c2; }
+    .c-purple { --art-bg: #ebe1ff; }
+    .c-ice    { --art-bg: #d7f0fa; }
+    .c-forest { --art-bg: #d9e9d6; }
+    .c-paper  { --art-bg: #fbfbf8; }
+    @media (prefers-color-scheme: dark) {
+      .c-red    { --art-bg: #47231e; }
+      .c-green  { --art-bg: #1d3a26; }
+      .c-orange { --art-bg: #423014; }
+      .c-blue   { --art-bg: #1d2f4a; }
+      .c-gold   { --art-bg: #443a14; }
+      .c-purple { --art-bg: #322350; }
+      .c-ice    { --art-bg: #123a4a; }
+      .c-forest { --art-bg: #21331f; }
+      .c-paper  { --art-bg: #e9e9e4; }
     }
 
-    /* 每款遊戲的圖示磚底色（淺色 / 深色各一組） */
-    .t-red    { --tile-bg: #ffe4de; }
-    .t-green  { --tile-bg: #ddf3e0; }
-    .t-orange { --tile-bg: #ffedd2; }
-    .t-blue   { --tile-bg: #ddebff; }
-    .t-gold   { --tile-bg: #fff3c9; }
-    .t-purple { --tile-bg: #ece2ff; }
-    .t-ice    { --tile-bg: #d9f1fb; }
-    .t-forest { --tile-bg: #dbead9; }
-    .t-pink   { --tile-bg: #ffe1eb; }
-    .t-space  { --tile-bg: #dde4ff; }
-    @media (prefers-color-scheme: dark) {
-      .t-red    { --tile-bg: #47231e; }
-      .t-green  { --tile-bg: #1d3a26; }
-      .t-orange { --tile-bg: #423014; }
-      .t-blue   { --tile-bg: #1d2f4a; }
-      .t-gold   { --tile-bg: #443a14; }
-      .t-purple { --tile-bg: #322350; }
-      .t-ice    { --tile-bg: #123a4a; }
-      .t-forest { --tile-bg: #21331f; }
-      .t-pink   { --tile-bg: #472334; }
-      .t-space  { --tile-bg: #1a2150; }
+    @media (min-width: 640px) {
+      .feature { grid-template-columns: 1.1fr 1fr; }
+      .feature .shot { height: 300px; }
+      .feature .body { justify-content: center; gap: 18px; padding: 28px; }
+      .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid .wide { grid-column: span 2; }
     }
 
     /* ---------- 進場動畫 ---------- */
     @media (prefers-reduced-motion: no-preference) {
-      header, .game {
-        opacity: 0;
-        transform: translateY(14px);
-        animation: rise .55s cubic-bezier(.16, 1, .3, 1) forwards;
-        animation-delay: calc(var(--i, 0) * 70ms);
+      /* backwards：動畫結束後不鎖住 transform，按壓回饋才會生效 */
+      .rise {
+        animation: rise .55s cubic-bezier(.16, 1, .3, 1) backwards;
+        animation-delay: calc(var(--i, 0) * 55ms);
       }
-      @keyframes rise { to { opacity: 1; transform: none; } }
+      @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
     }
 
     /* ---------- 加到主畫面提示 ---------- */
@@ -169,14 +260,14 @@
       position: fixed;
       left: 16px; right: 16px;
       bottom: max(16px, env(safe-area-inset-bottom));
-      max-width: 448px; margin: 0 auto;
+      max-width: 528px; margin: 0 auto;
       display: none;
       align-items: center; gap: 12px;
-      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      background: color-mix(in srgb, var(--surface) 90%, transparent);
       -webkit-backdrop-filter: blur(14px);
       backdrop-filter: blur(14px);
       border: 1px solid var(--line);
-      border-radius: 18px;
+      border-radius: var(--r-tile);
       padding: 12px 14px;
       box-shadow: var(--shadow);
       font-size: 13px; line-height: 1.55;
@@ -184,7 +275,7 @@
     .install strong { font-weight: 800; }
     .install .close {
       flex: none;
-      font: inherit; font-weight: 700;
+      font: inherit; font-weight: 800;
       color: var(--accent-text);
       background: var(--accent);
       border: none; border-radius: 999px;
@@ -196,76 +287,118 @@
 </head>
 <body>
   <div class="shell">
-    <header style="--i:1">
+    <header class="rise">
       <p class="hello">今天想玩哪一個呢？</p>
-      <h1>寶貝遊戲選單<span class="wave">👋</span></h1>
+      <h1>寶貝遊戲選單</h1>
     </header>
 
-    <ul class="games">
-      <li><a class="game" style="--i:1" href="./babyearthdefense/dist/">
-        <span class="tile t-space">🌍</span>
-        <span class="meta"><span class="name">寶寶地球保衛戰</span><span class="desc">繞著地球轉圈圈，打出連環爆破！</span></span>
-        <span class="go">›</span>
-      </a></li>
-      <li><a class="game" style="--i:2" href="./baby_school_rush/dist/">
-        <span class="tile t-pink">🎒</span>
-        <span class="meta"><span class="name">上學衝衝衝～</span><span class="desc">跳過障礙、收集星星，準時抵達學校！</span></span>
-        <span class="go">›</span>
-      </a></li>
-      <li><a class="game" style="--i:3" href="https://goblin-wardens-arena.kuma-informa-2811.chatgpt.site/" target="_blank" rel="noopener">
-        <span class="tile t-forest">🛡️</span>
-        <span class="meta"><span class="name">暮林守衛</span><span class="desc">3D 劍盾生存！擊退成群的哥布林</span></span>
-        <span class="go">›</span>
-      </a></li>
-      <li><a class="game" style="--i:4" href="./babyworddefense/">
-        <span class="tile t-gold">ϟ</span>
-        <span class="meta"><span class="name">怪獸單字防衛隊</span><span class="desc">聽英文拆炸彈！小一到小六守護城市</span></span>
-        <span class="go">›</span>
-      </a></li>
-      <li><a class="game" style="--i:5" href="https://mojer.github.io/babygame/babyball" target="_blank" rel="noopener">
-        <span class="tile t-red">🎯</span>
-        <span class="meta"><span class="name">寶貝被球K</span><span class="desc">閃開飛來的球球！</span></span>
-        <span class="go">›</span>
-      </a></li>
-      <li><a class="game" style="--i:6" href="https://mojer.github.io/babygame/babypickup" target="_blank" rel="noopener">
-        <span class="tile t-green">🥦</span>
-        <span class="meta"><span class="name">寶貝撿菜菜</span><span class="desc">把掉下來的菜菜通通接住</span></span>
-        <span class="go">›</span>
-      </a></li>
-      <li><a class="game" style="--i:7" href="https://mojer.github.io/babygame/Baby Run" target="_blank" rel="noopener">
-        <span class="tile t-orange">🏃</span>
-        <span class="meta"><span class="name">寶貝跑跑跑</span><span class="desc">向前衝，跳過障礙！</span></span>
-        <span class="go">›</span>
-      </a></li>
-      <li><a class="game" style="--i:8" href="https://mojer.github.io/babygame/babyrobotshooter" target="_blank" rel="noopener">
-        <span class="tile t-blue">🤖</span>
-        <span class="meta"><span class="name">寶貝機器人射擊</span><span class="desc">瞄準機器人，射擊！</span></span>
-        <span class="go">›</span>
-      </a></li>
-      <li><a class="game" style="--i:9" href="https://mojer.github.io/babygame/babyballrace" target="_blank" rel="noopener">
-        <span class="tile t-gold">🏁</span>
-        <span class="meta"><span class="name">滾珠大作戰</span><span class="desc">雙人對戰！誰的球先到終點？</span></span>
-        <span class="go">›</span>
-      </a></li>
-      <li><a class="game" style="--i:10" href="https://mojer.github.io/babygame/babyballrace2" target="_blank" rel="noopener">
-        <span class="tile t-purple">🗺️</span>
-        <span class="meta"><span class="name">滾珠大作戰 2</span><span class="desc">全地圖一眼看完的滾珠對戰！</span></span>
-        <span class="go">›</span>
-      </a></li>
-      <li><a class="game" style="--i:11" href="https://mojer.github.io/babygame/babyhockey" target="_blank" rel="noopener">
-        <span class="tile t-ice">🏒</span>
-        <span class="meta"><span class="name">桌上冰球大亂鬥</span><span class="desc">兩人一起玩！60 秒進球比多</span></span>
-        <span class="go">›</span>
-      </a></li>
-    </ul>
+    <div class="card feature rise" style="--i:1">
+      <span class="shot"><img src="thumbs/earth.jpg" alt="" width="506" height="900"></span>
+      <span class="body">
+        <span class="txt">
+          <span class="tag">最新遊戲</span>
+          <span class="name">寶寶地球保衛戰<span class="last">上次玩的</span></span>
+          <span class="desc">繞著地球轉圈圈，打出連環爆破！</span>
+        </span>
+        <span class="actions">
+          <a class="play" data-game="earth" href="./babyearthdefense/dist/">開始玩</a>
+          <a class="trailer" href="https://youtu.be/UeCWa0vAomc" target="_blank" rel="noopener">看預告片</a>
+        </span>
+      </span>
+    </div>
+
+    <section>
+      <h2>一個人玩</h2>
+      <ul class="grid">
+        <li class="wide"><a class="card tile rise" style="--i:2" data-game="school" href="./baby_school_rush/dist/">
+          <span class="art"><img src="thumbs/school.jpg" alt="" width="700" height="394"></span>
+          <p class="name">上學衝衝衝～<span class="last">上次玩的</span></p>
+          <p class="desc">跳過障礙、收集星星，準時抵達學校！</p>
+        </a></li>
+        <li><a class="card tile rise" style="--i:3" data-game="word" href="./babyworddefense/">
+          <span class="art word c-paper"><img src="thumbs/word.jpg" alt="" loading="lazy" width="390" height="520"></span>
+          <p class="name">怪獸單字防衛隊<span class="last">上次玩的</span></p>
+          <p class="desc">聽英文拆炸彈，守護城市</p>
+        </a></li>
+        <li><a class="card tile rise" style="--i:4" data-game="goblin" href="https://goblin-wardens-arena.kuma-informa-2811.chatgpt.site/" target="_blank" rel="noopener">
+          <span class="art c-forest"><span class="emoji" aria-hidden="true">🛡️</span></span>
+          <p class="name">暮林守衛<span class="last">上次玩的</span></p>
+          <p class="desc">3D 劍盾生存，擊退哥布林</p>
+        </a></li>
+        <li><a class="card tile rise" style="--i:5" data-game="ball" href="https://mojer.github.io/babygame/babyball" target="_blank" rel="noopener">
+          <span class="art c-red"><span class="emoji" aria-hidden="true">🎯</span></span>
+          <p class="name">寶貝被球K<span class="last">上次玩的</span></p>
+          <p class="desc">閃開飛來的球球！</p>
+        </a></li>
+        <li><a class="card tile rise" style="--i:6" data-game="pickup" href="https://mojer.github.io/babygame/babypickup" target="_blank" rel="noopener">
+          <span class="art c-green"><span class="emoji" aria-hidden="true">🥦</span></span>
+          <p class="name">寶貝撿菜菜<span class="last">上次玩的</span></p>
+          <p class="desc">把掉下來的菜菜接住</p>
+        </a></li>
+        <li><a class="card tile rise" style="--i:7" data-game="run" href="https://mojer.github.io/babygame/Baby Run" target="_blank" rel="noopener">
+          <span class="art c-orange"><span class="emoji" aria-hidden="true">🏃</span></span>
+          <p class="name">寶貝跑跑跑<span class="last">上次玩的</span></p>
+          <p class="desc">向前衝，跳過障礙！</p>
+        </a></li>
+        <li><a class="card tile rise" style="--i:8" data-game="robot" href="https://mojer.github.io/babygame/babyrobotshooter" target="_blank" rel="noopener">
+          <span class="art c-blue"><span class="emoji" aria-hidden="true">🤖</span></span>
+          <p class="name">寶貝機器人射擊<span class="last">上次玩的</span></p>
+          <p class="desc">瞄準機器人，射擊！</p>
+        </a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>兩個人一起玩 <small>找爸爸媽媽或好朋友</small></h2>
+      <ul class="grid">
+        <li class="wide"><a class="card tile rise" style="--i:9" data-game="hockey" href="https://mojer.github.io/babygame/babyhockey" target="_blank" rel="noopener">
+          <span class="art faces c-ice">
+            <img src="babyhockey/assets/ch_01_s.png" alt="" loading="lazy" width="256" height="256">
+            <span class="vs" aria-hidden="true">VS</span>
+            <img src="babyhockey/assets/ch_04_s.png" alt="" loading="lazy" width="256" height="256">
+          </span>
+          <p class="name">桌上冰球大亂鬥<span class="last">上次玩的</span></p>
+          <p class="desc">60 秒內誰進球比較多？</p>
+        </a></li>
+        <li><a class="card tile rise" style="--i:10" data-game="race" href="https://mojer.github.io/babygame/babyballrace" target="_blank" rel="noopener">
+          <span class="art faces c-gold">
+            <img src="babyballrace2/assets/ch_02_s.png" alt="" loading="lazy" width="256" height="256">
+            <img src="babyballrace2/assets/ch_05_s.png" alt="" loading="lazy" width="256" height="256">
+          </span>
+          <p class="name">滾珠大作戰<span class="last">上次玩的</span></p>
+          <p class="desc">誰的球先到終點？</p>
+        </a></li>
+        <li><a class="card tile rise" style="--i:11" data-game="race2" href="https://mojer.github.io/babygame/babyballrace2" target="_blank" rel="noopener">
+          <span class="art faces c-purple">
+            <img src="babyballrace2/assets/ch_03_s.png" alt="" loading="lazy" width="256" height="256">
+            <img src="babyballrace2/assets/ch_06_s.png" alt="" loading="lazy" width="256" height="256">
+          </span>
+          <p class="name">滾珠大作戰 2<span class="last">上次玩的</span></p>
+          <p class="desc">整張地圖一眼看完</p>
+        </a></li>
+      </ul>
+    </section>
   </div>
 
   <div id="installPrompt" class="install">
-    <span>👉 用 Safari 點<strong>分享</strong>，選「<strong>加到主畫面</strong>」就能安裝囉！</span>
+    <span>用 Safari 點<strong>分享</strong>，選「<strong>加到主畫面</strong>」就能安裝囉！</span>
     <button class="close" onclick="document.getElementById('installPrompt').style.display='none'">知道了</button>
   </div>
 
 <script>
+  // 記住上次玩的遊戲，下次打開時標出來（瀏覽器不允許儲存時就略過）
+  (function () {
+    var KEY = 'babygame:last';
+    var last = null;
+    try { last = localStorage.getItem(KEY); } catch (e) {}
+    document.querySelectorAll('[data-game]').forEach(function (a) {
+      if (a.dataset.game === last) a.closest('.card').classList.add('is-last');
+      a.addEventListener('click', function () {
+        try { localStorage.setItem(KEY, a.dataset.game); } catch (e) {}
+      });
+    });
+  })();
+
   window.addEventListener('load', () => {
     // 僅在 iPhone Safari 且不是 App 模式時顯示安裝提示
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
