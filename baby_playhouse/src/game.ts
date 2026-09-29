@@ -1,14 +1,17 @@
 import * as THREE from 'three';
 import { OutlineEffect } from 'three/examples/jsm/effects/OutlineEffect.js';
-import { CHARACTERS, COMING_SOON, ROOMS, START_ROOM } from './config';
+import { CHARACTERS, COMING_SOON, DEFAULT_BG, INTRO, ROOMS, START_ROOM } from './config';
 import { sfx, unlockAudio } from './core/audio';
 import { Character } from './entities/character';
 import { Room, type Door, type Interactable } from './scene/room';
 import { Fx } from './systems/fx';
+import { Bubbles } from './ui/bubbles';
 
 export interface GameHooks {
   onSelect(key: string): void;
   toast(msg: string): void;
+  /** Toon-rendered head shots for the cast bar, keyed by character. */
+  onPortraits?(urls: Record<string, string>): void;
 }
 
 const CAM_DIR = new THREE.Vector3(0.5, Math.SQRT1_2, 0.5).normalize(); // 45° down, from south-east
@@ -45,6 +48,12 @@ export class Game {
   private emitters = new Map<string, Emitter>();
   private busy = false;
   private readonly fade: HTMLDivElement;
+  /** Seconds of self-rocking left for an unoccupied rocking horse. */
+  private rockLeft = new Map<Interactable, number>();
+  /** On/off state of toggles (lamp). */
+  private toggles = new WeakMap<Interactable, boolean>();
+  private readonly speech: Bubbles;
+  private lastLine = new Map<Character, string>();
 
   constructor(
     private readonly container: HTMLElement,
@@ -84,6 +93,8 @@ export class Game {
     this.selRing.position.y = 0.015;
     this.selRing.renderOrder = 1;
 
+    this.speech = new Bubbles(document.body);
+
     this.fade = document.createElement('div');
     this.fade.className = 'fade';
     document.body.appendChild(this.fade);
@@ -102,8 +113,15 @@ export class Game {
     ]);
     this.chars = chars;
     chars.forEach((c) => this.scene.add(c.root));
-    this.activateRoom(room);
-    this.select(chars.find((c) => c.def.key === 'bunny') ?? chars[0], false);
+    this.activateRoom(START_ROOM, room);
+    chars.forEach((c, i) => {
+      const p = room.castSpawns[i];
+      if (p) c.teleport(room.nav.nearestFree(p.x, p.z) ?? p, c.def.facing);
+    });
+    this.select(chars[0], false);
+    this.hooks.onPortraits?.(this.renderPortraits());
+    const host = chars.find((c) => c.def.key === INTRO.speaker);
+    if (host) setTimeout(() => this.say(host, INTRO.text), 900);
     this.resize();
     this.snapCamera();
     this.renderer.setAnimationLoop((ts) => this.frame(ts));
@@ -126,7 +144,8 @@ export class Game {
     return p;
   }
 
-  private activateRoom(room: Room) {
+  private activateRoom(key: string, room: Room) {
+    (this.scene.background as THREE.Color).set(ROOMS[key].bg ?? DEFAULT_BG);
     if (this.room) {
       this.scene.remove(this.room.root);
       for (const it of this.room.interactables) it.occupant = undefined;
@@ -145,9 +164,19 @@ export class Game {
     c.root.add(this.selRing);
     this.hooks.onSelect(c.def.key);
     if (greet) {
-      c.happy();
-      sfx('hi', c.def.voice);
+      const pool = c.def.lines.filter((l) => l !== this.lastLine.get(c));
+      this.say(c, pool[Math.floor(Math.random() * pool.length)] ?? c.def.lines[0]);
     }
+  }
+
+  /** Speech bubble above a character's head, with a little hop and voice. */
+  say(c: Character, text: string) {
+    this.lastLine.set(c, text);
+    if (!c.busy && !c.isSitting) c.face(this.camera.position);
+    c.happy();
+    sfx('hi', c.def.voice);
+    const tmp = new THREE.Vector3();
+    this.speech.say(c, () => c.headTop(tmp), text);
   }
 
   selectKey(key: string) {
@@ -245,10 +274,11 @@ export class Game {
   private async enterRoom(from: Door) {
     if (this.busy) return;
     this.busy = true;
+    this.speech.clear();
     sfx('door');
     this.fade.classList.add('on');
     const [room] = await Promise.all([this.getRoom(from.to), new Promise((r) => setTimeout(r, FADE_MS))]);
-    this.activateRoom(room);
+    this.activateRoom(from.to, room);
 
     // Arrive at the matching door, everyone steps a little into the room.
     const door = room.door(from.spawn) ?? room.doors[0];
@@ -297,10 +327,13 @@ export class Game {
       it.occupant = undefined;
       this.seats.delete(c);
     }
+    c.rock = 0;
   }
 
   private interact(it: Interactable) {
     const c = this.selected;
+    if (c.busy) return;
+    if (it.action === 'slide') return this.slide(c, it);
     if (it.snap) return this.sit(c, it);
 
     this.react(it);
@@ -317,6 +350,7 @@ export class Game {
     const occ = it.occupant as Character | undefined;
     if (occ) {
       occ.happy();
+      if (it.action === 'drive' || it.action === 'rock') return this.react(it);
       sfx(occ === c && pose === 'bath' ? 'splash' : 'hi', occ.def.voice);
       if (pose === 'bath') this.bubbles(it);
       else this.fx.jelly(it.pivot, 0.1);
@@ -328,11 +362,48 @@ export class Game {
       if (it.occupant) return c.happy();
       it.occupant = c;
       this.seats.set(c, it);
-      c.face(this.camera.position); // face the player so the face stays visible
+      // Ride-ons (car, horse) face their own way; everything else faces the player.
+      if (snap.userData.align) c.faceYaw(new THREE.Euler().setFromQuaternion(snap.getWorldQuaternion(new THREE.Quaternion()), 'YXZ').y);
+      else c.face(this.camera.position);
       c.sitOn(snap, pose);
       this.fx.jelly(it.pivot, 0.15);
       sfx(it.sfx);
       if (pose === 'bath') setTimeout(() => this.bubbles(it), 350);
+    });
+  }
+
+  /** Walk to the ladder, climb up, then whoosh down the ramp. */
+  private slide(c: Character, it: Interactable) {
+    const pts = this.room.fxPoints;
+    const ladder = pts.get('slide_ladder');
+    const ramp = [pts.get('slide_0'), pts.get('slide_1'), pts.get('slide_2')];
+    if (!ladder || !it.snap || ramp.some((p) => !p)) {
+      this.fx.jelly(it.pivot);
+      return;
+    }
+    if (it.occupant) {
+      (it.occupant as Character).happy();
+      return;
+    }
+    this.fx.jelly(it.pivot, 0.06);
+    sfx('tap');
+    const top = it.snap.getWorldPosition(new THREE.Vector3());
+    this.walkTo(ladder, false, () => {
+      if (it.occupant) return c.happy();
+      it.occupant = c;
+      c.face(top);
+      c.jump(top, 0.35, () => {
+        c.face(ramp[1]!);
+        sfx('hi', c.def.voice);
+        setTimeout(() => {
+          sfx(it.sfx);
+          c.ride(ramp as THREE.Vector3[], 2.4, () => {
+            it.occupant = undefined;
+            c.happy();
+            this.fx.burst('star', ramp[2]!.clone().setY(0.4), 7);
+          });
+        }, 380);
+      });
     });
   }
 
@@ -449,6 +520,88 @@ export class Game {
         this.fx.burst('star', at, 3, { size: 0.1 });
         break;
       }
+      case 'tv': {
+        this.fx.jelly(it.pivot, 0.06);
+        const screen = it.parts.find((p) => p.name === 'INT_tv') ?? it.parts[0];
+        const m = screen.material as THREE.MeshToonMaterial;
+        const cols = [0xf28c7a, 0xfff3c4, 0xa5dcc8, 0xa9d3f2, 0xc9b8e8];
+        this.fx.tween(2.6, (k) => {
+          m.emissive.setHex(cols[Math.floor(k * 13) % cols.length]);
+          m.emissiveIntensity = k < 0.95 ? 0.9 : 0;
+        });
+        this.fx.burst('note', at, 5, { spread: 0.5 });
+        break;
+      }
+      case 'books': {
+        const books = it.parts.filter((p) => p.name.includes('_books_'));
+        books.forEach((bk, i) => setTimeout(() => this.fx.jelly(bk, 0.35), i * 70));
+        this.fx.burst('heart', at.setY(at.y - 0.4), 4, { spread: 0.4 });
+        this.fx.burst('star', at, 3);
+        break;
+      }
+      case 'lamp': {
+        const on = !(this.toggles.get(it) ?? true);
+        this.toggles.set(it, on);
+        const shade = it.parts.find((p) => p.name === 'INT_lamp') ?? it.parts[0];
+        (shade.material as THREE.MeshToonMaterial).emissiveIntensity = on ? 2.5 : 0;
+        this.fx.jelly(it.pivot, 0.08);
+        if (on) this.fx.burst('star', at, 4, { size: 0.1 });
+        break;
+      }
+      case 'cuckoo': {
+        this.fx.jelly(it.pivot, 0.1);
+        const bird = it.parts.find((p) => p.name.includes('_bird'));
+        const hands = it.parts.filter((p) => p.name.includes('_hand'));
+        const bz = bird?.position.z ?? 0;
+        this.fx.tween(1.1, (k) => {
+          if (bird) bird.position.z = bz + Math.sin(k * Math.PI) * 0.12;
+          hands.forEach((h, i) => (h.rotation.z = -k * Math.PI * 2 * (i ? 1 : 3)));
+        });
+        this.fx.burst('note', at, 3);
+        break;
+      }
+      case 'flowers': {
+        const blooms = it.parts.filter((p) => p.name.includes('_bloom'));
+        blooms.forEach((bl, i) => setTimeout(() => this.fx.jelly(bl, 0.6), i * 60));
+        this.fx.burst('heart', at, 6, { spread: 0.7 });
+        break;
+      }
+      case 'shake': {
+        this.fx.tween(1.2, (k) => (it.pivot.rotation.z = Math.sin(k * Math.PI * 8) * (1 - k) * 0.08));
+        it.parts.filter((p) => p.name.includes('_apple')).forEach((a) => this.fx.jelly(a, 0.6));
+        this.fx.burst('star', at.setY(at.y - 0.3), 6, { spread: 0.8, up: 0.2 });
+        break;
+      }
+      case 'bounce': {
+        const y0 = it.pivot.position.y;
+        this.fx.tween(0.9, (k) => (it.pivot.position.y = y0 + Math.abs(Math.sin(k * Math.PI * 2)) * (1 - k) * 0.35));
+        this.fx.jelly(it.pivot, 0.15);
+        this.fx.burst('star', at, 4);
+        break;
+      }
+      case 'drive': {
+        const rider = it.occupant as Character | undefined;
+        const lights = it.parts.filter((p) => p.name.includes('_light'));
+        lights.forEach((l) => ((l.material as THREE.MeshToonMaterial).emissiveIntensity = 4));
+        setTimeout(() => lights.forEach((l) => ((l.material as THREE.MeshToonMaterial).emissiveIntensity = 2.5)), 600);
+        if (rider) {
+          const z0 = it.pivot.position.z;
+          const rz0 = rider.position.z;
+          this.fx.tween(1.6, (k) => {
+            const off = Math.sin(k * Math.PI) * 0.4;
+            it.pivot.position.z = z0 + off;
+            rider.position.z = rz0 + off;
+          });
+        } else {
+          this.fx.jelly(it.pivot, 0.12);
+        }
+        this.fx.burst('note', at, 2);
+        break;
+      }
+      case 'rock':
+        this.rockLeft.set(it, 2.2);
+        this.fx.burst('heart', at, 3, { size: 0.1 });
+        break;
       case 'squeak':
         this.fx.jelly(it.pivot, 0.45);
         this.fx.burst('heart', at, 3, { size: 0.1 });
@@ -526,17 +679,76 @@ export class Game {
     }
   }
 
+  private updateRockers(dt: number, t: number) {
+    for (const it of this.room.interactables) {
+      if (it.action !== 'rock') continue;
+      const rider = it.occupant as Character | undefined;
+      const left = Math.max(0, (this.rockLeft.get(it) ?? 0) - dt);
+      this.rockLeft.set(it, left);
+      const amp = rider ? 0.16 : 0.16 * Math.min(1, left);
+      const angle = Math.sin(t * 4.5) * amp;
+      it.pivot.rotation.x = angle;
+      if (rider) rider.rock = angle;
+    }
+  }
+
+  /** Render each character's head and shoulders with the game's toon look. */
+  private renderPortraits(): Record<string, string> {
+    const size = 160;
+    const r = this.renderer;
+    const rt = new THREE.WebGLRenderTarget(size, size, { samples: 4, colorSpace: THREE.SRGBColorSpace });
+    const scene = new THREE.Scene();
+    scene.add(new THREE.HemisphereLight(0xfff6e8, 0xe0bf98, 2.2));
+    const key = new THREE.DirectionalLight(0xffffff, 1.4);
+    key.position.set(1, 2, 3);
+    scene.add(key);
+    const cam = new THREE.PerspectiveCamera(26, 1, 0.05, 20);
+    const prevColor = r.getClearColor(new THREE.Color());
+    const prevAlpha = r.getClearAlpha();
+    r.setClearColor(0x000000, 0);
+    const out: Record<string, string> = {};
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext('2d')!;
+    const px = new Uint8Array(size * size * 4);
+    for (const c of this.chars) {
+      const m = c.model.clone(true);
+      scene.add(m);
+      const box = new THREE.Box3().setFromObject(m);
+      const h = box.max.y;
+      const focus = new THREE.Vector3(0, h * 0.6, 0);
+      const d = (h * 0.5) / Math.tan(THREE.MathUtils.degToRad(13));
+      cam.position.set(d * 0.3, focus.y + h * 0.15, d * 0.95);
+      cam.lookAt(focus);
+      r.setRenderTarget(rt);
+      r.clear();
+      this.outline.render(scene, cam);
+      r.readRenderTargetPixels(rt, 0, 0, size, size, px);
+      const img = ctx.createImageData(size, size);
+      for (let y = 0; y < size; y++) img.data.set(px.subarray((size - 1 - y) * size * 4, (size - y) * size * 4), y * size * 4);
+      ctx.putImageData(img, 0, 0);
+      out[c.def.key] = canvas.toDataURL('image/png');
+      scene.remove(m);
+    }
+    r.setRenderTarget(null);
+    r.setClearColor(prevColor, prevAlpha);
+    rt.dispose();
+    return out;
+  }
+
   private frame(ts: number) {
     this.timer.update(ts);
     const dt = Math.min(this.timer.getDelta(), 1 / 20);
     const t = this.timer.getElapsed();
     for (const c of this.chars) c.update(dt, t);
     this.updateEmitters(dt);
+    this.updateRockers(dt, t);
     this.fx.update(dt);
     const s = 1 + Math.sin(t * 4) * 0.06;
     this.selRing.scale.set(s, s, s);
     this.camTarget.lerp(this.desiredTarget(new THREE.Vector3()), Math.min(1, dt * 2.5));
     this.placeCamera();
     this.outline.render(this.scene, this.camera);
+    this.speech.update(this.camera, this.renderer.domElement);
   }
 }

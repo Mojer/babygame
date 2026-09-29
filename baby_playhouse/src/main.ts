@@ -18,7 +18,7 @@ document.body.appendChild(hud);
 
 const loading = document.createElement('div');
 loading.className = 'loading';
-loading.textContent = '咖啡廳開門中… 0%';
+loading.textContent = '遊樂場開門中… 0%';
 document.body.appendChild(loading);
 
 const toastEl = hud.querySelector<HTMLDivElement>('.toast')!;
@@ -28,6 +28,12 @@ const game = new Game(app, {
   onSelect(key) {
     hud.querySelectorAll<HTMLButtonElement>('.cast button').forEach((b) => {
       b.setAttribute('aria-pressed', String(b.dataset.key === key));
+    });
+  },
+  onPortraits(urls) {
+    hud.querySelectorAll<HTMLButtonElement>('.cast button').forEach((b) => {
+      const url = urls[b.dataset.key!];
+      if (url) b.innerHTML = `<img src="${url}" alt="" draggable="false" />`;
     });
   },
   toast(msg) {
@@ -48,7 +54,7 @@ hud.querySelectorAll<HTMLButtonElement>('.cast button').forEach((b) => {
 });
 
 game
-  .load((k) => (loading.textContent = `咖啡廳開門中… ${Math.round(k * 100)}%`))
+  .load((k) => (loading.textContent = `遊樂場開門中… ${Math.round(k * 100)}%`))
   .then(() => {
     loading.classList.add('done');
     setTimeout(() => loading.remove(), 500);

@@ -54,7 +54,13 @@ b.box("wall_W_skirting", (0.03, ROOM, 0.12), (IN_W + 0.015, 0, 0.06), "wall_trim
 b.box("wall_N_cap", (ROOM + WALL_T + 0.04, WALL_T + 0.04, 0.05), (-WALL_T / 2, H, WALL_H), "wall_trim")
 b.box("wall_W_cap", (WALL_T + 0.04, ROOM + 0.04, 0.05), (-H, 0, WALL_H), "wall_trim")
 # low front walls; east wall has a 1.2 m door gap
-b.box("wall_S_low", (ROOM + WALL_T, WALL_T, LOW_H), (0, -H, LOW_H / 2), "wall_trim", bevel=0.04)
+# south low wall with a door gap to the living room (centred at x = S_DOOR_X)
+S_DOOR_X, S_DOOR_W = -1.5, 1.2
+s_left = (-H - WALL_T / 2, S_DOOR_X - S_DOOR_W / 2)
+s_right = (S_DOOR_X + S_DOOR_W / 2, H + WALL_T / 2)
+for k, (x0, x1) in enumerate((s_left, s_right)):
+    b.box(f"wall_S_low_{k}", (x1 - x0, WALL_T, LOW_H), ((x0 + x1) / 2, -H, LOW_H / 2), "wall_trim", bevel=0.04)
+b.box("doormat_S", (1.0, 0.5, 0.015), (S_DOOR_X, -H + 0.35, 0.008), "coral", bevel=0.005)
 seg = (ROOM - 1.2) / 2
 b.box("wall_E_low_a", (WALL_T, seg, LOW_H), (H, -H + seg / 2, LOW_H / 2), "wall_trim", bevel=0.04)
 b.box("wall_E_low_b", (WALL_T, seg, LOW_H), (H, H - seg / 2, LOW_H / 2), "wall_trim", bevel=0.04)
@@ -214,6 +220,8 @@ for i, (dx, dy, dz, r) in enumerate(((0, 0, 0.32, 0.14), (0.07, 0.05, 0.43, 0.1)
 nav = b.box("NAV_floor", (ROOM - 0.4, ROOM - 0.4, 0.001), (0, 0, 0.001), "mint", bevel=0)
 nav.display_type = "WIRE"
 nav.hide_render = True
+b.empty("DOOR_south", (S_DOOR_X, -H, 0), size=0.4, props={"to": "living", "spawn": "DOOR_north"},
+        shape="SINGLE_ARROW", rot=(90, 0, 0))
 b.empty("DOOR_east", (H, 0, 0), size=0.4, props={"to": "bathroom", "spawn": "DOOR_west"}, shape="SINGLE_ARROW",
         rot=(0, 90, 0))
 b.empty("SPAWN_01", (1.6, -1.6, 0), size=0.3, shape="CIRCLE", rot=(90, 0, 0))

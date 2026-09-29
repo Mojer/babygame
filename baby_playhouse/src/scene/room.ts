@@ -45,6 +45,8 @@ export class Room {
   readonly fxPoints = new Map<string, THREE.Vector3>();
   nav!: NavGrid;
   spawn = new THREE.Vector3();
+  /** Start spots for the cast (SPAWN_cast_* sorted by name), used when the game starts here. */
+  readonly castSpawns: THREE.Vector3[] = [];
 
   static async load(url: string): Promise<Room> {
     const gltf = await loadGLB(url);
@@ -59,10 +61,12 @@ export class Room {
 
     let navMesh: THREE.Object3D | undefined;
     const snaps: THREE.Object3D[] = [];
+    const spawns: THREE.Object3D[] = [];
     const meshes: THREE.Mesh[] = [];
     scene.traverse((o) => {
       if (o.name.startsWith('NAV_')) navMesh = o;
       else if (o.name.startsWith('SNAP_')) snaps.push(o);
+      else if (o.name.startsWith('SPAWN_cast')) spawns.push(o);
       else if (o.name.startsWith('SPAWN_')) o.getWorldPosition(this.spawn);
       else if (o.name.startsWith('DOOR_')) {
         this.doors.push({
@@ -76,6 +80,8 @@ export class Room {
       }
       if ((o as THREE.Mesh).isMesh) meshes.push(o as THREE.Mesh);
     });
+    spawns.sort((a, b) => a.name.localeCompare(b.name));
+    for (const o of spawns) this.castSpawns.push(o.getWorldPosition(new THREE.Vector3()));
     if (navMesh) navMesh.visible = false;
     scene.traverse((o) => {
       if (o.name.startsWith('COL_')) o.visible = false;

@@ -8,14 +8,30 @@
 art/
   scripts/     Blender 建模與匯出腳本（可重複執行）
     pb_lib.py        共用工具：色票貼圖、基本形狀、匯出
-    build_cafe.py    建立咖啡廳場景與 3 隻角色
+    build_cafe.py    建立咖啡廳場景與熊貓、兔兔、貓咪
     build_bathroom.py 建立浴室場景
+    build_living.py  建立迎賓客廳
+    build_lawn.py    建立室外草坪（遊戲起點）
+    build_capybara.py 建立卡比巴拉園長
     export_all.py    存 .blend，並匯出目前場景的 room_*.glb（有角色時也匯出 char_*.glb）
   blender/     .blend 原始檔
   textures/    palette.png（全遊戲共用色票）
   export/      Blender 直接匯出的 GLB（未壓縮）
 public/models/ 壓縮後、給遊戲載入的 GLB
 ```
+
+## 房間地圖
+
+```
+     [咖啡廳]──[浴室]
+        │
+   [迎賓客廳]
+        │
+    [室外草坪]  ← 起點
+```
+
+新房間用 `pb_lib.room_shell()` 建外殼，用 `doors={'N': x, 'S': x, 'W': y, 'E': y}` 在指定位置開門。
+開在北牆和西牆（全高牆）的門會自動加門框，並露出門後房間的顏色。
 
 ## 重建流程
 
@@ -44,16 +60,22 @@ npm run build    # 輸出到 dist/，選單連結 ./baby_playhouse/dist/
 | `entities/character.ts` | 角色的程式動畫：走路搖擺、呼吸、眨眼、跳上椅子、開心跳 |
 | `systems/fx.ts` | 星星、愛心、音符、蒸氣粒子，以及點擊漣漪和果凍彈跳 |
 | `core/audio.ts` | 用 WebAudio 合成所有音效（還不需要音檔） |
-| `config.ts` | 角色、房間、未開放的門的提示文字 |
+| `config.ts` | 角色（含對話台詞）、房間、起始房間、開場白 |
+| `ui/bubbles.ts` | 角色頭上的對話框（HTML，跟著角色移動） |
 
 新增互動物件時，只要在 Blender 取 `INT_` 開頭的名字，並加上 `action`，程式會自動抓到它。
 名稱以同樣前綴開頭的零件會自動歸成一組；前綴對不上的，加到 `room.ts` 的 `ALIASES`。
 目前支援的 `action`：
 - 咖啡廳：`sit`、`brew`、`toggle_lights`、`glow`、`ding`、`eat`、`flicker`
 - 浴室：`bath`、`shower`、`wash`、`squeak`、`sparkle`、`bubbles`、`swing`、`toot`
+- 客廳：`tv`、`books`、`lamp`、`cuckoo`（其他沿用 `sit`、`eat`、`brew`）
+- 草坪：`slide`、`drive`、`rock`、`flowers`、`shake`、`bounce`
 - 其他值會套用預設的彈跳加星星效果
 
 有 `SNAP_` 定位點的物件都可以坐；定位點的 `pose` 設成 `bath` 時，角色會泡進去。
+定位點加上 `align: 1` 時，角色會朝定位點的方向坐（小汽車、搖搖馬），否則面向鏡頭。
+溜滑梯使用 `FX_slide_ladder`（梯子下方）和 `FX_slide_0..2`（滑道路徑）。
+`SPAWN_cast_0..n` 是遊戲開始時角色的站位，依照 `config.ts` 的 `CHARACTERS` 順序排列。
 `FX_` 開頭的 Empty 是特效發射點（`fx` 屬性），例如蓮蓬頭和水龍頭的出水位置。
 新增房間的步驟：在 `config.ts` 的 `ROOMS` 登記，門的 `to` 填房間名稱，`spawn` 填對方房間的門名稱。
 

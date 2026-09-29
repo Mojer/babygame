@@ -102,6 +102,32 @@ const SOUNDS: Record<string, (pitch?: number) => void> = {
     noise(0.35, { freq: 600, to: 1800, q: 0.8, vol: 0.22 });
     [72, 76, 79].forEach((n, i) => tone(NOTE(n), 0.3, { type: 'triangle', delay: 0.1 + i * 0.08, vol: 0.14 }));
   },
+  squish: () => {
+    tone(260, 0.22, { to: 140, type: 'sine', vol: 0.3 });
+    noise(0.2, { freq: 700, to: 300, q: 1, vol: 0.12 });
+  },
+  tv: () => [72, 76, 79, 84, 79, 84].forEach((n, i) => tone(NOTE(n), 0.14, { type: 'square', delay: i * 0.1, vol: 0.07 })),
+  page: () => noise(0.25, { freq: 3000, to: 1500, q: 0.8, vol: 0.2 }),
+  click: () => tone(1500, 0.04, { type: 'square', vol: 0.12 }),
+  cuckoo: () => {
+    for (let i = 0; i < 2; i++) {
+      tone(NOTE(79), 0.18, { type: 'sine', delay: i * 0.45, vol: 0.28 });
+      tone(NOTE(75), 0.25, { type: 'sine', delay: i * 0.45 + 0.2, vol: 0.28 });
+    }
+  },
+  rustle: () => noise(0.7, { freq: 4000, to: 2500, q: 0.6, vol: 0.2, wobble: 14 }),
+  whee: () => {
+    tone(500, 0.8, { to: 1400, type: 'triangle', vol: 0.18 });
+    noise(0.8, { freq: 800, to: 2400, q: 0.5, vol: 0.1 });
+  },
+  honk: () => {
+    tone(440, 0.12, { type: 'square', vol: 0.12 });
+    tone(440, 0.18, { type: 'square', delay: 0.18, vol: 0.12 });
+  },
+  neigh: () => {
+    tone(700, 0.5, { to: 500, type: 'sawtooth', vol: 0.07 });
+    for (let i = 0; i < 5; i++) tone(650 - i * 40, 0.08, { type: 'triangle', delay: 0.1 + i * 0.07, vol: 0.1 });
+  },
   hi: (p = 440) => {
     tone(p, 0.12, { to: p * 1.35, type: 'triangle', vol: 0.3 });
     tone(p * 1.35, 0.16, { to: p * 1.1, type: 'triangle', delay: 0.12, vol: 0.28 });

@@ -25,6 +25,9 @@ PALETTE = [
     ("yellow", "FFE08A"), ("bulb", "FFF2B0"), ("brown", "7A5240"), ("choco", "5A3B2E"),
     ("lilac", "C9B8E8"), ("cat_grey", "B3AEC6"), ("sand", "EED9B5"), ("teal", "5FB3A8"),
     ("tile_blue", "BCDDF3"), ("lemon", "FFF3C4"),
+    ("capy", "B98250"), ("capy_dark", "8A5A38"), ("grass", "A3D67E"), ("grass_dark", "86C25F"),
+    ("coral", "F28C7A"), ("peach", "FBD3B8"), ("sofa", "8FC7B5"), ("bark", "9A6B47"),
+    ("sky_deep", "6FA8DC"), ("plum", "9C7BC4"),
 ]
 GRID = 8
 CELL = 32
@@ -315,3 +318,118 @@ def export_glb(objs, path):
         export_lights=False,
     )
     select_only([])
+
+
+# ---------------------------------------------------------------- room kit (shared by new rooms)
+
+ROOM = 6.0
+H = ROOM / 2
+WALL_T = 0.15
+WALL_H = 1.5
+LOW_H = 0.25
+IN_N = H - WALL_T / 2
+IN_W = -H + WALL_T / 2
+DOOR_W = 1.2
+DOOR_H = 1.1
+
+
+def _wall_run(b, name, axis, fixed, length_min, length_max, door, height, thick, color, bevel):
+    """One straight wall along `axis` ('x' or 'y') at `fixed`, with an optional door gap centred at `door`."""
+    spans = [(length_min, length_max)]
+    if door is not None:
+        spans = [(length_min, door - DOOR_W / 2), (door + DOOR_W / 2, length_max)]
+    parts = []
+    for i, (a, c) in enumerate(spans):
+        if c - a < 0.02:
+            continue
+        mid, ln = (a + c) / 2, c - a
+        if axis == "x":
+            parts.append(b.box(f"{name}_{i}", (ln, thick, height), (mid, fixed, height / 2), color, bevel=bevel))
+        else:
+            parts.append(b.box(f"{name}_{i}", (thick, ln, height), (fixed, mid, height / 2), color, bevel=bevel))
+    return parts
+
+
+def room_shell(b, wall="wall", trim="wall_trim", low="wall_trim", doors=None, floor=None, views=None):
+    """Standard 6x6 room: full walls N/W, low walls S/E. doors = {'N': x, 'W': y, 'S': x, 'E': y}.
+
+    views = {'N': (wall_color, floor_color)} tints the glimpse behind a full-wall door.
+    """
+    doors = doors or {}
+    if floor:
+        b.box("floor", (ROOM, ROOM, 0.1), (0, 0, -0.05), floor, bevel=0.03)
+    _wall_run(b, "wall_N", "x", H, -H - WALL_T, H, doors.get("N"), WALL_H, WALL_T, wall, 0.03)
+    _wall_run(b, "wall_W", "y", -H, -H, H, doors.get("W"), WALL_H, WALL_T, wall, 0.03)
+    _wall_run(b, "wall_S_low", "x", -H, -H - WALL_T / 2, H + WALL_T / 2, doors.get("S"), LOW_H, WALL_T, low, 0.04)
+    _wall_run(b, "wall_E_low", "y", H, -H, H, doors.get("E"), LOW_H, WALL_T, low, 0.04)
+    b.box("wall_N_cap", (ROOM + WALL_T + 0.04, WALL_T + 0.04, 0.05), (-WALL_T / 2, H, WALL_H), trim)
+    b.box("wall_W_cap", (WALL_T + 0.04, ROOM + 0.04, 0.05), (-H, 0, WALL_H), trim)
+    b.box("wall_N_skirting", (ROOM, 0.03, 0.12), (0, IN_N - 0.015, 0.06), trim, bevel=0.01)
+    b.box("wall_W_skirting", (0.03, ROOM, 0.12), (IN_W + 0.015, 0, 0.06), trim, bevel=0.01)
+    for side, pos in doors.items():
+        if side in ("N", "W"):
+            vw, vf = (views or {}).get(side, ("wall", "floor"))
+            door_frame(b, side, pos, trim, wall=wall, view_color=vw, view_floor=vf)
+
+
+def door_frame(b, side, pos, color="white", wall="wall", view_color="wall", view_floor="floor"):
+    """Frame + lintel for a door in a full-height wall, plus a glimpse of the room behind it."""
+    lintel_h = WALL_H - DOOR_H
+    if side == "N":
+        b.box("wall_N_lintel", (DOOR_W + 0.02, WALL_T, lintel_h), (pos, H, DOOR_H + lintel_h / 2), wall, bevel=0.02)
+        for k, dx in enumerate((-DOOR_W / 2, DOOR_W / 2)):
+            b.box(f"door_frame_N_side_{k}", (0.07, WALL_T + 0.06, DOOR_H), (pos + dx, H, DOOR_H / 2), color, bevel=0.02)
+        b.box("door_frame_N_top", (DOOR_W + 0.14, WALL_T + 0.06, 0.07), (pos, H, DOOR_H), color, bevel=0.02)
+        b.box("doorway_N_view", (DOOR_W + 0.1, 0.04, DOOR_H), (pos, H + WALL_T / 2 + 0.3, DOOR_H / 2), view_color, bevel=0)
+        b.box("doorway_N_view_floor", (DOOR_W, 0.4, 0.1), (pos, H + WALL_T / 2 + 0.12, -0.05), view_floor, bevel=0)
+    else:
+        b.box("wall_W_lintel", (WALL_T, DOOR_W + 0.02, lintel_h), (-H, pos, DOOR_H + lintel_h / 2), wall, bevel=0.02)
+        for k, dy in enumerate((-DOOR_W / 2, DOOR_W / 2)):
+            b.box(f"door_frame_W_side_{k}", (WALL_T + 0.06, 0.07, DOOR_H), (-H, pos + dy, DOOR_H / 2), color, bevel=0.02)
+        b.box("door_frame_W_top", (WALL_T + 0.06, DOOR_W + 0.14, 0.07), (-H, pos, DOOR_H), color, bevel=0.02)
+        b.box("doorway_W_view", (0.04, DOOR_W + 0.1, DOOR_H), (-H - WALL_T / 2 - 0.3, pos, DOOR_H / 2), view_color, bevel=0)
+        b.box("doorway_W_view_floor", (0.4, DOOR_W, 0.1), (-H - WALL_T / 2 - 0.12, pos, -0.05), view_floor, bevel=0)
+
+
+def setup_preview(preview_coll, lens=50, dist=15.5, target=(-0.3, 0.3, 0.4)):
+    """Camera from the south-east at 45 deg, sun + warm world, EEVEE, Standard view transform."""
+    scn = bpy.context.scene
+    cam_data = bpy.data.cameras.new("PreviewCam")
+    cam_data.lens = lens
+    cam = bpy.data.objects.new("PreviewCam", cam_data)
+    preview_coll.objects.link(cam)
+    el = math.radians(45)
+    cam.location = (target[0] + dist * math.cos(el) * math.sin(math.radians(45)),
+                    target[1] - dist * math.cos(el) * math.cos(math.radians(45)),
+                    target[2] + dist * math.sin(el))
+    look_at(cam, target)
+    scn.camera = cam
+    sun_data = bpy.data.lights.new("Sun", "SUN")
+    sun_data.energy = 3.6
+    sun_data.angle = math.radians(8)
+    sun = bpy.data.objects.new("Sun", sun_data)
+    preview_coll.objects.link(sun)
+    sun.rotation_euler = (math.radians(40), 0, math.radians(30))
+    world = scn.world or bpy.data.worlds.new("World")
+    scn.world = world
+    world.use_nodes = True
+    bg = world.node_tree.nodes.get("Background")
+    bg.inputs["Color"].default_value = (0.93, 0.90, 0.86, 1)
+    bg.inputs["Strength"].default_value = 0.55
+    scn.view_settings.view_transform = "Standard"
+    for eng in ("BLENDER_EEVEE", "BLENDER_EEVEE_NEXT"):
+        try:
+            scn.render.engine = eng
+            break
+        except TypeError:
+            continue
+    scn.render.resolution_x = 1600
+    scn.render.resolution_y = 1000
+
+
+def nav_and_spawn(b, spawn=(0, 0)):
+    nav = b.box("NAV_floor", (ROOM - 0.4, ROOM - 0.4, 0.001), (0, 0, 0.001), "mint", bevel=0)
+    nav.display_type = "WIRE"
+    nav.hide_render = True
+    b.empty("SPAWN_01", (spawn[0], spawn[1], 0), size=0.3, shape="CIRCLE", rot=(90, 0, 0))
+    return nav

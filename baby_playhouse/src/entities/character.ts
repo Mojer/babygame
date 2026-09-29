@@ -3,7 +3,7 @@ import { WALK_SPEED, type CharacterDef } from '../config';
 import { loadGLB, toonify } from '../core/assets';
 import { sfx } from '../core/audio';
 
-type State = 'idle' | 'walk' | 'hop' | 'sit';
+type State = 'idle' | 'walk' | 'hop' | 'sit' | 'ride';
 
 interface Limb {
   obj: THREE.Object3D;
@@ -42,6 +42,16 @@ export class Character {
   /** How the character rests on its seat: perched on a stool, or sunk into a tub. */
   private pose: 'sit' | 'bath' = 'sit';
   readonly pickables: THREE.Object3D[] = [];
+  /** The loaded glTF scene (used for portraits). */
+  model!: THREE.Object3D;
+  /** Extra forward/back tilt, e.g. while riding the rocking horse. */
+  rock = 0;
+  /** Top of the model above the feet (for speech bubbles). */
+  height = 0.7;
+  private sprout?: THREE.Group;
+  private ridePts: THREE.Vector3[] = [];
+  private rideSpeed = 2;
+  private rideDone?: () => void;
 
   private constructor(readonly def: CharacterDef) {}
 
@@ -49,7 +59,9 @@ export class Character {
     const gltf = await loadGLB(`models/char_${def.key}.glb`);
     const c = new Character(def);
     const model = gltf.scene;
+    c.model = model;
     toonify(model, { castShadow: true, receiveShadow: false });
+    c.height = new THREE.Box3().setFromObject(model).max.y;
     c.body.add(model);
     c.root.add(c.body);
     c.root.position.set(def.spawn[0], 0, def.spawn[1]);
@@ -62,6 +74,21 @@ export class Character {
       if (/_arm_[LR]$/.test(n)) c.arms.push({ obj: o, base: o.position.clone(), side: n.endsWith('L') ? -1 : 1 });
       if (/_eye_(hi_)?-?1$/.test(n)) c.eyes.push(o);
     });
+    // Anything named *_sprout_* sways around the base of its stem.
+    const sproutParts: THREE.Object3D[] = [];
+    model.traverse((o) => o.name.includes('_sprout') && sproutParts.push(o));
+    if (sproutParts.length) {
+      model.updateMatrixWorld(true);
+      const box = new THREE.Box3();
+      sproutParts.forEach((o) => box.expandByObject(o));
+      const g = new THREE.Group();
+      box.getCenter(g.position);
+      g.position.y = box.min.y;
+      model.add(g);
+      g.updateMatrixWorld();
+      sproutParts.forEach((o) => g.attach(o));
+      c.sprout = g;
+    }
     return c;
   }
 
@@ -69,12 +96,21 @@ export class Character {
     return this.root.position;
   }
 
+  /** World point just above the head, following bobs and seat heights. */
+  headTop(out = new THREE.Vector3()) {
+    return this.body.getWorldPosition(out).add(new THREE.Vector3(0, this.height + 0.08, 0));
+  }
+
+  get busy() {
+    return this.state === 'hop' || this.state === 'ride';
+  }
+
   get isSitting() {
     return this.state === 'sit' || (this.state === 'hop' && !!this.seat);
   }
 
   walk(path: THREE.Vector3[], onArrive?: () => void) {
-    if (this.state === 'hop') return;
+    if (this.state === 'hop' || this.state === 'ride') return;
     const go = () => {
       this.path = path.map((p) => p.clone());
       this.onArrive = onArrive;
@@ -114,10 +150,31 @@ export class Character {
     this.path = [];
     this.onArrive = undefined;
     this.hopDone = undefined;
+    this.ridePts = [];
+    this.rideDone = undefined;
+    this.rock = 0;
     this.seat = undefined;
     this.state = 'idle';
     this.yaw = this.targetYaw = yaw;
     this.root.rotation.y = yaw;
+  }
+
+  faceYaw(yaw: number) {
+    this.targetYaw = yaw;
+  }
+
+  /** Jump to a point (e.g. the top of the slide ladder). */
+  jump(to: THREE.Vector3, arc: number, done: () => void) {
+    this.startHop(to, done);
+    this.hopArc = arc;
+  }
+
+  /** Glide along a polyline at `speed` m/s (the slide), sitting pose. */
+  ride(points: THREE.Vector3[], speed: number, done: () => void) {
+    this.ridePts = points.map((p) => p.clone());
+    this.rideSpeed = speed;
+    this.rideDone = done;
+    this.state = 'ride';
   }
 
   face(point: THREE.Vector3) {
@@ -183,6 +240,24 @@ export class Character {
         this.hopDone = undefined;
         done?.();
       }
+    } else if (this.state === 'ride') {
+      const target = this.ridePts[0];
+      const pos = this.root.position;
+      const d = pos.distanceTo(target);
+      const step = this.rideSpeed * dt;
+      if (d <= step) {
+        pos.copy(target);
+        this.ridePts.shift();
+        if (!this.ridePts.length) {
+          this.state = 'idle';
+          const cb = this.rideDone;
+          this.rideDone = undefined;
+          cb?.();
+        }
+      } else {
+        pos.addScaledVector(target.clone().sub(pos), step / d);
+      }
+      squash = 0.94;
     } else {
       squash = 1 + Math.sin(t * 2.4) * 0.015;
     }
@@ -197,9 +272,11 @@ export class Character {
       }
     }
 
-    const sitting = this.state === 'sit';
+    const sitting = this.state === 'sit' || this.state === 'ride';
     body.position.y = bob + (sitting ? (this.pose === 'bath' ? 0 : -0.1) : 0);
     body.rotation.z = tilt;
+    body.rotation.x = this.rock;
+    if (this.sprout) this.sprout.rotation.z = Math.sin(t * 2.2) * 0.12 + tilt * 1.5;
     body.scale.set(1 / Math.sqrt(squash), squash, 1 / Math.sqrt(squash));
 
     for (const l of this.legs) {
