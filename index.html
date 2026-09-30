@@ -64,6 +64,7 @@
       --accent-ink: #b8341a;
       --accent-soft: #ffe7e0;
       --accent-text: #ffffff;
+      --badge: #7a4fe0;
       --shadow: 0 1px 2px rgba(46, 60, 100, .06), 0 10px 28px rgba(46, 60, 100, .09);
       --r-card: 24px;
       --r-tile: 18px;
@@ -78,6 +79,7 @@
         --accent: #ff7757;
         --accent-ink: #ffb19c;
         --accent-soft: #3d2019;
+        --badge: #8559f0;
         --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 12px 30px rgba(0, 0, 0, .35);
       }
     }
@@ -124,6 +126,7 @@
       margin-bottom: 30px;
     }
     .feature .shot {
+      position: relative;
       height: 220px;
       background: #0a1030;
       overflow: hidden;
@@ -198,9 +201,9 @@
     .wide .art { aspect-ratio: 16 / 7; }
     .art img { width: 100%; height: 100%; object-fit: cover; }
     .art .emoji { font-size: 58px; line-height: 1; }
-    .art .badge {
+    .art .badge, .shot .badge {
       position: absolute; top: 10px; left: 10px; margin: 0;
-      color: var(--accent-text); background: var(--accent);
+      color: #fff; background: var(--badge);
       box-shadow: 0 2px 6px rgba(0, 0, 0, .18);
     }
     .art.word img { object-fit: contain; height: 118%; margin-top: 12%; }
@@ -311,10 +314,9 @@
     </div>
 
     <div class="card feature rise" style="--i:2">
-      <span class="shot"><img src="thumbs/earth.jpg" alt="" width="506" height="900"></span>
+      <span class="shot"><img src="thumbs/earth.jpg" alt="" width="506" height="900"><span class="tag badge">搶先版</span></span>
       <span class="body">
         <span class="txt">
-          <span class="tag">最新遊戲</span>
           <span class="name">寶寶地球保衛戰<span class="last">上次玩的</span></span>
           <span class="desc">繞著地球轉圈圈，打出連環爆破！</span>
         </span>
