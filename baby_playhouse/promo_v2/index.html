@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Playhouse Promo</title>
+<style>
+  @font-face { font-family: 'Huninn'; src: local('jf open 粉圓 2.1'), local('jf-openhuninn-2.1'), url('https://fonts.gstatic.com/s/huninn/v1/Huninn-Regular.ttf'); }
+  :root { color-scheme: light; }
+  body { margin: 0; background: #2b211d; color: #ffe9d6; font: 13px/1.4 'SF Mono', Menlo, monospace; }
+  canvas { display: block; width: 100%; max-width: 1920px; height: auto; margin: 0 auto; }
+  .bar { display: flex; gap: 12px; align-items: center; padding: 8px 16px; }
+  input[type=range] { flex: 1; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="bar"><button id="play">▶ play</button><input id="seek" type="range" min="0" max="64" step="0.015625" value="0"><span id="info">loading…</span></div>
+<audio id="audio" src="out/soundtrack.wav" preload="auto"></audio>
+<script type="module">
+import { createPromo } from './main.ts';
+import score from './score.json';
+await document.fonts.load("100px 'jf open 粉圓 2.1'");
+await document.fonts.load("100px Huninn");
+const canvas = document.getElementById('c');
+const r = await createPromo(canvas);
+const info = document.getElementById('info');
+const params = new URLSearchParams(location.search);
+const spb = 60 / score.bpm;
+const SINK = `http://127.0.0.1:${params.get('sink') ?? 5214}`;
+
+if (params.has('render')) {
+  const from = +(params.get('from') ?? 0), to = +(params.get('to') ?? r.frames);
+  const t0 = performance.now();
+  for (let f = from; f < to; f++) {
+    r.drawFrame(r.beatAt(f));
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+    await fetch(`${SINK}/frame/${f}`, { method: 'POST', body: blob });
+    info.textContent = `frame ${f + 1}/${to}`;
+    document.title = `R ${f + 1}/${to}`;
+  }
+  await fetch(`${SINK}/done`, { method: 'POST', body: String(performance.now() - t0) });
+  info.textContent = 'DONE';
+  document.title = 'DONE';
+} else {
+  const audio = document.getElementById('audio');
+  const seek = document.getElementById('seek');
+  const show = B => { r.drawFrame(B); info.textContent = `beat ${B.toFixed(3)}  bar ${Math.floor(B / 4) + 1}`; };
+  const B0 = params.has('beat') ? +params.get('beat') : 0;
+  seek.value = B0; show(B0);
+  window.showBeat = show;
+  // Review helper: snap(beats, scale) writes stills to out/snaps/b<beat>.png.
+  window.snap = async (beats, scale = 0.5) => {
+    const c2 = document.createElement('canvas');
+    c2.width = canvas.width * scale; c2.height = canvas.height * scale;
+    for (const B of beats) {
+      r.drawFrame(B);
+      c2.getContext('2d').drawImage(canvas, 0, 0, c2.width, c2.height);
+      const blob = await new Promise(res => c2.toBlob(res, 'image/jpeg', 0.85));
+      await fetch(`${SINK}/snap/b${B}`, { method: 'POST', body: blob });
+    }
+    return beats.length;
+  };
+  seek.oninput = () => { audio.currentTime = seek.value * spb; show(+seek.value); };
+  document.getElementById('play').onclick = () => { audio.paused ? audio.play() : audio.pause(); };
+  const loop = () => { if (!audio.paused) { const B = audio.currentTime / spb; seek.value = B; show(B); } requestAnimationFrame(loop); };
+  loop();
+}
+</script>
+</body>
+</html>
