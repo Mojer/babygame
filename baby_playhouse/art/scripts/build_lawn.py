@@ -191,7 +191,7 @@ for k, col in enumerate(("coral", "sky_deep", "lemon")):
 # ------------------------------------------------------------------ markers
 pb_lib.nav_and_spawn(b, spawn=(N_DOOR_X, 2.0))
 # start positions (the game starts here): the principal front and centre, the others around him
-for k, (sx_, sy_) in enumerate(((0.6, -0.35), (-0.35, -0.75), (1.55, 0.35), (-0.2, 0.8))):
+for k, (sx_, sy_) in enumerate(((0.6, -0.35), (-0.35, -0.75), (1.55, 0.35), (-0.2, 0.8), (1.15, 0.95))):
     b.empty(f"SPAWN_cast_{k}", (sx_, sy_, 0), size=0.2, shape="CIRCLE", rot=(90, 0, 0))
 pb_lib.setup_preview(preview)
 bpy.context.view_layer.update()

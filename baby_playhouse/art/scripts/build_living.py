@@ -178,7 +178,7 @@ for k, (px, py) in enumerate(((2.55, 2.55), (-2.6, -2.6))):
 # ------------------------------------------------------------------ markers
 pb_lib.nav_and_spawn(b, spawn=(1.2, -1.5))
 # start positions for the cast (capybara principal greets at the sofa opening)
-for k, (sx, sy) in enumerate(((1.35, -1.35), (-0.9, -1.8), (2.0, 0.5), (-1.3, 0.2))):
+for k, (sx, sy) in enumerate(((1.35, -1.35), (-0.9, -1.8), (2.0, 0.5), (-1.3, 0.2), (-0.2, -2.2))):
     b.empty(f"SPAWN_cast_{k}", (sx, sy, 0), size=0.2, shape="CIRCLE", rot=(90, 0, 0))
 b.empty("DOOR_north", (N_DOOR_X, H, 0), size=0.4, props={"to": "cafe", "spawn": "DOOR_south"}, shape="SINGLE_ARROW",
         rot=(-90, 0, 0))

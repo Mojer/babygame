@@ -23,6 +23,15 @@ export const CHARACTERS: CharacterDef[] = [
     lines: ['有東西找不到，希望大家可以幫忙搜尋！', '慢慢來，不要急～', '頭上的小芽今天也很有精神！'],
   },
   {
+    key: 'akane',
+    label: '小茜',
+    icon: '👧',
+    spawn: [0, 0],
+    facing: Math.PI / 4,
+    voice: 560,
+    lines: ['我是小茜！', '我來幫忙找東西！', '書包裡有點心喔～'],
+  },
+  {
     key: 'panda',
     label: '熊貓',
     icon: '🐼',

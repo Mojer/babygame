@@ -28,6 +28,7 @@ PALETTE = [
     ("capy", "B98250"), ("capy_dark", "8A5A38"), ("grass", "A3D67E"), ("grass_dark", "86C25F"),
     ("coral", "F28C7A"), ("peach", "FBD3B8"), ("sofa", "8FC7B5"), ("bark", "9A6B47"),
     ("sky_deep", "6FA8DC"), ("plum", "9C7BC4"),
+    ("beige", "DCCBB2"), ("hair", "3A2724"), ("rose", "EE8FA6"), ("skirt", "6B6A73"),
 ]
 GRID = 8
 CELL = 32

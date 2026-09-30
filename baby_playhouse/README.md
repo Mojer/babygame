@@ -13,6 +13,7 @@ art/
     build_living.py  建立迎賓客廳
     build_lawn.py    建立室外草坪（遊戲起點）
     build_capybara.py 建立卡比巴拉園長
+    build_akane.py   建立小茜（依角色設定圖）
     export_all.py    存 .blend，並匯出目前場景的 room_*.glb（有角色時也匯出 char_*.glb）
   blender/     .blend 原始檔
   textures/    palette.png（全遊戲共用色票）
