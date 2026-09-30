@@ -198,6 +198,11 @@
     .wide .art { aspect-ratio: 16 / 7; }
     .art img { width: 100%; height: 100%; object-fit: cover; }
     .art .emoji { font-size: 58px; line-height: 1; }
+    .art .badge {
+      position: absolute; top: 10px; left: 10px; margin: 0;
+      color: var(--accent-text); background: var(--accent);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .18);
+    }
     .art.word img { object-fit: contain; height: 118%; margin-top: 12%; }
     .art.faces { display: flex; align-items: center; justify-content: center; gap: 6%; }
     .art.faces img { width: 38%; max-width: 128px; height: auto; }
@@ -206,6 +211,8 @@
     .tile .desc, .tile .name { display: block; }
     .tile .name { font-size: 16px; font-weight: 900; line-height: 1.35; padding: 10px 6px 0; }
     .tile .desc { font-size: 13px; color: var(--text-soft); line-height: 1.45; padding: 2px 6px 0; }
+    .tile-actions { padding: 12px 6px 2px; }
+    .top-pick { margin-bottom: 16px; }
     .last {
       display: none;
       font-size: 11px; font-weight: 800;
@@ -243,6 +250,7 @@
       .feature .body { justify-content: center; gap: 18px; padding: 28px; }
       .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .grid .wide { grid-column: span 2; }
+      .grid .full { grid-column: 1 / -1; }
     }
 
     /* ---------- 進場動畫 ---------- */
@@ -292,7 +300,17 @@
       <h1>寶貝遊戲選單</h1>
     </header>
 
-    <div class="card feature rise" style="--i:1">
+    <div class="card tile rise top-pick" style="--i:1">
+      <span class="art"><img src="thumbs/playhouse.jpg" alt="" width="800" height="350"><span class="tag badge">搶先版</span></span>
+      <p class="name">寶貝遊樂場<span class="last">上次玩的</span></p>
+      <p class="desc">和卡比巴拉園長一起，點一點就開玩！</p>
+      <span class="actions tile-actions">
+        <a class="play" data-game="playhouse" href="./baby_playhouse/dist/">開始玩</a>
+        <a class="trailer" href="https://youtu.be/oYPZWCqOXzw" target="_blank" rel="noopener">看預告片</a>
+      </span>
+    </div>
+
+    <div class="card feature rise" style="--i:2">
       <span class="shot"><img src="thumbs/earth.jpg" alt="" width="506" height="900"></span>
       <span class="body">
         <span class="txt">
