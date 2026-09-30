@@ -5,6 +5,8 @@ import { sfx } from '../core/audio';
 
 type State = 'idle' | 'walk' | 'hop' | 'sit' | 'ride';
 
+const HIDE_BLUSH = true;
+
 interface Limb {
   obj: THREE.Object3D;
   base: THREE.Vector3;
@@ -69,7 +71,9 @@ export class Character {
     c.root.rotation.y = c.yaw;
     model.traverse((o) => {
       const n = o.name;
-      if ((o as THREE.Mesh).isMesh) c.pickables.push(o);
+      // Cheek blush reads oddly with the toon shading + outlines, so it is hidden for now.
+      if (HIDE_BLUSH && n.includes('_blush_')) o.visible = false;
+      if ((o as THREE.Mesh).isMesh && o.visible) c.pickables.push(o);
       if (/_leg_[LR]$/.test(n)) c.legs.push({ obj: o, base: o.position.clone(), side: n.endsWith('L') ? -1 : 1 });
       if (/_arm_[LR]$/.test(n)) c.arms.push({ obj: o, base: o.position.clone(), side: n.endsWith('L') ? -1 : 1 });
       if (/_eye_(hi_)?-?1$/.test(n)) c.eyes.push(o);
