@@ -105,6 +105,25 @@ export class Character {
     return this.body.getWorldPosition(out).add(new THREE.Vector3(0, this.height + 0.08, 0));
   }
 
+  /** Standing or walking on the floor (can be nudged aside by other characters). */
+  get onFloor() {
+    return this.state === 'idle' || this.state === 'walk';
+  }
+
+  get walking() {
+    return this.state === 'walk';
+  }
+
+  /** Final point of the current walk, if walking. */
+  get walkGoal(): THREE.Vector3 | undefined {
+    return this.state === 'walk' ? this.path[this.path.length - 1] : undefined;
+  }
+
+  /** Swap in a new route to the same goal without losing the arrival callback. */
+  reroute(path: THREE.Vector3[]) {
+    if (this.state === 'walk' && path.length) this.path = path.map((p) => p.clone());
+  }
+
   get busy() {
     return this.state === 'hop' || this.state === 'ride';
   }

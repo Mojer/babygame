@@ -14,6 +14,8 @@ export interface GameHooks {
   onPortraits?(urls: Record<string, string>): void;
 }
 
+/** Minimum distance between two characters' centres (chibi heads are ~0.4 m wide). */
+const CHAR_SPACING = 0.46;
 const CAM_DIR = new THREE.Vector3(0.5, Math.SQRT1_2, 0.5).normalize(); // 45° down, from south-east
 const NO_OUTLINE = { visible: false };
 const FADE_MS = 320;
@@ -308,8 +310,9 @@ export class Game {
   // ------------------------------------------------------------------ actions
   private walkTo(point: THREE.Vector3, ripple: boolean, onArrive?: () => void): boolean {
     const c = this.selected;
-    const goal = this.room.nav.nearestFree(point.x, point.z);
-    if (!goal) return false;
+    const free = this.room.nav.nearestFree(point.x, point.z);
+    if (!free) return false;
+    const goal = this.clearSpot(free, c);
     const path = this.room.nav.findPath(c.position, goal);
     if (!path) return false;
     this.leaveSeat(c);
@@ -319,6 +322,74 @@ export class Game {
     }
     c.walk(path, onArrive);
     return true;
+  }
+
+  /** Nearest walkable spot to `p` that no other standing character is occupying. */
+  private clearSpot(p: THREE.Vector3, self: Character): THREE.Vector3 {
+    const others = this.chars.filter((o) => o !== self && o.onFloor);
+    const clear = (q: THREE.Vector3) =>
+      others.every((o) => Math.hypot(o.position.x - q.x, o.position.z - q.z) >= CHAR_SPACING);
+    if (clear(p)) return p;
+    for (const r of [CHAR_SPACING, CHAR_SPACING * 1.6, CHAR_SPACING * 2.4]) {
+      for (let k = 0; k < 12; k++) {
+        const a = (k / 12) * Math.PI * 2;
+        const q = new THREE.Vector3(p.x + Math.cos(a) * r, 0, p.z + Math.sin(a) * r);
+        if (this.room.nav.isFree(q.x, q.z) && clear(q)) return q;
+      }
+    }
+    return p;
+  }
+
+  /** Keep standing/walking characters from overlapping; idle ones shuffle aside for walkers. */
+  private separate() {
+    const nav = this.room.nav;
+    const cs = this.chars.filter((c) => c.onFloor);
+    for (let i = 0; i < cs.length; i++) {
+      for (let j = i + 1; j < cs.length; j++) {
+        const a = cs[i].position;
+        const b = cs[j].position;
+        let dx = a.x - b.x;
+        let dz = a.z - b.z;
+        let d = Math.hypot(dx, dz);
+        if (d >= CHAR_SPACING) continue;
+        if (d < 1e-4) {
+          dx = Math.random() - 0.5;
+          dz = Math.random() - 0.5;
+          d = Math.hypot(dx, dz);
+        }
+        const push = Math.min(CHAR_SPACING - d, 0.05); // ease apart over a few frames
+        const nx = dx / d;
+        const nz = dz / d;
+        // The walker keeps going; whoever is standing still makes way.
+        let wa = cs[i].walking === cs[j].walking ? 0.5 : cs[i].walking ? 0.25 : 0.75;
+        let wb = 1 - wa;
+        // If one of them is against furniture or a wall, the other takes the whole nudge;
+        // every move is checked against the walk grid so nobody is pushed through walls.
+        const canA = (w: number) => nav.isFree(a.x + nx * push * w, a.z + nz * push * w);
+        const canB = (w: number) => nav.isFree(b.x - nx * push * w, b.z - nz * push * w);
+        if (!canA(wa)) [wa, wb] = [0, 1];
+        else if (!canB(wb)) [wa, wb] = [1, 0];
+        if (wa && canA(wa)) {
+          a.x += nx * push * wa;
+          a.z += nz * push * wa;
+        }
+        if (wb && canB(wb)) {
+          b.x -= nx * push * wb;
+          b.z -= nz * push * wb;
+        }
+      }
+    }
+  }
+
+  /** A walker nudged into furniture's safety margin re-plans its route from where it is. */
+  private keepWalkersOnGrid() {
+    const nav = this.room.nav;
+    for (const c of this.chars) {
+      const goal = c.walkGoal;
+      if (!goal || nav.isFree(c.position.x, c.position.z)) continue;
+      const path = nav.findPath(c.position, goal);
+      if (path) c.reroute(path);
+    }
   }
 
   private leaveSeat(c: Character) {
@@ -738,9 +809,11 @@ export class Game {
 
   private frame(ts: number) {
     this.timer.update(ts);
-    const dt = Math.min(this.timer.getDelta(), 1 / 20);
+    const dt = THREE.MathUtils.clamp(this.timer.getDelta(), 0, 1 / 20); // never negative, never a huge jump
     const t = this.timer.getElapsed();
     for (const c of this.chars) c.update(dt, t);
+    this.separate();
+    this.keepWalkersOnGrid();
     this.updateEmitters(dt);
     this.updateRockers(dt, t);
     this.fx.update(dt);
