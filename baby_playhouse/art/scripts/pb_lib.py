@@ -29,6 +29,7 @@ PALETTE = [
     ("coral", "F28C7A"), ("peach", "FBD3B8"), ("sofa", "8FC7B5"), ("bark", "9A6B47"),
     ("sky_deep", "6FA8DC"), ("plum", "9C7BC4"),
     ("beige", "DCCBB2"), ("hair", "3A2724"), ("rose", "EE8FA6"), ("skirt", "6B6A73"),
+    ("hoodie", "2B3150"), ("jogger", "40356A"), ("hair_fade", "6A5650"), ("henley", "F4EAD6"),
 ]
 GRID = 8
 CELL = 32
