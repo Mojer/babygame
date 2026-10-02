@@ -22,6 +22,7 @@ import bpy  # noqa: E402
 
 N_DOOR_X = -1.5  # to the cafe (matches the cafe's south door)
 S_DOOR_X = 1.0  # out to the lawn
+E_DOOR_Y = 0.6  # to the ball-pit room
 
 pb_lib.clear_scene()
 palette = pb_lib.build_palette(os.path.join(ROOT, "art", "textures", "palette.png"))
@@ -32,7 +33,7 @@ preview = collection("Preview")
 b = Builder(room, MAT, GLOW)
 
 # ------------------------------------------------------------------ shell
-pb_lib.room_shell(b, wall="peach", trim="white", low="white", floor="sand", doors={"N": N_DOOR_X, "S": S_DOOR_X})
+pb_lib.room_shell(b, wall="peach", trim="white", low="white", floor="sand", doors={"N": N_DOOR_X, "S": S_DOOR_X, "E": E_DOOR_Y})
 PLANK = 0.4
 for i in range(int(pb_lib.ROOM / PLANK)):
     if i % 2:
@@ -40,6 +41,7 @@ for i in range(int(pb_lib.ROOM / PLANK)):
               "cream", bevel=0)
 b.box("doormat_N", (1.0, 0.5, 0.015), (N_DOOR_X, IN_N - 0.35, 0.008), "teal", bevel=0.005)
 b.box("doormat_S", (1.0, 0.5, 0.015), (S_DOOR_X, -H + 0.35, 0.008), "grass_dark", bevel=0.005)
+b.box("doormat_E", (0.5, 1.0, 0.015), (H - 0.35, E_DOOR_Y, 0.008), "lilac", bevel=0.005)
 # coffee-cup plaque above the cafe door
 b.box("door_sign", (0.34, 0.03, 0.26), (N_DOOR_X, IN_N, pb_lib.DOOR_H + 0.2), "wood", bevel=0.04)
 b.cyl("door_sign_cup", 0.06, 0.09, (N_DOOR_X, IN_N - 0.05, pb_lib.DOOR_H + 0.19), "white", bevel=0.01)
@@ -182,6 +184,8 @@ for k, (sx, sy) in enumerate(((1.35, -1.35), (-0.9, -1.8), (2.0, 0.5), (-1.3, 0.
     b.empty(f"SPAWN_cast_{k}", (sx, sy, 0), size=0.2, shape="CIRCLE", rot=(90, 0, 0))
 b.empty("DOOR_north", (N_DOOR_X, H, 0), size=0.4, props={"to": "cafe", "spawn": "DOOR_south"}, shape="SINGLE_ARROW",
         rot=(-90, 0, 0))
+b.empty("DOOR_east", (H, E_DOOR_Y, 0), size=0.4, props={"to": "ballpit", "spawn": "DOOR_west"}, shape="SINGLE_ARROW",
+        rot=(0, 90, 0))
 b.empty("DOOR_south", (S_DOOR_X, -H, 0), size=0.4, props={"to": "lawn", "spawn": "DOOR_north"}, shape="SINGLE_ARROW",
         rot=(90, 0, 0))
 

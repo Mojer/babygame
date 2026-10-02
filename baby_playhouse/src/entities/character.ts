@@ -4,6 +4,8 @@ import { loadGLB, toonify } from '../core/assets';
 import { sfx } from '../core/audio';
 
 type State = 'idle' | 'walk' | 'hop' | 'sit' | 'ride';
+/** How a character rests on a seat: perched, sunk in (tub / ball pit), or standing (trampoline). */
+export type Pose = 'sit' | 'bath' | 'stand';
 
 const HIDE_BLUSH = true;
 
@@ -42,12 +44,14 @@ export class Character {
   private standSpot = new THREE.Vector3();
   seat?: THREE.Object3D;
   /** How the character rests on its seat: perched on a stool, or sunk into a tub. */
-  private pose: 'sit' | 'bath' = 'sit';
+  private pose: Pose = 'sit';
   readonly pickables: THREE.Object3D[] = [];
   /** The loaded glTF scene (used for portraits). */
   model!: THREE.Object3D;
   /** Extra forward/back tilt, e.g. while riding the rocking horse. */
   rock = 0;
+  /** Extra height above the seat, e.g. bouncing on the trampoline. */
+  lift = 0;
   /** Top of the model above the feet (for speech bubbles). */
   height = 0.7;
   private sprout?: THREE.Group;
@@ -119,6 +123,16 @@ export class Character {
     return this.state === 'walk' ? this.path[this.path.length - 1] : undefined;
   }
 
+  /** End the current walk where the character stands, as if it had arrived. */
+  finishWalk() {
+    if (this.state !== 'walk') return;
+    this.path = [];
+    this.state = 'idle';
+    const cb = this.onArrive;
+    this.onArrive = undefined;
+    cb?.();
+  }
+
   /** Swap in a new route to the same goal without losing the arrival callback. */
   reroute(path: THREE.Vector3[]) {
     if (this.state === 'walk' && path.length) this.path = path.map((p) => p.clone());
@@ -144,7 +158,7 @@ export class Character {
     else go();
   }
 
-  sitOn(seat: THREE.Object3D, pose: 'sit' | 'bath' = 'sit') {
+  sitOn(seat: THREE.Object3D, pose: Pose = 'sit') {
     this.standSpot.copy(this.root.position);
     this.seat = seat;
     this.pose = pose;
@@ -176,6 +190,7 @@ export class Character {
     this.ridePts = [];
     this.rideDone = undefined;
     this.rock = 0;
+    this.lift = 0;
     this.seat = undefined;
     this.state = 'idle';
     this.yaw = this.targetYaw = yaw;
@@ -295,8 +310,9 @@ export class Character {
       }
     }
 
-    const sitting = this.state === 'sit' || this.state === 'ride';
-    body.position.y = bob + (sitting ? (this.pose === 'bath' ? 0 : -0.1) : 0);
+    const seated = this.state === 'sit' || this.state === 'ride';
+    const sitting = seated && this.pose !== 'stand';
+    body.position.y = bob + this.lift + (sitting ? (this.pose === 'bath' ? 0 : -0.1) : 0);
     body.rotation.z = tilt;
     body.rotation.x = this.rock;
     if (this.sprout) this.sprout.rotation.z = Math.sin(t * 2.2) * 0.12 + tilt * 1.5;

@@ -138,7 +138,11 @@ export class Room {
 
     // Bake the walk grid.
     const bounds = new THREE.Box3().setFromObject(navMesh ?? scene);
-    const obstacles = meshes.filter((m) => !FLOOR_LIKE.test(m.name));
+    // Things that move at runtime (e.g. rollable balls, `dynamic` on the INT head) stay out of the baked grid.
+    const dynamicParts = new Set(
+      this.interactables.filter((i) => i.parts.some((p) => p.userData.dynamic)).flatMap((i) => i.parts),
+    );
+    const obstacles = meshes.filter((m) => !FLOOR_LIKE.test(m.name) && !dynamicParts.has(m));
     this.nav = NavGrid.bake(bounds, obstacles, NAV_CELL, CHAR_RADIUS);
 
     for (const it of this.interactables) {

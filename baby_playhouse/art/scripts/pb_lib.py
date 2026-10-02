@@ -198,23 +198,40 @@ class Builder:
         bmesh.ops.scale(bm, vec=Vector(scale), verts=bm.verts)
         return self._finish(name, bm, color, loc, rot, True, glow, 0, parent, props)
 
-    def torus(self, name, R, r, loc, color, rot=(0, 0, 0), seg=24, parent=None, props=None):
+    def torus(self, name, R, r, loc, color, rot=(0, 0, 0), seg=24, parent=None, props=None, arc=None):
+        """Ring in the XY plane. arc=(a0, a1) in degrees builds only that segment (with end caps)."""
         bm = bmesh.new()
         ring = []
         minor = 8
-        for i in range(seg):
-            a = 2 * math.pi * i / seg
+        full = arc is None
+        a0, a1 = (0, 360) if full else arc
+        steps = seg if full else max(2, int(seg * (a1 - a0) / 360) + 1)
+        count = steps if full else steps + 1
+        for i in range(count):
+            a = math.radians(a0 + (a1 - a0) * i / steps)
             row = []
             for j in range(minor):
                 b = 2 * math.pi * j / minor
                 rr = R + r * math.cos(b)
                 row.append(bm.verts.new((rr * math.cos(a), rr * math.sin(a), r * math.sin(b))))
             ring.append(row)
-        for i in range(seg):
+        for i in range(steps if full else count - 1):
             for j in range(minor):
-                a, b = ring[i], ring[(i + 1) % seg]
+                a, b = ring[i], ring[(i + 1) % count]
                 bm.faces.new((a[j], b[j], b[(j + 1) % minor], a[(j + 1) % minor]))
+        if not full:
+            bm.faces.new(tuple(reversed(ring[0])))
+            bm.faces.new(tuple(ring[-1]))
+            bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         return self._finish(name, bm, color, loc, rot, True, False, 0, parent, props)
+
+    def multi_ball(self, name, balls, color, seg=12, parent=None, props=None):
+        """Many spheres merged into one mesh (one draw call). balls = [(radius, centre), ...]."""
+        bm = bmesh.new()
+        for r, centre in balls:
+            geom = bmesh.ops.create_uvsphere(bm, u_segments=seg, v_segments=max(6, seg // 2), radius=r)
+            bmesh.ops.translate(bm, vec=Vector(centre), verts=geom["verts"])
+        return self._finish(name, bm, color, (0, 0, 0), (0, 0, 0), True, False, 0, parent, props)
 
     def arc_block(self, name, center, r_in, r_out, a0, a1, z0, z1, color, seg=20, bevel=0.02,
                   parent=None, props=None):

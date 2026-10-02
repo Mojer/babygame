@@ -102,6 +102,9 @@ const SOUNDS: Record<string, (pitch?: number) => void> = {
     noise(0.35, { freq: 600, to: 1800, q: 0.8, vol: 0.22 });
     [72, 76, 79].forEach((n, i) => tone(NOTE(n), 0.3, { type: 'triangle', delay: 0.1 + i * 0.08, vol: 0.14 }));
   },
+  rattle: () => {
+    for (let i = 0; i < 9; i++) tone(900 + Math.random() * 900, 0.05, { type: 'triangle', delay: i * 0.035 + Math.random() * 0.02, vol: 0.07 });
+  },
   squish: () => {
     tone(260, 0.22, { to: 140, type: 'sine', vol: 0.3 });
     noise(0.2, { freq: 700, to: 300, q: 1, vol: 0.12 });

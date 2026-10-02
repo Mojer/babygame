@@ -12,6 +12,7 @@ art/
     build_bathroom.py 建立浴室場景
     build_living.py  建立迎賓客廳
     build_lawn.py    建立室外草坪（遊戲起點）
+    build_ballpit.py 建立球池房間
     build_capybara.py 建立卡比巴拉園長
     build_akane.py   建立小茜（依角色設定圖）
     build_yu.py      建立小宇（依角色設定圖）
@@ -27,7 +28,7 @@ public/models/ 壓縮後、給遊戲載入的 GLB
 ```
      [咖啡廳]──[浴室]
         │
-   [迎賓客廳]
+   [迎賓客廳]──[球池房間]
         │
     [室外草坪]  ← 起點
 ```
@@ -60,6 +61,7 @@ npm run build    # 輸出到 dist/，選單連結 ./baby_playhouse/dist/
 | `scene/room.ts` | 載入房間 GLB，依照命名規則建立互動物件、定位點、門和走路網格 |
 | `systems/navgrid.ts` | 從上方往下射線烘焙可走網格，A* 尋路加路徑平滑 |
 | `entities/character.ts` | 角色的程式動畫：走路搖擺、呼吸、眨眼、跳上椅子、開心跳 |
+| `systems/playground.ts` | 會動的遊具：超大球滾動與碰撞、鞦韆擺盪、蹦床彈跳 |
 | `systems/fx.ts` | 星星、愛心、音符、蒸氣粒子，以及點擊漣漪和果凍彈跳 |
 | `core/audio.ts` | 用 WebAudio 合成所有音效（還不需要音檔） |
 | `config.ts` | 角色（含對話台詞）、房間、起始房間、開場白 |
@@ -72,11 +74,13 @@ npm run build    # 輸出到 dist/，選單連結 ./baby_playhouse/dist/
 - 浴室：`bath`、`shower`、`wash`、`squeak`、`sparkle`、`bubbles`、`swing`、`toot`
 - 客廳：`tv`、`books`、`lamp`、`cuckoo`（其他沿用 `sit`、`eat`、`brew`）
 - 草坪：`slide`、`drive`、`rock`、`flowers`、`shake`、`bounce`
+- 球池房間：`ballpit`（泡進球池）、`roll`（超大球，可滾動）、`trampoline`（定位點 `pose: jump`）、`swingseat`（鞦韆，搭配 `FX_swing_axis`）
 - 其他值會套用預設的彈跳加星星效果
 
 有 `SNAP_` 定位點的物件都可以坐；定位點的 `pose` 設成 `bath` 時，角色會泡進去。
 定位點加上 `align: 1` 時，角色會朝定位點的方向坐（小汽車、搖搖馬），否則面向鏡頭。
 溜滑梯使用 `FX_slide_ladder`（梯子下方）和 `FX_slide_0..2`（滑道路徑）。
+INT 物件加上 `dynamic: 1` 時不會被烘進走路網格（會移動的東西，例如超大球），改由 `systems/playground.ts` 處理碰撞。
 `SPAWN_cast_0..n` 是遊戲開始時角色的站位，依照 `config.ts` 的 `CHARACTERS` 順序排列。
 `FX_` 開頭的 Empty 是特效發射點（`fx` 屬性），例如蓮蓬頭和水龍頭的出水位置。
 新增房間的步驟：在 `config.ts` 的 `ROOMS` 登記，門的 `to` 填房間名稱，`spawn` 填對方房間的門名稱。

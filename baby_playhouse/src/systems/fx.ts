@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-type Kind = 'star' | 'heart' | 'puff' | 'note' | 'drop' | 'bubble';
+type Kind = 'star' | 'heart' | 'puff' | 'note' | 'drop' | 'bubble' | 'ball';
 
 function makeTexture(kind: Kind) {
   const s = 64;
@@ -8,7 +8,20 @@ function makeTexture(kind: Kind) {
   cv.width = cv.height = s;
   const g = cv.getContext('2d')!;
   g.translate(s / 2, s / 2);
-  if (kind === 'bubble') {
+  if (kind === 'ball') {
+    // white ball with a highlight; each particle is tinted a random pit colour
+    g.fillStyle = '#ffffff';
+    g.strokeStyle = 'rgba(90,59,46,0.55)';
+    g.lineWidth = 3;
+    g.beginPath();
+    g.arc(0, 0, 26, 0, Math.PI * 2);
+    g.fill();
+    g.stroke();
+    g.fillStyle = 'rgba(255,255,255,0.9)';
+    g.beginPath();
+    g.ellipse(-9, -10, 8, 5, -0.7, 0, Math.PI * 2);
+    g.fill();
+  } else if (kind === 'bubble') {
     g.fillStyle = 'rgba(214,238,250,0.35)';
     g.strokeStyle = 'rgba(255,255,255,0.95)';
     g.lineWidth = 4;
@@ -53,6 +66,8 @@ function makeTexture(kind: Kind) {
   tex.colorSpace = THREE.SRGBColorSpace;
   return tex;
 }
+
+const BALL_TINTS = [0xf28c7a, 0xfff3c4, 0x6fa8dc, 0xa5dcc8, 0xc9b8e8];
 
 interface Particle {
   sprite: THREE.Sprite;
@@ -103,6 +118,7 @@ export class Fx {
   ) {
     for (let i = 0; i < count; i++) {
       const mat = new THREE.SpriteMaterial({ map: this.tex(kind), transparent: true, depthWrite: false });
+      if (kind === 'ball') mat.color.setHex(BALL_TINTS[Math.floor(Math.random() * BALL_TINTS.length)]);
       const sprite = new THREE.Sprite(mat);
       sprite.position.copy(at);
       if (opts.jitter) {

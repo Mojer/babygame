@@ -2,9 +2,10 @@ import * as THREE from 'three';
 import { OutlineEffect } from 'three/examples/jsm/effects/OutlineEffect.js';
 import { CHARACTERS, COMING_SOON, DEFAULT_BG, INTRO, ROOMS, START_ROOM } from './config';
 import { sfx, unlockAudio } from './core/audio';
-import { Character } from './entities/character';
+import { Character, type Pose } from './entities/character';
 import { Room, type Door, type Interactable } from './scene/room';
 import { Fx } from './systems/fx';
+import { Playground } from './systems/playground';
 import { Bubbles } from './ui/bubbles';
 
 export interface GameHooks {
@@ -16,6 +17,8 @@ export interface GameHooks {
 
 /** Minimum distance between two characters' centres (chibi heads are ~0.4 m wide). */
 const CHAR_SPACING = 0.46;
+/** Seats whose own tap action plays while someone is on them (instead of just saying hi). */
+const RIDE_ACTIONS = new Set(['drive', 'rock', 'swingseat', 'trampoline', 'ballpit']);
 const CAM_DIR = new THREE.Vector3(0.5, Math.SQRT1_2, 0.5).normalize(); // 45° down, from south-east
 const NO_OUTLINE = { visible: false };
 const FADE_MS = 320;
@@ -55,6 +58,8 @@ export class Game {
   /** On/off state of toggles (lamp). */
   private toggles = new WeakMap<Interactable, boolean>();
   private readonly speech: Bubbles;
+  private readonly playground: Playground;
+  private readonly stuck = new Map<Character, { goal: THREE.Vector3; from: THREE.Vector3; t: number; rerouted: boolean }>();
   private lastLine = new Map<Character, string>();
 
   constructor(
@@ -96,6 +101,7 @@ export class Game {
     this.selRing.renderOrder = 1;
 
     this.speech = new Bubbles(document.body);
+    this.playground = new Playground(this.fx);
 
     this.fade = document.createElement('div');
     this.fade.className = 'fade';
@@ -156,6 +162,7 @@ export class Game {
     this.emitters.clear();
     this.room = room;
     this.scene.add(room.root);
+    this.playground.enter(room);
     const candle = room.interactables.find((i) => i.action === 'flicker');
     this.candleLight.intensity = 0;
     if (candle) this.candleLight.position.copy(candle.pivot.position).add(new THREE.Vector3(0, 0.25, 0));
@@ -361,14 +368,20 @@ export class Game {
         const nx = dx / d;
         const nz = dz / d;
         // The walker keeps going; whoever is standing still makes way.
-        let wa = cs[i].walking === cs[j].walking ? 0.5 : cs[i].walking ? 0.25 : 0.75;
-        let wb = 1 - wa;
-        // If one of them is against furniture or a wall, the other takes the whole nudge;
-        // every move is checked against the walk grid so nobody is pushed through walls.
         const canA = (w: number) => nav.isFree(a.x + nx * push * w, a.z + nz * push * w);
         const canB = (w: number) => nav.isFree(b.x - nx * push * w, b.z - nz * push * w);
-        if (!canA(wa)) [wa, wb] = [0, 1];
-        else if (!canB(wb)) [wa, wb] = [1, 0];
+        let wa: number;
+        let wb: number;
+        if (cs[i].walking !== cs[j].walking) {
+          // A walker is never shoved back (that could pin it in place forever): whoever is
+          // standing steps aside, and if a wall stops them the walker squeezes past.
+          [wa, wb] = cs[i].walking ? [0, 1] : [1, 0];
+        } else {
+          [wa, wb] = [0.5, 0.5];
+          // against a wall or furniture: the other one takes the whole nudge
+          if (!canA(wa)) [wa, wb] = [0, 1];
+          else if (!canB(wb)) [wa, wb] = [1, 0];
+        }
         if (wa && canA(wa)) {
           a.x += nx * push * wa;
           a.z += nz * push * wa;
@@ -377,6 +390,41 @@ export class Game {
           b.x -= nx * push * wb;
           b.z -= nz * push * wb;
         }
+      }
+    }
+  }
+
+  /**
+   * Walkers that barely move for a while (blocked by a crowd at their goal) count as arrived
+   * when they're close, re-plan once when they're not, and give up if still stuck.
+   */
+  private watchStuck(dt: number) {
+    for (const c of this.chars) {
+      const goal = c.walkGoal;
+      if (!goal) {
+        this.stuck.delete(c);
+        continue;
+      }
+      let st = this.stuck.get(c);
+      if (!st || st.goal !== goal) {
+        st = { goal, from: c.position.clone(), t: 0, rerouted: false };
+        this.stuck.set(c, st);
+      }
+      st.t += dt;
+      if (st.t < 0.8) continue;
+      const moved = Math.hypot(c.position.x - st.from.x, c.position.z - st.from.z);
+      st.from.copy(c.position);
+      st.t = 0;
+      if (moved > 0.15) continue;
+      const left = Math.hypot(goal.x - c.position.x, goal.z - c.position.z);
+      if (left < CHAR_SPACING * 1.6 || st.rerouted) {
+        this.stuck.delete(c);
+        c.finishWalk();
+      } else {
+        st.rerouted = true;
+        const path = this.room.nav.findPath(c.position, this.clearSpot(goal, c));
+        if (path) c.reroute(path);
+        st.goal = c.walkGoal ?? goal; // same walk, new endpoint — not a new command
       }
     }
   }
@@ -399,6 +447,7 @@ export class Game {
       this.seats.delete(c);
     }
     c.rock = 0;
+    c.lift = 0;
   }
 
   private interact(it: Interactable) {
@@ -406,6 +455,7 @@ export class Game {
     if (c.busy) return;
     if (it.action === 'slide') return this.slide(c, it);
     if (it.snap) return this.sit(c, it);
+    if (it.action === 'roll') return this.react(it); // the ball moves, so kick it from where you stand
 
     this.react(it);
     this.walkTo(it.approach, false, () => {
@@ -417,11 +467,11 @@ export class Game {
   /** Stools, benches and the bathtub: walk over, hop on, occupy. */
   private sit(c: Character, it: Interactable) {
     const snap = it.snap!;
-    const pose = snap.userData.pose === 'bath' ? 'bath' : 'sit';
+    const pose: Pose = snap.userData.pose === 'bath' ? 'bath' : snap.userData.pose === 'jump' ? 'stand' : 'sit';
     const occ = it.occupant as Character | undefined;
     if (occ) {
       occ.happy();
-      if (it.action === 'drive' || it.action === 'rock') return this.react(it);
+      if (RIDE_ACTIONS.has(it.action)) return this.react(it);
       sfx(occ === c && pose === 'bath' ? 'splash' : 'hi', occ.def.voice);
       if (pose === 'bath') this.bubbles(it);
       else this.fx.jelly(it.pivot, 0.1);
@@ -439,7 +489,9 @@ export class Game {
       c.sitOn(snap, pose);
       this.fx.jelly(it.pivot, 0.15);
       sfx(it.sfx);
-      if (pose === 'bath') setTimeout(() => this.bubbles(it), 350);
+      if (it.action === 'ballpit') setTimeout(() => this.ballSplash(it), 350);
+      else if (pose === 'bath') setTimeout(() => this.bubbles(it), 350);
+      if (it.action === 'swingseat') setTimeout(() => this.playground.push(it), 400);
     });
   }
 
@@ -476,6 +528,12 @@ export class Game {
         }, 380);
       });
     });
+  }
+
+  private ballSplash(pit: Interactable) {
+    const rider = pit.occupant as Character | undefined;
+    const at = rider ? rider.position.clone().setY(0.4) : pit.pivot.position.clone().setY(0.4);
+    this.fx.burst('ball', at, 14, { spread: 0.9, up: 1.6, size: 0.1, life: 1.1, gravity: 3.2 });
   }
 
   private bubbles(tub: Interactable) {
@@ -669,6 +727,23 @@ export class Game {
         this.fx.burst('note', at, 2);
         break;
       }
+      case 'roll':
+        this.playground.kick(it, this.selected.position);
+        this.selected.face(it.pivot.position);
+        this.selected.happy();
+        this.fx.burst('star', at, 4);
+        return;
+      case 'ballpit':
+        this.ballSplash(it);
+        break;
+      case 'swingseat':
+        this.playground.push(it);
+        this.fx.burst('heart', at.setY(0.9), 3, { size: 0.1 });
+        break;
+      case 'trampoline':
+        this.playground.boost(it);
+        this.fx.burst('star', at.setY(1.0), 5);
+        break;
       case 'rock':
         this.rockLeft.set(it, 2.2);
         this.fx.burst('heart', at, 3, { size: 0.1 });
@@ -813,7 +888,9 @@ export class Game {
     const t = this.timer.getElapsed();
     for (const c of this.chars) c.update(dt, t);
     this.separate();
+    this.playground.update(dt, t, this.room, this.chars);
     this.keepWalkersOnGrid();
+    this.watchStuck(dt);
     this.updateEmitters(dt);
     this.updateRockers(dt, t);
     this.fx.update(dt);
