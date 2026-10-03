@@ -2,6 +2,11 @@
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
 
+/** The shared AudioContext (null until the first user gesture unlocks audio). */
+export function audioContext(): AudioContext | null {
+  return ctx;
+}
+
 export function unlockAudio() {
   if (!ctx) {
     ctx = new AudioContext();

@@ -65,7 +65,8 @@ npm run build    # 輸出到 dist/，選單連結 ./baby_playhouse/dist/
 | `systems/critters.ts` | 小鳥（飛進來、在草地上走、被點或有人走近就飛走）和小雞 |
 | `systems/playground.ts` | 會動的遊具：超大球滾動與碰撞、鞦韆擺盪、蹦床彈跳 |
 | `systems/fx.ts` | 星星、愛心、音符、蒸氣粒子，以及點擊漣漪和果凍彈跳 |
-| `core/audio.ts` | 用 WebAudio 合成所有音效（還不需要音檔） |
+| `core/audio.ts` | 用 WebAudio 合成所有音效 |
+| `core/music.ts` | 背景音樂 `public/audio/play-house-garden.mp3`（128 kbps；192 kbps 母帶放在 `art/audio/`，不進 git）：第一次點擊後淡入、循環播放，右上角 🎵 可開關（會記住） |
 | `config.ts` | 角色（含對話台詞）、房間、起始房間、開場白 |
 | `ui/bubbles.ts` | 角色頭上的對話框（HTML，跟著角色移動） |
 

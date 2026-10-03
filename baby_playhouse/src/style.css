@@ -65,6 +65,24 @@ body {
   font-size: 26px;
 }
 
+.music {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--card);
+  box-shadow: 0 3px 0 rgba(90, 59, 46, 0.25);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.music[aria-pressed="false"] {
+  opacity: 0.7;
+}
+
 .cast {
   position: absolute;
   left: 50%;

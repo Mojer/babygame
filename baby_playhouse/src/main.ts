@@ -1,6 +1,7 @@
 import './style.css';
 import { CHARACTERS } from './config';
-import { unlockAudio } from './core/audio';
+import { audioContext, unlockAudio } from './core/audio';
+import { initMusic, isMusicMuted, isMusicStarted, setMusicMuted, startMusic } from './core/music';
 import { Game } from './game';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
@@ -9,6 +10,7 @@ const hud = document.createElement('div');
 hud.className = 'hud';
 hud.innerHTML = `
   <a class="back" href="../../index.html" aria-label="回選單">🏠</a>
+  <button class="music" type="button" aria-label="背景音樂" aria-pressed="true">🎵</button>
   <div class="cast" role="toolbar" aria-label="選角色">
     ${CHARACTERS.map((c) => `<button data-key="${c.key}" aria-label="${c.label}" aria-pressed="false">${c.icon}</button>`).join('')}
   </div>
@@ -44,7 +46,9 @@ const game = new Game(app, {
   },
 });
 
-if (import.meta.env.DEV) (window as unknown as { game: Game }).game = game;
+if (import.meta.env.DEV) {
+  Object.assign(window, { game, music: { isMusicStarted, isMusicMuted, audioContext } });
+}
 
 hud.querySelectorAll<HTMLButtonElement>('.cast button').forEach((b) => {
   b.addEventListener('click', () => {
@@ -63,3 +67,33 @@ game
     console.error(err);
     loading.textContent = '載入失敗，請重新整理 🙏';
   });
+
+// Background music: starts on the first tap anywhere (browsers block autoplay).
+initMusic('audio/play-house-garden.mp3');
+const musicBtn = hud.querySelector<HTMLButtonElement>('.music')!;
+const showMusic = () => {
+  const on = !isMusicMuted();
+  musicBtn.textContent = on ? '🎵' : '🔇';
+  musicBtn.setAttribute('aria-pressed', String(on));
+};
+showMusic();
+window.addEventListener(
+  'pointerdown',
+  (e) => {
+    if ((e.target as Element | null)?.closest('.music')) return; // the button handles itself
+    unlockAudio();
+    startMusic();
+  },
+  { capture: true },
+);
+musicBtn.addEventListener('click', () => {
+  unlockAudio();
+  if (!isMusicStarted()) {
+    // first tap ever is on the music button: just turn the music on
+    if (isMusicMuted()) setMusicMuted(false);
+    startMusic();
+  } else {
+    setMusicMuted(!isMusicMuted());
+  }
+  showMusic();
+});
