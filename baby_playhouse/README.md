@@ -13,6 +13,7 @@ art/
     build_living.py  建立迎賓客廳
     build_lawn.py    建立室外草坪（遊戲起點）
     build_ballpit.py 建立球池房間
+    build_farm.py    建立開心農場（從咖啡廳西門進入）
     build_capybara.py 建立卡比巴拉園長
     build_akane.py   建立小茜（依角色設定圖）
     build_yu.py      建立小宇（依角色設定圖）
@@ -26,11 +27,11 @@ public/models/ 壓縮後、給遊戲載入的 GLB
 ## 房間地圖
 
 ```
-     [咖啡廳]──[浴室]
-        │
-   [迎賓客廳]──[球池房間]
-        │
-    [室外草坪]  ← 起點
+[開心農場]──[咖啡廳]──[浴室]
+                │
+           [迎賓客廳]──[球池房間]
+                │
+           [室外草坪]  ← 起點
 ```
 
 新房間用 `pb_lib.room_shell()` 建外殼，用 `doors={'N': x, 'S': x, 'W': y, 'E': y}` 在指定位置開門。
@@ -61,6 +62,7 @@ npm run build    # 輸出到 dist/，選單連結 ./baby_playhouse/dist/
 | `scene/room.ts` | 載入房間 GLB，依照命名規則建立互動物件、定位點、門和走路網格 |
 | `systems/navgrid.ts` | 從上方往下射線烘焙可走網格，A* 尋路加路徑平滑 |
 | `entities/character.ts` | 角色的程式動畫：走路搖擺、呼吸、眨眼、跳上椅子、開心跳 |
+| `systems/critters.ts` | 小鳥（飛進來、在草地上走、被點或有人走近就飛走）和小雞 |
 | `systems/playground.ts` | 會動的遊具：超大球滾動與碰撞、鞦韆擺盪、蹦床彈跳 |
 | `systems/fx.ts` | 星星、愛心、音符、蒸氣粒子，以及點擊漣漪和果凍彈跳 |
 | `core/audio.ts` | 用 WebAudio 合成所有音效（還不需要音檔） |
@@ -74,6 +76,7 @@ npm run build    # 輸出到 dist/，選單連結 ./baby_playhouse/dist/
 - 浴室：`bath`、`shower`、`wash`、`squeak`、`sparkle`、`bubbles`、`swing`、`toot`
 - 客廳：`tv`、`books`、`lamp`、`cuckoo`（其他沿用 `sit`、`eat`、`brew`）
 - 草坪：`slide`、`drive`、`rock`、`flowers`、`shake`、`bounce`
+- 開心農場：`harvest`（`*_veg_N` 的蔬果依序跳起來）、`bird`、`chick`（小動物，用 `FX_lawn_a/b`、`FX_pen_a/b` 標出活動範圍）
 - 球池房間：`ballpit`（泡進球池）、`roll`（超大球，可滾動）、`trampoline`（定位點 `pose: jump`）、`swingseat`（鞦韆，搭配 `FX_swing_axis`）
 - 其他值會套用預設的彈跳加星星效果
 

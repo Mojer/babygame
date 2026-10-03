@@ -48,9 +48,13 @@ for i in range(int(ROOM / PLANK)):
         b.box(f"floor_plank_{i}", (ROOM - 0.02, PLANK - 0.02, 0.004), (0, -H + PLANK / 2 + i * PLANK, 0.002),
               "floor_dark", bevel=0)
 b.box("wall_N", (ROOM + WALL_T, WALL_T, WALL_H), (-WALL_T / 2, H, WALL_H / 2), "wall", bevel=0.03)
-b.box("wall_W", (WALL_T, ROOM, WALL_H), (-H, 0, WALL_H / 2), "wall", bevel=0.03)
+# west wall with a door out to the farm (centred at y = W_DOOR_Y)
+W_DOOR_Y = 0.15
+pb_lib._wall_run(b, "wall_W", "y", -H, -H, H, W_DOOR_Y, WALL_H, WALL_T, "wall", 0.03)
+pb_lib.door_frame(b, "W", W_DOOR_Y, "white", wall="wall", view_color="grass", view_floor="grass")
 b.box("wall_N_skirting", (ROOM, 0.03, 0.12), (0, IN_N - 0.015, 0.06), "wall_trim", bevel=0.01)
-b.box("wall_W_skirting", (0.03, ROOM, 0.12), (IN_W + 0.015, 0, 0.06), "wall_trim", bevel=0.01)
+for k, (y0, y1) in enumerate(((-H, W_DOOR_Y - 0.6), (W_DOOR_Y + 0.6, H))):
+    b.box(f"wall_W_skirting_{k}", (0.03, y1 - y0, 0.12), (IN_W + 0.015, (y0 + y1) / 2, 0.06), "wall_trim", bevel=0.01)
 b.box("wall_N_cap", (ROOM + WALL_T + 0.04, WALL_T + 0.04, 0.05), (-WALL_T / 2, H, WALL_H), "wall_trim")
 b.box("wall_W_cap", (WALL_T + 0.04, ROOM + 0.04, 0.05), (-H, 0, WALL_H), "wall_trim")
 # low front walls; east wall has a 1.2 m door gap
@@ -207,10 +211,10 @@ b.ball("candle_flame", 0.018, (IN_W + 0.3, -1.6, 0.635), "orange", scale=(1, 1, 
 stool("stool_side", IN_W + 0.3, -1.05, "wood", seat=0.3)
 
 # chalk menu board on the west wall + potted plant in the south-west corner
-b.box("menu_board", (0.04, 0.8, 0.55), (IN_W - 0.0, -0.4, 0.95), "wood_dark", bevel=0.02)
-b.box("menu_board_face", (0.02, 0.7, 0.45), (IN_W + 0.02, -0.4, 0.95), "choco", bevel=0)
+b.box("menu_board", (0.04, 0.8, 0.55), (IN_W - 0.0, -1.05, 0.95), "wood_dark", bevel=0.02)
+b.box("menu_board_face", (0.02, 0.7, 0.45), (IN_W + 0.02, -1.05, 0.95), "choco", bevel=0)
 for i in range(3):
-    b.box(f"menu_line_{i}", (0.01, 0.45 - i * 0.08, 0.025), (IN_W + 0.035, -0.4, 1.08 - i * 0.1), "white", bevel=0)
+    b.box(f"menu_line_{i}", (0.01, 0.45 - i * 0.08, 0.025), (IN_W + 0.035, -1.05, 1.08 - i * 0.1), "white", bevel=0)
 b.cyl("plant_pot", 0.14, 0.2, (IN_W + 0.3, -2.55, 0.1), "orange", r2=0.17, bevel=0.02)
 for i, (dx, dy, dz, r) in enumerate(((0, 0, 0.32, 0.14), (0.07, 0.05, 0.43, 0.1), (-0.06, -0.04, 0.42, 0.09))):
     b.ball(f"plant_leaves_{i}", r, (IN_W + 0.3 + dx, -2.55 + dy, dz), "green")
@@ -220,6 +224,9 @@ for i, (dx, dy, dz, r) in enumerate(((0, 0, 0.32, 0.14), (0.07, 0.05, 0.43, 0.1)
 nav = b.box("NAV_floor", (ROOM - 0.4, ROOM - 0.4, 0.001), (0, 0, 0.001), "mint", bevel=0)
 nav.display_type = "WIRE"
 nav.hide_render = True
+b.box("doormat_W", (0.5, 1.0, 0.015), (IN_W + 0.35, W_DOOR_Y, 0.008), "grass_dark", bevel=0.005)
+b.empty("DOOR_west", (-H, W_DOOR_Y, 0), size=0.4, props={"to": "farm", "spawn": "DOOR_west"}, shape="SINGLE_ARROW",
+        rot=(0, -90, 0))
 b.empty("DOOR_south", (S_DOOR_X, -H, 0), size=0.4, props={"to": "living", "spawn": "DOOR_north"},
         shape="SINGLE_ARROW", rot=(90, 0, 0))
 b.empty("DOOR_east", (H, 0, 0), size=0.4, props={"to": "bathroom", "spawn": "DOOR_west"}, shape="SINGLE_ARROW",

@@ -5,6 +5,7 @@ import { sfx, unlockAudio } from './core/audio';
 import { Character, type Pose } from './entities/character';
 import { Room, type Door, type Interactable } from './scene/room';
 import { Fx } from './systems/fx';
+import { Critters } from './systems/critters';
 import { Playground } from './systems/playground';
 import { Bubbles } from './ui/bubbles';
 
@@ -19,6 +20,8 @@ export interface GameHooks {
 const CHAR_SPACING = 0.46;
 /** Seats whose own tap action plays while someone is on them (instead of just saying hi). */
 const RIDE_ACTIONS = new Set(['drive', 'rock', 'swingseat', 'trampoline', 'ballpit']);
+/** Interactables that move about: poke them from where you stand instead of walking over. */
+const MOVING_ACTIONS = new Set(['roll', 'bird', 'chick']);
 const CAM_DIR = new THREE.Vector3(0.5, Math.SQRT1_2, 0.5).normalize(); // 45° down, from south-east
 const NO_OUTLINE = { visible: false };
 const FADE_MS = 320;
@@ -59,6 +62,7 @@ export class Game {
   private toggles = new WeakMap<Interactable, boolean>();
   private readonly speech: Bubbles;
   private readonly playground: Playground;
+  private readonly critters = new Critters();
   private readonly stuck = new Map<Character, { goal: THREE.Vector3; from: THREE.Vector3; t: number; rerouted: boolean }>();
   private lastLine = new Map<Character, string>();
 
@@ -163,6 +167,7 @@ export class Game {
     this.room = room;
     this.scene.add(room.root);
     this.playground.enter(room);
+    this.critters.enter(room);
     const candle = room.interactables.find((i) => i.action === 'flicker');
     this.candleLight.intensity = 0;
     if (candle) this.candleLight.position.copy(candle.pivot.position).add(new THREE.Vector3(0, 0.25, 0));
@@ -455,7 +460,8 @@ export class Game {
     if (c.busy) return;
     if (it.action === 'slide') return this.slide(c, it);
     if (it.snap) return this.sit(c, it);
-    if (it.action === 'roll') return this.react(it); // the ball moves, so kick it from where you stand
+    // things that move about are poked from where you stand rather than walked to
+    if (MOVING_ACTIONS.has(it.action)) return this.react(it);
 
     this.react(it);
     this.walkTo(it.approach, false, () => {
@@ -671,7 +677,7 @@ export class Game {
       case 'lamp': {
         const on = !(this.toggles.get(it) ?? true);
         this.toggles.set(it, on);
-        const shade = it.parts.find((p) => p.name === 'INT_lamp') ?? it.parts[0];
+        const shade = it.parts.find((p) => p.name.startsWith('INT_')) ?? it.parts[0];
         (shade.material as THREE.MeshToonMaterial).emissiveIntensity = on ? 2.5 : 0;
         this.fx.jelly(it.pivot, 0.08);
         if (on) this.fx.burst('star', at, 4, { size: 0.1 });
@@ -725,6 +731,31 @@ export class Game {
           this.fx.jelly(it.pivot, 0.12);
         }
         this.fx.burst('note', at, 2);
+        break;
+      }
+      case 'bird':
+      case 'chick':
+        this.critters.tap(it);
+        this.selected.face(it.pivot.position);
+        this.selected.happy();
+        this.fx.burst(it.action === 'bird' ? 'note' : 'heart', at, 3, { size: 0.09 });
+        return;
+      case 'harvest': {
+        // every vegetable in the bed pops up in turn
+        const groups = new Map<string, THREE.Object3D[]>();
+        for (const part of it.parts) {
+          const m = /^(.*_veg_\d+)/.exec(part.name);
+          if (m) groups.set(m[1], [...(groups.get(m[1]) ?? []), part]);
+        }
+        [...groups.values()].forEach((parts, i) => {
+          setTimeout(() => {
+            const base = parts.map((q) => q.position.y);
+            this.fx.tween(0.55, (k) => parts.forEach((q, j) => (q.position.y = base[j] + Math.sin(k * Math.PI) * 0.16)));
+            sfx('pop');
+          }, i * 110);
+        });
+        this.fx.jelly(it.pivot, 0.06);
+        setTimeout(() => this.fx.burst('heart', at, 5, { spread: 0.6 }), groups.size * 110);
         break;
       }
       case 'roll':
@@ -889,6 +920,7 @@ export class Game {
     for (const c of this.chars) c.update(dt, t);
     this.separate();
     this.playground.update(dt, t, this.room, this.chars);
+    this.critters.update(dt, t, this.chars);
     this.keepWalkersOnGrid();
     this.watchStuck(dt);
     this.updateEmitters(dt);

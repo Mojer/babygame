@@ -82,6 +82,7 @@ export const ROOMS: Record<string, RoomDef> = {
   bathroom: { model: 'models/room_bathroom.glb', label: '🛁 浴室' },
   lawn: { model: 'models/room_lawn.glb', label: '🌳 草坪', bg: 0xcfe8f6 },
   ballpit: { model: 'models/room_ballpit.glb', label: '🎈 球池房間' },
+  farm: { model: 'models/room_farm.glb', label: '🌻 開心農場', bg: 0xcfe8f6 },
 };
 
 export const START_ROOM = 'lawn';

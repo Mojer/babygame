@@ -30,6 +30,7 @@ PALETTE = [
     ("sky_deep", "6FA8DC"), ("plum", "9C7BC4"),
     ("beige", "DCCBB2"), ("hair", "3A2724"), ("rose", "EE8FA6"), ("skirt", "6B6A73"),
     ("hoodie", "2B3150"), ("jogger", "40356A"), ("hair_fade", "6A5650"), ("henley", "F4EAD6"),
+    ("melon", "3C7A45"), ("mushcap", "B5794E"),
 ]
 GRID = 8
 CELL = 32
@@ -123,6 +124,9 @@ class Builder:
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         bm.free()
+        # drop UVs inherited from converted curves/text so the palette swatch is the only UV set
+        while me.uv_layers:
+            me.uv_layers.remove(me.uv_layers[0])
         uv = me.uv_layers.new(name="UVMap")
         u, v = swatch_uv(color)
         for d in uv.data:
@@ -256,12 +260,16 @@ class Builder:
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         return self._finish(name, bm, color, (0, 0, 0), (0, 0, 0), False, False, bevel, parent, props)
 
-    def text(self, name, body, size, loc, color, rot=(90, 0, 0), depth=0.03, glow=False, props=None):
+    def text(self, name, body, size, loc, color, rot=(90, 0, 0), depth=0.03, glow=False, props=None, font=None,
+             bevel=0.008):
+        """3D text; depth=0 and bevel=0 give flat, printed-looking letters."""
         cu = bpy.data.curves.new(name + "_curve", "FONT")
         cu.body = body
+        if font and os.path.exists(font):
+            cu.font = bpy.data.fonts.load(font, check_existing=True)
         cu.size = size
         cu.extrude = depth
-        cu.bevel_depth = 0.008
+        cu.bevel_depth = bevel
         cu.align_x = "CENTER"
         cu.align_y = "CENTER"
         tmp = bpy.data.objects.new(name + "_tmp", cu)
