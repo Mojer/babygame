@@ -1,0 +1,703 @@
+{
+  "title": "寶貝遊樂場 茜と宇の篇 30s Promo",
+  "bpm": 128,
+  "beats": 64,
+  "fps": 60,
+  "width": 1920,
+  "height": 1080,
+  "sampleRate": 48000,
+  "shots": [
+    {
+      "name": "intro",
+      "beat": 0,
+      "len": 8
+    },
+    {
+      "name": "newfriend",
+      "beat": 8,
+      "len": 8
+    },
+    {
+      "name": "lawn",
+      "beat": 16,
+      "len": 8
+    },
+    {
+      "name": "farm",
+      "beat": 24,
+      "len": 8
+    },
+    {
+      "name": "ballpit",
+      "beat": 32,
+      "len": 8
+    },
+    {
+      "name": "tour",
+      "beat": 40,
+      "len": 8
+    },
+    {
+      "name": "together",
+      "beat": 48,
+      "len": 8
+    },
+    {
+      "name": "end",
+      "beat": 56,
+      "len": 8
+    }
+  ],
+  "bars": [
+    {
+      "bar": 0,
+      "chords": [
+        "F",
+        "F",
+        "F",
+        "F"
+      ]
+    },
+    {
+      "bar": 1,
+      "chords": [
+        "Bb",
+        "Bb",
+        "C",
+        "C"
+      ]
+    },
+    {
+      "bar": 2,
+      "chords": [
+        "F",
+        "F",
+        "F",
+        "F"
+      ]
+    },
+    {
+      "bar": 3,
+      "chords": [
+        "C",
+        "C",
+        "C",
+        "C"
+      ]
+    },
+    {
+      "bar": 4,
+      "chords": [
+        "Am",
+        "Am",
+        "Am",
+        "Am"
+      ]
+    },
+    {
+      "bar": 5,
+      "chords": [
+        "Dm",
+        "Dm",
+        "Dm",
+        "Dm"
+      ]
+    },
+    {
+      "bar": 6,
+      "chords": [
+        "Bb",
+        "Bb",
+        "Bb",
+        "Bb"
+      ]
+    },
+    {
+      "bar": 7,
+      "chords": [
+        "C",
+        "C",
+        "C",
+        "C"
+      ]
+    },
+    {
+      "bar": 8,
+      "chords": [
+        "F",
+        "F",
+        "F",
+        "F"
+      ]
+    },
+    {
+      "bar": 9,
+      "chords": [
+        "Am",
+        "Am",
+        "Am",
+        "Am"
+      ]
+    },
+    {
+      "bar": 10,
+      "chords": [
+        "F",
+        "F",
+        "Am",
+        "Am"
+      ]
+    },
+    {
+      "bar": 11,
+      "chords": [
+        "Bb",
+        "Bb",
+        "C",
+        "C"
+      ]
+    },
+    {
+      "bar": 12,
+      "chords": [
+        "Bb",
+        "Bb",
+        "Bb",
+        "Bb"
+      ]
+    },
+    {
+      "bar": 13,
+      "chords": [
+        "C",
+        "C",
+        "C",
+        "C"
+      ]
+    },
+    {
+      "bar": 14,
+      "chords": [
+        "F",
+        "F",
+        "F",
+        "F"
+      ]
+    },
+    {
+      "bar": 15,
+      "chords": [
+        "F",
+        "F",
+        "F",
+        "F"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "beat": 0,
+      "type": "burst"
+    },
+    {
+      "beat": 2,
+      "type": "boing",
+      "who": "akane"
+    },
+    {
+      "beat": 2.25,
+      "type": "pow",
+      "text": "KIRA!",
+      "color": "#FFB067",
+      "x": 0.17,
+      "y": 0.66,
+      "r": 130,
+      "rot": -0.15
+    },
+    {
+      "beat": 2.5,
+      "type": "hi",
+      "who": "akane"
+    },
+    {
+      "beat": 2.75,
+      "type": "hi",
+      "who": "yu"
+    },
+    {
+      "beat": 3.0,
+      "type": "letter",
+      "text": "寶",
+      "index": 0
+    },
+    {
+      "beat": 3.5,
+      "type": "letter",
+      "text": "貝",
+      "index": 1
+    },
+    {
+      "beat": 4.0,
+      "type": "letter",
+      "text": "遊",
+      "index": 2
+    },
+    {
+      "beat": 4.5,
+      "type": "letter",
+      "text": "樂",
+      "index": 3
+    },
+    {
+      "beat": 5.0,
+      "type": "letter",
+      "text": "場",
+      "index": 4
+    },
+    {
+      "beat": 6,
+      "type": "badge",
+      "text": "茜と宇の篇"
+    },
+    {
+      "beat": 7.5,
+      "type": "wipe",
+      "shape": "gate",
+      "to": "newfriend"
+    },
+    {
+      "beat": 8,
+      "type": "newfriend",
+      "who": "yu",
+      "name": "小宇",
+      "line": "我是小宇！我跑很快喔！",
+      "color": "#4E6FB5",
+      "bg": "#D7E4FA"
+    },
+    {
+      "beat": 9,
+      "type": "boing",
+      "who": "yu"
+    },
+    {
+      "beat": 9,
+      "type": "hi",
+      "who": "yu"
+    },
+    {
+      "beat": 9.25,
+      "type": "pow",
+      "text": "NEW!",
+      "color": "#FFE36E",
+      "x": 0.9,
+      "y": 0.2,
+      "r": 130,
+      "rot": 0.15
+    },
+    {
+      "beat": 12,
+      "type": "boing",
+      "who": "akane"
+    },
+    {
+      "beat": 12.25,
+      "type": "hi",
+      "who": "akane"
+    },
+    {
+      "beat": 13.5,
+      "type": "cheer"
+    },
+    {
+      "beat": 15.5,
+      "type": "wipe",
+      "shape": "star",
+      "to": "lawn"
+    },
+    {
+      "beat": 16,
+      "type": "caption",
+      "icon": "🌳",
+      "zh": "草坪",
+      "sub": "抓到你了！",
+      "subAt": 22.5,
+      "color": "#86C25F"
+    },
+    {
+      "beat": 17,
+      "type": "pow",
+      "text": "等等我～",
+      "color": "#7CCBFF",
+      "x": 0.84,
+      "y": 0.28,
+      "r": 150,
+      "rot": 0.12
+    },
+    {
+      "beat": 20.5,
+      "type": "boing",
+      "who": "akane"
+    },
+    {
+      "beat": 21,
+      "type": "slide",
+      "who": "akane"
+    },
+    {
+      "beat": 21,
+      "type": "boing",
+      "who": "yu"
+    },
+    {
+      "beat": 22,
+      "type": "slide",
+      "who": "yu"
+    },
+    {
+      "beat": 23,
+      "type": "sparkle",
+      "at": "catch"
+    },
+    {
+      "beat": 23,
+      "type": "pow",
+      "text": "抓到了！",
+      "color": "#FF8FB1",
+      "x": 0.18,
+      "y": 0.4,
+      "r": 160,
+      "rot": -0.12
+    },
+    {
+      "beat": 23.5,
+      "type": "wipe",
+      "shape": "dots",
+      "to": "farm"
+    },
+    {
+      "beat": 24,
+      "type": "caption",
+      "icon": "🌻",
+      "zh": "開心農場",
+      "sub": "一起來種菜！",
+      "subAt": 28,
+      "color": "#E8A33D"
+    },
+    {
+      "beat": 24.5,
+      "type": "hi",
+      "who": "yu"
+    },
+    {
+      "beat": 24.5,
+      "type": "pow",
+      "text": "歡迎！",
+      "color": "#FFE36E",
+      "x": 0.83,
+      "y": 0.26,
+      "r": 140,
+      "rot": 0.12
+    },
+    {
+      "beat": 28,
+      "type": "harvest",
+      "bed": "radishbed"
+    },
+    {
+      "beat": 28.5,
+      "type": "harvest",
+      "bed": "cabbagebed"
+    },
+    {
+      "beat": 29,
+      "type": "harvest",
+      "bed": "tomatoes"
+    },
+    {
+      "beat": 29.5,
+      "type": "harvest",
+      "bed": "pumpkins"
+    },
+    {
+      "beat": 30,
+      "type": "harvest",
+      "bed": "melons"
+    },
+    {
+      "beat": 30.5,
+      "type": "cheer"
+    },
+    {
+      "beat": 30.5,
+      "type": "pow",
+      "text": "大豐收！",
+      "color": "#8FE3A3",
+      "x": 0.16,
+      "y": 0.38,
+      "r": 160,
+      "rot": -0.1
+    },
+    {
+      "beat": 31.5,
+      "type": "wipe",
+      "shape": "heart",
+      "to": "ballpit"
+    },
+    {
+      "beat": 32,
+      "type": "caption",
+      "icon": "🎈",
+      "zh": "球池房間",
+      "sub": "蹦～蹦～ 跳跳床！",
+      "subAt": 34,
+      "color": "#B89CFF"
+    },
+    {
+      "beat": 32.25,
+      "type": "boing",
+      "who": "akane"
+    },
+    {
+      "beat": 32.75,
+      "type": "splash",
+      "at": "pit"
+    },
+    {
+      "beat": 33,
+      "type": "bounce",
+      "who": "yu"
+    },
+    {
+      "beat": 34,
+      "type": "bounce",
+      "who": "yu"
+    },
+    {
+      "beat": 34,
+      "type": "pow",
+      "text": "蹦！",
+      "color": "#FFB067",
+      "x": 0.84,
+      "y": 0.24,
+      "r": 120,
+      "rot": 0.12
+    },
+    {
+      "beat": 35,
+      "type": "bounce",
+      "who": "yu"
+    },
+    {
+      "beat": 36,
+      "type": "bounce",
+      "who": "yu"
+    },
+    {
+      "beat": 37,
+      "type": "boing",
+      "who": "yu"
+    },
+    {
+      "beat": 38,
+      "type": "splash",
+      "at": "pit"
+    },
+    {
+      "beat": 38,
+      "type": "pow",
+      "text": "噗通！",
+      "color": "#7CCBFF",
+      "x": 0.17,
+      "y": 0.36,
+      "r": 150,
+      "rot": -0.12
+    },
+    {
+      "beat": 38.5,
+      "type": "cheer"
+    },
+    {
+      "beat": 39.5,
+      "type": "wipe",
+      "shape": "gate",
+      "to": "tour"
+    },
+    {
+      "beat": 40,
+      "type": "cut",
+      "icon": "🛋️",
+      "zh": "迎賓客廳",
+      "color": "#F28C7A"
+    },
+    {
+      "beat": 40.5,
+      "type": "pow",
+      "text": "看電視！",
+      "color": "#FFE36E",
+      "x": 0.84,
+      "y": 0.26,
+      "r": 130,
+      "rot": 0.12,
+      "len": 1.4
+    },
+    {
+      "beat": 42,
+      "type": "cut",
+      "icon": "☕",
+      "zh": "咖啡廳",
+      "color": "#C98B5A"
+    },
+    {
+      "beat": 42.5,
+      "type": "pow",
+      "text": "好香！",
+      "color": "#FFB067",
+      "x": 0.84,
+      "y": 0.26,
+      "r": 130,
+      "rot": 0.12,
+      "len": 1.4
+    },
+    {
+      "beat": 44,
+      "type": "cut",
+      "icon": "🛁",
+      "zh": "浴室",
+      "color": "#6FA8DC"
+    },
+    {
+      "beat": 44.5,
+      "type": "pow",
+      "text": "泡泡！",
+      "color": "#7CCBFF",
+      "x": 0.84,
+      "y": 0.26,
+      "r": 130,
+      "rot": 0.12,
+      "len": 1.4
+    },
+    {
+      "beat": 46,
+      "type": "cut",
+      "icon": "🐴",
+      "zh": "騎騎樂",
+      "color": "#86C25F"
+    },
+    {
+      "beat": 46.5,
+      "type": "pow",
+      "text": "嘟嘟！",
+      "color": "#FF8FB1",
+      "x": 0.84,
+      "y": 0.26,
+      "r": 130,
+      "rot": 0.12,
+      "len": 1.4
+    },
+    {
+      "beat": 47.5,
+      "type": "wipe",
+      "shape": "dots",
+      "to": "together"
+    },
+    {
+      "beat": 48.5,
+      "type": "stamp",
+      "text": "和好朋友",
+      "index": 0
+    },
+    {
+      "beat": 49.0,
+      "type": "boing",
+      "who": "capybara"
+    },
+    {
+      "beat": 49.5,
+      "type": "boing",
+      "who": "panda"
+    },
+    {
+      "beat": 50.0,
+      "type": "boing",
+      "who": "akane"
+    },
+    {
+      "beat": 50.5,
+      "type": "boing",
+      "who": "yu"
+    },
+    {
+      "beat": 51.0,
+      "type": "boing",
+      "who": "bunny"
+    },
+    {
+      "beat": 51.5,
+      "type": "boing",
+      "who": "cat"
+    },
+    {
+      "beat": 52,
+      "type": "stamp",
+      "text": "一起玩！",
+      "index": 1
+    },
+    {
+      "beat": 53,
+      "type": "cheer"
+    },
+    {
+      "beat": 53,
+      "type": "pow",
+      "text": "YAY!",
+      "color": "#FF8FB1",
+      "x": 0.12,
+      "y": 0.42,
+      "r": 140,
+      "rot": -0.14
+    },
+    {
+      "beat": 54.5,
+      "type": "cheer"
+    },
+    {
+      "beat": 54.5,
+      "type": "pow",
+      "text": "KIRA☆",
+      "color": "#B89CFF",
+      "x": 0.88,
+      "y": 0.44,
+      "r": 150,
+      "rot": 0.12
+    },
+    {
+      "beat": 55.5,
+      "type": "wipe",
+      "shape": "gate",
+      "to": "end"
+    },
+    {
+      "beat": 56,
+      "type": "logo"
+    },
+    {
+      "beat": 56,
+      "type": "burst"
+    },
+    {
+      "beat": 58,
+      "type": "badge",
+      "text": "茜と宇の篇"
+    },
+    {
+      "beat": 60,
+      "type": "cta",
+      "text": "一起來玩吧！"
+    },
+    {
+      "beat": 62,
+      "type": "sparkle",
+      "at": "cta"
+    }
+  ]
+}
