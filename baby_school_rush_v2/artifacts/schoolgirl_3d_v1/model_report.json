@@ -1,0 +1,451 @@
+{
+  "scene": "BSR_Schoolgirl_Model_v1",
+  "objects": [
+    {
+      "name": "BSR_Arm.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Arm.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Backpack",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_BackpackHandle",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_BackpackPocket",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_BackpackZip",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_BagStrap.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_BagStrap.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Body_Shirt",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Buckle.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Buckle.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Button_0",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Button_1",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Button_2",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Cheek.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Cheek.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Collar.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Collar.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Cuff.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Cuff.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Ear.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Ear.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_EyeSpark.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_EyeSpark.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_EyeWhite.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_EyeWhite.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Hair_Bangs_00",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Hair_Bangs_01",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Hair_Bangs_02",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Hair_Bangs_03",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Hair_Bangs_04",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Hair_Bangs_05",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Hair_Bangs_06",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Hair_Cap",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Hair_Long",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Hair_Side_-1",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Hair_Side_1",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Hand.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Hand.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Head",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Iris.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Iris.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Lace0.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Lace0.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Lace1.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Lace1.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Lace2.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Lace2.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Lash.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Lash.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Leg.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Leg.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Mouth",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Neck",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Nose",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Pelvis",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Pupil.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Pupil.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Rig",
+      "type": "ARMATURE"
+    },
+    {
+      "name": "BSR_Shoe.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Shoe.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Skirt",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Sleeve.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Sleeve.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Sock.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Sock.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Sole.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Sole.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Suspender.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Suspender.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Thumb.L",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Thumb.R",
+      "type": "MESH"
+    },
+    {
+      "name": "BSR_Waistband",
+      "type": "MESH"
+    },
+    {
+      "name": "CAM_Back",
+      "type": "CAMERA"
+    },
+    {
+      "name": "CAM_Front",
+      "type": "CAMERA"
+    },
+    {
+      "name": "CAM_Preview",
+      "type": "CAMERA"
+    },
+    {
+      "name": "CAM_Side",
+      "type": "CAMERA"
+    },
+    {
+      "name": "LIGHT_Fill",
+      "type": "LIGHT"
+    },
+    {
+      "name": "LIGHT_Key",
+      "type": "LIGHT"
+    },
+    {
+      "name": "LIGHT_Rim",
+      "type": "LIGHT"
+    },
+    {
+      "name": "REF_Back",
+      "type": "EMPTY"
+    },
+    {
+      "name": "REF_Front",
+      "type": "EMPTY"
+    },
+    {
+      "name": "REF_Plane_Back",
+      "type": "MESH"
+    },
+    {
+      "name": "REF_Plane_Front",
+      "type": "MESH"
+    },
+    {
+      "name": "REF_Plane_Side",
+      "type": "MESH"
+    },
+    {
+      "name": "REF_Side",
+      "type": "EMPTY"
+    }
+  ],
+  "bones": [
+    {
+      "name": "root",
+      "parent": null
+    },
+    {
+      "name": "pelvis",
+      "parent": "root"
+    },
+    {
+      "name": "spine",
+      "parent": "pelvis"
+    },
+    {
+      "name": "chest",
+      "parent": "spine"
+    },
+    {
+      "name": "neck",
+      "parent": "chest"
+    },
+    {
+      "name": "head",
+      "parent": "neck"
+    },
+    {
+      "name": "upper_arm.L",
+      "parent": "chest"
+    },
+    {
+      "name": "forearm.L",
+      "parent": "upper_arm.L"
+    },
+    {
+      "name": "hand.L",
+      "parent": "forearm.L"
+    },
+    {
+      "name": "upper_arm.R",
+      "parent": "chest"
+    },
+    {
+      "name": "forearm.R",
+      "parent": "upper_arm.R"
+    },
+    {
+      "name": "hand.R",
+      "parent": "forearm.R"
+    },
+    {
+      "name": "thigh.L",
+      "parent": "pelvis"
+    },
+    {
+      "name": "shin.L",
+      "parent": "thigh.L"
+    },
+    {
+      "name": "foot.L",
+      "parent": "shin.L"
+    },
+    {
+      "name": "thigh.R",
+      "parent": "pelvis"
+    },
+    {
+      "name": "shin.R",
+      "parent": "thigh.R"
+    },
+    {
+      "name": "foot.R",
+      "parent": "shin.R"
+    }
+  ],
+  "mesh_count": 72,
+  "base_faces": 12510,
+  "height": 3.7698,
+  "min_z": 0.0,
+  "unweighted_or_unnormalized_vertices": 0,
+  "missing_armature_modifiers": [],
+  "deformation_tests": [
+    {
+      "bone": "forearm.L",
+      "mesh": "BSR_Arm.L",
+      "max_vertex_displacement": 0.21383,
+      "pass": true
+    },
+    {
+      "bone": "shin.L",
+      "mesh": "BSR_Leg.L",
+      "max_vertex_displacement": 0.36345,
+      "pass": true
+    }
+  ],
+  "actions": [],
+  "limitations": [
+    "FK rig, no IK controls yet",
+    "Skirt weighted to pelvis; high knee poses require skirt bones or corrective weights",
+    "Long hair currently head weighted; secondary-motion bones to be added later",
+    "Body consists of separate garment/limb meshes, not a seamless production retopology",
+    "Face has simple geometry, no facial rig"
+  ]
+}

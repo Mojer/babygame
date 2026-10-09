@@ -1,0 +1,224 @@
+{
+  "version": 1,
+  "format": "RGBA PNG, trimmed, transparent",
+  "referenceSetupPose": "../setup/schoolgirl-setup-pose-v1.png",
+  "componentCount": 27,
+  "components": [
+    {
+      "name": "head_base",
+      "file": "png/head_base.png",
+      "width": 366,
+      "height": 439,
+      "sourceSheet": "source-sheets/head-hair-chroma.png",
+      "cell": 0
+    },
+    {
+      "name": "face",
+      "file": "png/face.png",
+      "width": 170,
+      "height": 220,
+      "sourceSheet": "source-sheets/head-hair-chroma.png",
+      "cell": 1
+    },
+    {
+      "name": "hair_back",
+      "file": "png/hair_back.png",
+      "width": 476,
+      "height": 461,
+      "sourceSheet": "source-sheets/head-hair-chroma.png",
+      "cell": 2
+    },
+    {
+      "name": "hair_front",
+      "file": "png/hair_front.png",
+      "width": 391,
+      "height": 419,
+      "sourceSheet": "source-sheets/head-hair-chroma.png",
+      "cell": 3
+    },
+    {
+      "name": "ponytail_01",
+      "file": "png/ponytail_01.png",
+      "width": 306,
+      "height": 313,
+      "sourceSheet": "source-sheets/head-hair-chroma.png",
+      "cell": 4
+    },
+    {
+      "name": "ponytail_02",
+      "file": "png/ponytail_02.png",
+      "width": 316,
+      "height": 313,
+      "sourceSheet": "source-sheets/head-hair-chroma.png",
+      "cell": 5
+    },
+    {
+      "name": "torso",
+      "file": "png/torso.png",
+      "width": 300,
+      "height": 420,
+      "sourceSheet": "source-sheets/torso-clothing-chroma.png",
+      "cell": 0
+    },
+    {
+      "name": "bow",
+      "file": "png/bow.png",
+      "width": 247,
+      "height": 235,
+      "sourceSheet": "source-sheets/torso-clothing-chroma.png",
+      "cell": 1
+    },
+    {
+      "name": "backpack",
+      "file": "png/backpack.png",
+      "width": 259,
+      "height": 435,
+      "sourceSheet": "source-sheets/torso-clothing-chroma.png",
+      "cell": 2
+    },
+    {
+      "name": "backpack_strap_front",
+      "file": "png/backpack_strap_front.png",
+      "width": 159,
+      "height": 396,
+      "sourceSheet": "source-sheets/torso-clothing-chroma.png",
+      "cell": 3
+    },
+    {
+      "name": "shorts",
+      "file": "png/shorts.png",
+      "width": 307,
+      "height": 314,
+      "sourceSheet": "source-sheets/torso-clothing-chroma.png",
+      "cell": 4
+    },
+    {
+      "name": "skirt_front",
+      "file": "png/skirt_front.png",
+      "width": 326,
+      "height": 381,
+      "sourceSheet": "source-sheets/torso-clothing-chroma.png",
+      "cell": 5
+    },
+    {
+      "name": "skirt_back",
+      "file": "png/skirt_back.png",
+      "width": 330,
+      "height": 367,
+      "sourceSheet": "source-sheets/torso-clothing-chroma.png",
+      "cell": 6
+    },
+    {
+      "name": "neck",
+      "file": "png/neck.png",
+      "width": 199,
+      "height": 173,
+      "sourceSheet": "source-sheets/torso-clothing-chroma.png",
+      "cell": 7
+    },
+    {
+      "name": "backpack_strap_rear",
+      "file": "png/backpack_strap_rear.png",
+      "width": 149,
+      "height": 393,
+      "sourceSheet": "source-sheets/torso-clothing-chroma.png",
+      "cell": 8
+    },
+    {
+      "name": "arm_front_upper",
+      "file": "png/arm_front_upper.png",
+      "width": 217,
+      "height": 431,
+      "sourceSheet": "source-sheets/arms-chroma.png",
+      "cell": 0
+    },
+    {
+      "name": "arm_front_lower",
+      "file": "png/arm_front_lower.png",
+      "width": 293,
+      "height": 418,
+      "sourceSheet": "source-sheets/arms-chroma.png",
+      "cell": 1
+    },
+    {
+      "name": "hand_front",
+      "file": "png/hand_front.png",
+      "width": 215,
+      "height": 231,
+      "sourceSheet": "source-sheets/arms-chroma.png",
+      "cell": 2
+    },
+    {
+      "name": "arm_rear_upper",
+      "file": "png/arm_rear_upper.png",
+      "width": 218,
+      "height": 429,
+      "sourceSheet": "source-sheets/arms-chroma.png",
+      "cell": 3
+    },
+    {
+      "name": "arm_rear_lower",
+      "file": "png/arm_rear_lower.png",
+      "width": 292,
+      "height": 416,
+      "sourceSheet": "source-sheets/arms-chroma.png",
+      "cell": 4
+    },
+    {
+      "name": "hand_rear",
+      "file": "png/hand_rear.png",
+      "width": 216,
+      "height": 231,
+      "sourceSheet": "source-sheets/arms-chroma.png",
+      "cell": 5
+    },
+    {
+      "name": "leg_front_thigh",
+      "file": "png/leg_front_thigh.png",
+      "width": 185,
+      "height": 490,
+      "sourceSheet": "source-sheets/legs-chroma.png",
+      "cell": 0
+    },
+    {
+      "name": "leg_front_calf",
+      "file": "png/leg_front_calf.png",
+      "width": 144,
+      "height": 482,
+      "sourceSheet": "source-sheets/legs-chroma.png",
+      "cell": 1
+    },
+    {
+      "name": "shoe_front",
+      "file": "png/shoe_front.png",
+      "width": 345,
+      "height": 203,
+      "sourceSheet": "source-sheets/legs-chroma.png",
+      "cell": 2
+    },
+    {
+      "name": "leg_rear_thigh",
+      "file": "png/leg_rear_thigh.png",
+      "width": 166,
+      "height": 480,
+      "sourceSheet": "source-sheets/legs-chroma.png",
+      "cell": 3
+    },
+    {
+      "name": "leg_rear_calf",
+      "file": "png/leg_rear_calf.png",
+      "width": 141,
+      "height": 486,
+      "sourceSheet": "source-sheets/legs-chroma.png",
+      "cell": 4
+    },
+    {
+      "name": "shoe_rear",
+      "file": "png/shoe_rear.png",
+      "width": 345,
+      "height": 202,
+      "sourceSheet": "source-sheets/legs-chroma.png",
+      "cell": 5
+    }
+  ]
+}

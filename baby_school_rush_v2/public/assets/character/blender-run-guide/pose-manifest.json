@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "blenderVersion": "5.2.2 LTS",
+  "fps": 30,
+  "cycleFrames": 16,
+  "camera": "orthographic-right-profile",
+  "canvas": { "width": 1024, "height": 1024, "alpha": true },
+  "constraints": {
+    "rootXLocked": true,
+    "groundLineLocked": true,
+    "leftRightMirrored": true,
+    "armsOpposeLegs": true
+  },
+  "poses": [
+    { "frame": 0, "file": "run_01_contact_l.png", "pose": "contact_l" },
+    { "frame": 2, "file": "run_02_down_l.png", "pose": "down_l" },
+    { "frame": 4, "file": "run_03_passing_l.png", "pose": "passing_l" },
+    { "frame": 6, "file": "run_04_up_l.png", "pose": "up_l" },
+    { "frame": 8, "file": "run_05_contact_r.png", "pose": "contact_r" },
+    { "frame": 10, "file": "run_06_down_r.png", "pose": "down_r" },
+    { "frame": 12, "file": "run_07_passing_r.png", "pose": "passing_r" },
+    { "frame": 14, "file": "run_08_up_r.png", "pose": "up_r" }
+  ]
+}

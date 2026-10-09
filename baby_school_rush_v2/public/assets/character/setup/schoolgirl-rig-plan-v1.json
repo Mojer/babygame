@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "canvas": { "width": 1024, "height": 1536 },
+  "setupPose": "schoolgirl-setup-pose-v1.png",
+  "coordinateSystem": "source-image pixels, origin at top-left",
+  "bones": [
+    { "name": "root", "parent": null, "x": 512, "y": 805 },
+    { "name": "pelvis", "parent": "root", "x": 512, "y": 805 },
+    { "name": "spine", "parent": "pelvis", "x": 510, "y": 665 },
+    { "name": "chest", "parent": "spine", "x": 505, "y": 480 },
+    { "name": "neck", "parent": "chest", "x": 520, "y": 330 },
+    { "name": "head", "parent": "neck", "x": 548, "y": 188 },
+
+    { "name": "upper_arm_rear", "parent": "chest", "x": 442, "y": 475 },
+    { "name": "forearm_rear", "parent": "upper_arm_rear", "x": 375, "y": 645 },
+    { "name": "hand_rear", "parent": "forearm_rear", "x": 327, "y": 770 },
+
+    { "name": "upper_arm_front", "parent": "chest", "x": 518, "y": 478 },
+    { "name": "forearm_front", "parent": "upper_arm_front", "x": 590, "y": 640 },
+    { "name": "hand_front", "parent": "forearm_front", "x": 684, "y": 744 },
+
+    { "name": "thigh_rear", "parent": "pelvis", "x": 472, "y": 820 },
+    { "name": "calf_rear", "parent": "thigh_rear", "x": 405, "y": 1050 },
+    { "name": "foot_rear", "parent": "calf_rear", "x": 338, "y": 1365 },
+
+    { "name": "thigh_front", "parent": "pelvis", "x": 557, "y": 820 },
+    { "name": "calf_front", "parent": "thigh_front", "x": 635, "y": 1055 },
+    { "name": "foot_front", "parent": "calf_front", "x": 686, "y": 1365 },
+
+    { "name": "foot_ik_rear", "parent": "root", "x": 352, "y": 1442 },
+    { "name": "foot_ik_front", "parent": "root", "x": 740, "y": 1442 },
+    { "name": "ponytail_01", "parent": "head", "x": 408, "y": 168 },
+    { "name": "ponytail_02", "parent": "ponytail_01", "x": 326, "y": 183 },
+    { "name": "skirt_front", "parent": "pelvis", "x": 535, "y": 690 },
+    { "name": "skirt_back", "parent": "pelvis", "x": 465, "y": 690 },
+    { "name": "backpack", "parent": "chest", "x": 401, "y": 478 }
+  ],
+  "slotOrderBackToFront": [
+    "hair_back",
+    "ponytail_02",
+    "ponytail_01",
+    "backpack",
+    "arm_rear_upper",
+    "arm_rear_lower",
+    "hand_rear",
+    "leg_rear_thigh",
+    "leg_rear_calf",
+    "shoe_rear",
+    "skirt_back",
+    "torso",
+    "shorts",
+    "leg_front_thigh",
+    "leg_front_calf",
+    "shoe_front",
+    "skirt_front",
+    "arm_front_upper",
+    "arm_front_lower",
+    "hand_front",
+    "neck",
+    "head_base",
+    "face",
+    "eyes",
+    "hair_front",
+    "bow",
+    "backpack_strap"
+  ],
+  "meshCandidates": [
+    "hair_back",
+    "ponytail_01",
+    "ponytail_02",
+    "skirt_front",
+    "skirt_back",
+    "backpack_strap"
+  ]
+}
