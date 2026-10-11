@@ -51,6 +51,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
+  <link rel="preload" as="image" href="thumbs/zombie.jpg">
   <link rel="preload" as="image" href="thumbs/earth.jpg">
   <style>
     /* 形狀規則：大卡片 24px、圖片磚 18px、按鈕與標籤全圓角 */
@@ -302,6 +303,15 @@
       <p class="hello">今天想玩哪一個呢？</p>
       <h1>寶貝遊戲選單</h1>
     </header>
+
+    <div class="card tile rise top-pick" style="--i:0">
+      <span class="art"><img src="thumbs/zombie.jpg" alt="" width="800" height="350"><span class="tag badge">新作</span></span>
+      <p class="name">屍潮超載<span class="last">上次玩的</span></p>
+      <p class="desc">茜和宇對抗成千上萬的殭屍，連鎖爆破清場，撐過 10 分鐘！</p>
+      <span class="actions tile-actions">
+        <a class="play" data-game="zombie" href="./zombie_overload/dist/">開始玩</a>
+      </span>
+    </div>
 
     <div class="card tile rise top-pick" style="--i:1">
       <span class="art"><img src="thumbs/playhouse.jpg?v=2" alt="" width="800" height="350"><span class="tag badge">搶先版</span></span>

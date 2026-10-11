@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#0b0c0e" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="description" content="屍潮超載：超大量殭屍生存 × 極致連鎖清場（原型）" />
+    <title>屍潮超載</title>
+    <script type="module" crossorigin src="./assets/index-D5Zn4iRV.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DIw6LonW.css">
+  </head>
+  <body>
+    <div id="game"></div>
+
+    <div id="xp"><i></i></div>
+    <div id="hud">
+      <div class="left">
+        <img id="hudPortrait" alt="" />
+        <div id="hp"><i></i><span>100 / 100</span></div>
+        <div id="lv">Lv 1</div>
+      </div>
+      <div class="center">
+        <div id="timer">00:00</div>
+      </div>
+      <div class="right">
+        <div id="kills">☠ 0</div>
+        <button id="muteBtn" class="icon-btn" aria-label="靜音">🔊</button>
+        <button id="pauseBtn" class="icon-btn" aria-label="暫停">❚❚</button>
+      </div>
+    </div>
+    <div id="chain"><b>CHAIN</b> ×<span>0</span></div>
+    <div id="banner"></div>
+    <div id="toast"></div>
+    <pre id="perf" class="hidden"></pre>
+
+    <div id="controls">
+      <div id="zone"></div>
+      <div id="joy"><div id="knob"></div></div>
+      <button id="dash" aria-label="衝刺"><span>衝刺</span></button>
+      <button id="ult" aria-label="大招"><span id="ultLabel">星艦</span></button>
+      <div id="keys">WASD 移動 · Space 衝刺 · E 大招 · Esc 暫停 · ` 效能</div>
+    </div>
+
+    <div id="levelup" class="modal hidden">
+      <h2>升級！選一個強化</h2>
+      <div class="cards"></div>
+    </div>
+
+    <!-- 第 1 頁：封面（主視覺完整露出，標題在上、按鈕在下） -->
+    <div id="start" class="overlay cover">
+      <div class="cover-title">
+        <p class="kicker">ZOMBIE OVERLOAD</p>
+        <h1>屍潮超載</h1>
+        <p class="cover-sub">SURVIVE THE HORDE</p>
+      </div>
+      <nav id="coverMenu" class="menu" aria-label="主選單">
+        <button id="startBtn" class="menu-item"><span>開始遊戲</span><em>START</em></button>
+        <button id="howtoBtn" class="menu-item"><span>玩法說明</span><em>HOW TO PLAY</em></button>
+        <button id="musicBtn" class="menu-item"><span>音樂音效</span><em id="musicState">ON</em></button>
+      </nav>
+      <div class="keyhint"><kbd>↑</kbd><kbd>↓</kbd> 選擇 <kbd>ENTER</kbd> 確認</div>
+    </div>
+
+    <!-- 第 2 頁：同時看得到兩個角色與兩種終極武器 -->
+    <div id="select" class="overlay select hidden">
+      <header class="sel-head">
+        <span class="brand">ZOMBIE OVERLOAD</span>
+        <ol class="steps">
+          <li class="on"><b>1</b>角色</li>
+          <li class="on"><b>2</b>終極武器</li>
+          <li><b>3</b>出發</li>
+        </ol>
+      </header>
+      <div class="sel-body">
+        <h2 class="sel-title"><span>選擇角色</span><small>SELECT SURVIVOR</small></h2>
+        <div id="charSelect" class="char-select" role="radiogroup" aria-label="選擇角色"></div>
+        <h2 class="sel-title sub"><span>終極武器</span><small>ULTIMATE WEAPON</small></h2>
+        <div id="ultSelect" class="ult-select" role="radiogroup" aria-label="選擇終極武器">
+          <button class="ult-card" role="radio" data-ult="ship" style="--c:#4fc3ff">
+            <span class="check" aria-hidden="true"></span>
+            <span class="ult-art"><img src="./sprites/ult_ship.png" alt="" /></span>
+            <span class="ult-info"><b>星艦砲擊</b><em>ORBITAL STRIKE</em><p>戰艦從畫面一角斜飛到對角，經過頭頂時往地面發射衝擊波，清掉整個畫面。</p></span>
+          </button>
+          <button class="ult-card" role="radio" data-ult="pylon" style="--c:#ffb02e">
+            <span class="check" aria-hidden="true"></span>
+            <span class="ult-art"><img src="./sprites/ult_pylon.png" alt="" /></span>
+            <span class="ult-info"><b>天降巨砲</b><em>SKYFALL CANNON</em><p>巨砲從外太空插進地面，朝 360° 連續散射砲彈，掃平整個畫面。</p></span>
+          </button>
+        </div>
+      </div>
+      <footer class="sel-foot">
+        <button id="backBtn" class="slant ghost"><span>‹ 返回</span></button>
+        <div class="keyhint"><kbd>←</kbd><kbd>→</kbd> 角色 <kbd>↑</kbd><kbd>↓</kbd> 武器 <kbd>ENTER</kbd> 出發</div>
+        <button id="goBtn" class="slant go"><span>出發 ›</span></button>
+      </footer>
+    </div>
+
+    <div id="howto" class="overlay hidden">
+      <div class="panel howto-panel">
+        <h2 class="sel-title"><span>玩法說明</span><small>HOW TO PLAY</small></h2>
+        <ul class="howto">
+          <li><b>移動</b> WASD／方向鍵，手機用左半邊虛擬搖桿；攻擊自動瞄準</li>
+          <li><b>❄️ 冰晶</b> 凍住身邊的殭屍，凍住的會被爆炸、光束「碎裂」成骨牌</li>
+          <li><b>🌀 黑洞</b> 把屍群吸成一團，結束時坍縮爆炸</li>
+          <li><b>☄️ 軌道光束</b> 橫掃屍群最密集的地方</li>
+          <li><b>☣️ 感染核心</b>（背上發光）死亡會毒爆，讓周圍殭屍變得不穩定、一碰就殉爆</li>
+          <li><b>終極武器</b> 充滿後由你決定時機（E 或右下大按鈕）：整個畫面的殭屍一起清掉</li>
+        </ul>
+        <p class="params">測試參數：<code>?n=3000&amp;stress&amp;god&amp;skills=0</code> 純屍群壓測 · <code>&amp;bot&amp;auto</code> 無人自動跑 · <code>&amp;fx=low|mid|high</code> 鎖定畫質 · <code>&amp;t=240</code> 從第 4 分鐘開始</p>
+        <button id="howtoClose" class="slant go"><span>知道了</span></button>
+      </div>
+    </div>
+
+    <div id="pause" class="overlay hidden">
+      <div class="panel small">
+        <h2>暫停</h2>
+        <button id="resumeBtn" class="primary">繼續</button>
+        <button id="restartBtn">重新開始</button>
+      </div>
+    </div>
+
+    <!-- FINISH 演出（最終波全滅時） -->
+    <div id="finish" aria-hidden="true">
+      <div class="finish-band"><b>FINISH!</b><small>ALL MUTANTS DOWN</small></div>
+    </div>
+
+    <!-- 結算（延續封面／選角的風格） -->
+    <div id="end" class="overlay result hidden">
+      <header class="sel-head">
+        <span class="brand">ZOMBIE OVERLOAD</span>
+        <span id="endTag" class="res-tag">MISSION COMPLETE</span>
+      </header>
+      <div class="res-body">
+        <div id="endHero" class="res-hero">
+          <span class="show"><span class="platform"></span><img id="endPortrait" class="portrait" alt="" /><img id="endMini" class="mini" alt="" /></span>
+          <div class="rank"><small>RANK</small><b id="endRank">S</b></div>
+          <div id="endWho" class="res-who"></div>
+        </div>
+        <div class="res-main">
+          <h2 class="sel-title res-title"><span id="endTitle">撐過屍潮！</span><small id="endSub">FINISH</small></h2>
+          <div class="res-score"><small>SCORE</small><b id="endScore">0</b></div>
+          <dl id="endStats" class="res-stats"></dl>
+          <div class="res-ups-wrap"><small>強化</small><div id="endUps" class="res-ups"></div></div>
+        </div>
+      </div>
+      <footer class="sel-foot">
+        <button id="menuBtn" class="slant ghost"><span>‹ 主選單</span></button>
+        <div class="keyhint"><kbd>ESC</kbd> 主選單 <kbd>ENTER</kbd> 再來一局</div>
+        <button id="againBtn" class="slant go"><span>再來一局 ›</span></button>
+      </footer>
+    </div>
+
+    <div id="rotate"><div>📱↻<p>請將裝置橫放</p></div></div>
+
+  </body>
+</html>
