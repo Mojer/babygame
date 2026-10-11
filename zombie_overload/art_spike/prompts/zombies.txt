@@ -1,0 +1,14 @@
+Create exactly ONE square image (1024x1024): a game sprite sheet of 16 cells in 4 rows x 4 columns, read left to right, top row first. No gutters, no separators, no grid lines drawn.
+
+Style: premium 16-bit pixel art (SNES era), crisp visible chunky pixels, limited palette, strong dark outline, 3-tone cel shading, no smooth gradients, no blur. Cute chibi proportions: big head about 40 percent of body height, short body and legs, expressive cartoon zombie faces (open mouths, white blank eyes), gross but cute, like a colorful top-down horde survival game.
+
+Camera: three-quarter top-down view for a top-down action game: the camera is above and in front, we see the top of the head, the face and the front of the body, feet near the bottom. Every figure is clearly FACING RIGHT: face, gaze, chest and both arms turn toward the RIGHT edge; forward is RIGHT, the back faces LEFT. Same camera, same scale and same feet line in every cell.
+
+Each row is ONE zombie type doing a 4-frame shambling walk cycle (frame 1: NEAR leg forward, FAR leg back; frame 2: legs passing under the body, body slightly higher; frame 3: FAR leg forward, NEAR leg back; frame 4: legs passing again). Frames 3-4 must not repeat frames 1-2: the leg in front swaps. Arms reach forward toward the RIGHT like a classic zombie.
+Row 1 WALKER: grey-green skin, torn faded blue t-shirt, brown pants, messy dark brown hair, slouched.
+Row 2 RUNNER: lean pale zombie in a torn red hoodie and dark jeans, body leaning hard forward to the RIGHT in a sprinting pose, arms swinging.
+Row 3 BRUTE: a much larger heavy zombie (about 1.4 times taller and twice as wide as the walker, still fully inside its cell) in grey riot-police armour: dark helmet with a cracked pale-blue visor, chunky shoulder pads and chest plate, thick green arms.
+Row 4 CORE: an infected zombie with dull green skin and a dark brown ragged shirt, carrying a big glowing sickly yellow-green pustule sac bulging from its back and shoulder, small green drips.
+
+Framing: each figure centred in its own cell with at least 15 percent empty margin on every side; nothing touches or crosses a cell edge. The whole figure is drawn with solid, fully opaque pixels: no transparency, no semi-transparent glow, no soft aura, nothing blended with the background. No text, no letters, no numbers, no logo, no watermark, no signature, no UI, no border, no frame, no grid.
+Background: solid flat pure magenta #FF00FF everywhere outside the characters, no shadow, no ground, no glow on the background.

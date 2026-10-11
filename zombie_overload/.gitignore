@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+# 生圖中間檔與人物參考圖（體積大、可重新生成；打包腳本讀這些產生 public/sprites）
+art_spike/gen/
+art_spike/proc/
+art_spike/ref/
+art_spike/__pycache__/
+.forge/

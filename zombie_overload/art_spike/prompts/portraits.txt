@@ -1,0 +1,7 @@
+Create exactly ONE image in landscape 3:2 format (1536x1024): two character portrait busts side by side, LEFT half and RIGHT half, each centred in its half with generous empty margin.
+The FIRST attached image is the turnaround of AKANE (girl) and the SECOND is the turnaround of YU (boy): copy their faces, hair and outfits exactly.
+Style: premium 16-bit pixel art (SNES era), crisp visible chunky pixels, limited palette, strong dark outline, 3-tone cel shading, no smooth gradients, no blur. Cute chibi proportions: big head about 40 percent of body height.
+LEFT: AKANE head-and-shoulders portrait, three-quarter front view facing slightly RIGHT, confident determined smile, long black hair with blunt bangs, pink polo with white collar, pink backpack strap, holding a golf club over her shoulder with a pink glowing head.
+RIGHT: YU head-and-shoulders portrait, three-quarter front view facing slightly LEFT, serious brave expression, bowl-cut hair, navy hoodie, cream henley with orange trim, one fist raised glowing blue.
+Large readable portrait pixel art, about 3 times more detailed than a walking sprite. Solid opaque pixels. No text, no letters, no numbers, no logo, no watermark, no signature, no UI, no border, no frame, no grid lines, no gutters.
+Background: solid flat pure green #00FF00 everywhere outside the two portraits.

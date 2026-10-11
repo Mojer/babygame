@@ -1,0 +1,10 @@
+Create exactly ONE square image (1024x1024): a game sprite sheet of 4 cells in 2 rows x 2 columns, read left to right, top row first. No gutters, no separators, no grid lines drawn.
+
+Style: premium 16-bit pixel art (SNES era), crisp visible chunky pixels, limited palette, strong dark outline, 3-tone cel shading, no smooth gradients, no blur. Cute chibi proportions: big head about 40 percent of body height.
+
+Subject: the hero of a zombie survival game, a young woman survivor with a long bright pink ponytail, determined face, short cropped black tactical jacket over a white top, cyan glowing trim lines on the jacket, black shorts, black boots, holding a compact futuristic rifle with a cyan glowing barrel in both hands, pointing forward.
+Camera: three-quarter top-down view for a top-down action game: the camera is above and in front, we see the top of the head, the face and the front of the body. She is clearly FACING RIGHT: face, gaze, chest and the rifle point toward the RIGHT edge; forward is RIGHT, her back and ponytail toward the LEFT.
+The 4 cells are a running cycle: frame 1 NEAR leg forward, FAR leg back; frame 2 legs passing, body slightly higher; frame 3 FAR leg forward, NEAR leg back; frame 4 legs passing again. Frames 3-4 must not repeat frames 1-2. Same scale and same feet line in every cell, the ponytail swinging slightly.
+
+Framing: each figure centred in its own cell with at least 15 percent empty margin on every side; nothing touches or crosses a cell edge. Solid, fully opaque pixels only: no transparency, no glow on the background, no muzzle flash. No text, no letters, no numbers, no logo, no watermark, no signature, no UI, no border, no frame, no grid.
+Background: solid flat pure magenta #FF00FF everywhere outside the character, no shadow, no ground.
