@@ -27,7 +27,7 @@ const params = {
   auto: flag('auto'),
   fx: fxParam === 'low' || fxParam === 'mid' || fxParam === 'high' ? (fxParam as TierName) : null,
   t: Number(q.get('t') ?? 0) || 0,
-  perf: q.get('perf') !== '0',
+  perf: q.has('perf') && q.get('perf') !== '0',
   skills: q.get('skills') !== '0',
   char: (CHARACTER_IDS as string[]).includes(q.get('char') ?? '') ? (q.get('char') as CharacterId) : null,
   ult: (q.get('ult') === 'pylon' ? 'pylon' : q.get('ult') === 'ship' ? 'ship' : null) as 'ship' | 'pylon' | null,
