@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { CHAIN, CORE, DEAD, FINAL, FROZEN, KIND_RADIUS, MUTANT, T_EXPLOSION, WALKER } from '../src/sim/content';
+import { BRUTE, CHAIN, CORE, DEAD, FINAL, FIXED_STEP, FROZEN, KIND_RADIUS, MUTANT, T_EXPLOSION, WALKER } from '../src/sim/content';
+import { EV_SHARD } from '../src/sim/chain';
 import { Grid } from '../src/sim/grid';
 import { Rng } from '../src/sim/rng';
 import { World } from '../src/sim/world';
@@ -98,6 +99,67 @@ function stepUntilQuiet(w: World, maxTicks: number) {
   } while (w.chain.count > 0 && ticks < maxTicks);
   return ticks;
 }
+
+/** 放入一發下一 tick 就會命中指定位置的基本攻擊，測試完整碰撞與反應流程。 */
+function boltAt(w: World, x: number, y: number) {
+  const b = w.bolts;
+  const atk = w.character.attack;
+  b.count = 1;
+  b.x[0] = x - atk.speed * FIXED_STEP;
+  b.y[0] = y;
+  b.vx[0] = atk.speed;
+  b.vy[0] = 0;
+  b.life[0] = atk.life;
+  b.pierce[0] = atk.pierce;
+  b.hits.fill(-1, 0, 4);
+}
+
+for (const kind of [BRUTE, WALKER]) {
+  test(`茜的爆破砲：直接命中凍結${kind === BRUTE ? '裝甲' : '普通'}殭屍也會碎裂並產生冰片`, () => {
+    const w = new World({ noSpawn: true, noSkills: true, god: true, autoLevel: true });
+    const z = w.zombies;
+    const s = z.spawn(kind, w.player.x + 140, w.player.y, 0);
+    z.status[s] |= FROZEN;
+    z.frozenT[s] = 99;
+    boltAt(w, z.x[s], z.y[s]);
+    w.step(idle);
+    assert.ok(z.status[s] & DEAD, '直接命中的凍結敵人應即死');
+    assert.equal(z.status[s] & FROZEN, 0, '碎裂應消耗凍結狀態');
+    assert.equal(w.stats.kills, 1);
+    assert.equal(w.stats.maxChain, 1);
+    assert.equal(w.chain.count, 1, '即使基本傷害足以擊殺，也應排入碎裂冰片');
+    assert.equal(w.chain.kind[0], EV_SHARD);
+  });
+}
+
+test('茜的爆破砲：未凍結目標只承受一次直擊，旁邊敵人承受爆炸傷害', () => {
+  const w = new World({ noSpawn: true, noSkills: true, god: true, autoLevel: true });
+  const z = w.zombies;
+  const direct = z.spawn(BRUTE, w.player.x + 140, w.player.y, 0);
+  const nearby = z.spawn(BRUTE, z.x[direct], z.y[direct] + 25, 0);
+  const hp = z.hp[direct];
+  boltAt(w, z.x[direct], z.y[direct]);
+  w.step(idle);
+  assert.equal(z.hp[direct], hp - w.character.attack.damage);
+  assert.equal(z.hp[nearby], hp - w.character.attack.splash!.damage);
+  assert.equal(w.stats.kills, 0);
+  assert.equal(w.chain.count, 0);
+});
+
+test('宇的機槍：直接命中仍只扣血，不觸發凍結碎裂', () => {
+  const w = new World({ character: 'yu', noSpawn: true, noSkills: true, god: true, autoLevel: true });
+  const z = w.zombies;
+  const s = z.spawn(BRUTE, w.player.x + 140, w.player.y, 0);
+  z.status[s] |= FROZEN;
+  z.frozenT[s] = 99;
+  const hp = z.hp[s];
+  boltAt(w, z.x[s], z.y[s]);
+  w.step(idle);
+  assert.ok(Math.abs(z.hp[s] - (hp - w.character.attack.damage)) < 1e-5);
+  assert.ok(z.status[s] & FROZEN);
+  assert.equal(w.stats.kills, 0);
+  assert.equal(w.chain.count, 0);
+});
 
 test('冰凍屍群：一次爆炸 → 碎裂骨牌傳遍整團，且會結束', () => {
   const w = new World({ seed: 5, noSpawn: true, noSkills: true, god: true, autoLevel: true });

@@ -1001,6 +1001,8 @@ export class World {
     const b = this.bolts;
     const atk = this.character.attack;
     const dmg = atk.damage * this.mods.boltDamage;
+    // 爆破砲的直擊也屬於爆炸，先觸發碎裂，避免基本傷害先擊殺而漏掉冰片。
+    const trigger = atk.splash ? T_HIT | T_EXPLOSION : T_HIT;
     for (let i = 0; i < b.count; i++) {
       b.x[i] += b.vx[i] * dt;
       b.y[i] += b.vy[i] * dt;
@@ -1010,12 +1012,12 @@ export class World {
       for (let k = 0; k < n && b.pierce[i] > 0; k++) {
         const s = this.tmp[k];
         if (b.hits[h] === s || b.hits[h + 1] === s || b.hits[h + 2] === s || b.hits[h + 3] === s) continue;
-        this.damage(s, dmg, T_HIT, 0, -1);
+        this.damage(s, dmg, trigger, 0, -1);
         this.fx.push(FX_BOLT_HIT, b.x[i], b.y[i]);
         b.hits[h + (atk.pierce - b.pierce[i]) % 4] = s;
         b.pierce[i]--;
         if (atk.splash) {
-          // 範圍爆破：以命中點為圓心炸開（爆炸會碎裂凍結的殭屍）
+          // 範圍爆破：直擊者已收到爆炸觸發，排除它以免重複扣血。
           const bx = b.x[i];
           const by = b.y[i];
           const m = this.grid.query(this.zombies, bx, by, atk.splash.radius, this.tmp2);
