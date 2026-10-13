@@ -1,0 +1,216 @@
+{
+  "schema": "generate2dmap.map_bundle_report.v1",
+  "status": "warn",
+  "method": "JSON Schema map.schema.json#/$defs/map_bundle_v2 (vendored copy, built-in Draft 2020-12 evaluator), file existence and sha256 of every referenced file, and cross-field rules: unique ids, tile indices against tilesets, wang/blob topology, material colours, portal targets and arrivals, slots and approach points",
+  "notProven": [
+    "reachability, portal arrivals and collision geometry (run map_nav.py check)",
+    "that collision and footprints match the painted art",
+    "engine or editor import (Tiled GUI, Godot, LDtk not verified)"
+  ],
+  "checks": [
+    {
+      "id": "schema",
+      "status": "pass",
+      "value": {
+        "errors": 0,
+        "warnings": 0
+      },
+      "threshold": {
+        "errors": 0
+      }
+    },
+    {
+      "id": "files",
+      "status": "pass",
+      "value": {
+        "errors": 0,
+        "warnings": 0
+      },
+      "threshold": {
+        "errors": 0
+      }
+    },
+    {
+      "id": "sha256",
+      "status": "pass",
+      "value": {
+        "errors": 0,
+        "warnings": 0
+      },
+      "threshold": {
+        "errors": 0
+      }
+    },
+    {
+      "id": "tilesets",
+      "status": "pass",
+      "value": {
+        "errors": 0,
+        "warnings": 0
+      },
+      "threshold": {
+        "errors": 0
+      }
+    },
+    {
+      "id": "layers",
+      "status": "pass",
+      "value": {
+        "errors": 0,
+        "warnings": 0
+      },
+      "threshold": {
+        "errors": 0
+      }
+    },
+    {
+      "id": "props_and_objects",
+      "status": "pass",
+      "value": {
+        "errors": 0,
+        "warnings": 0
+      },
+      "threshold": {
+        "errors": 0
+      }
+    },
+    {
+      "id": "collision",
+      "status": "pass",
+      "value": {
+        "errors": 0,
+        "warnings": 0
+      },
+      "threshold": {
+        "errors": 0
+      }
+    },
+    {
+      "id": "material_map",
+      "status": "pass",
+      "value": {
+        "errors": 0,
+        "warnings": 0
+      },
+      "threshold": {
+        "errors": 0
+      }
+    },
+    {
+      "id": "portals",
+      "status": "pass",
+      "value": {
+        "errors": 0,
+        "warnings": 0
+      },
+      "threshold": {
+        "errors": 0
+      }
+    },
+    {
+      "id": "spawns_anchors_interactions",
+      "status": "pass",
+      "value": {
+        "errors": 0,
+        "warnings": 0
+      },
+      "threshold": {
+        "errors": 0
+      }
+    },
+    {
+      "id": "document",
+      "status": "warn",
+      "value": {
+        "errors": 0,
+        "warnings": 1
+      },
+      "threshold": {
+        "errors": 0
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "path": "map-bundle.json",
+      "sha256": "b1f7f31330bb3e6c9297d82d6c787ed0c3b6dbbc8698733ea98ae14a80e9323e",
+      "bytes": 31914
+    },
+    {
+      "path": "ground.png",
+      "sha256": "e6e20a971c5270467156b21554879ad48fd0f63009f2c80df7320040d0ff518a",
+      "bytes": 2022016
+    },
+    {
+      "path": "runtime-props/yatai.png",
+      "sha256": "7744f518c007da5374108fc0a7cfb9ce67fbe125b99eccabba29a96211e972a0",
+      "bytes": 8825
+    },
+    {
+      "path": "runtime-props/bamboo.png",
+      "sha256": "d40d49db530d90fafeea1d5649d71e94ab6183b0e59e8ed12cd9c6cbaa6faea1",
+      "bytes": 5883
+    },
+    {
+      "path": "runtime-props/shrine.png",
+      "sha256": "7a2ffb548a8bee49a92b9ae9a29ce82fc2debcc621353d3b27d73c20614fcabd",
+      "bytes": 28060
+    },
+    {
+      "path": "runtime-props/torii.png",
+      "sha256": "b6bd5f715b30889358c2e9ab03d22962fa82eec7338a2c750f6e9c20b497d5ac",
+      "bytes": 8552
+    },
+    {
+      "path": "runtime-props/komainu.png",
+      "sha256": "b3a81a1d8a2d10365af6bc424ef8f98f74aa17507bf9d1236b02b444d8dd17b9",
+      "bytes": 2826
+    },
+    {
+      "path": "runtime-props/stoneLantern.png",
+      "sha256": "0b752a96dbd680fecf364021a5031cd6aeb85bc698812e54058a78a003c892f8",
+      "bytes": 1591
+    },
+    {
+      "path": "runtime-props/sakura.png",
+      "sha256": "54ed9b70388e0aa304d8399be5dc79aae774e3dee20e024e9942544fecfed3b1",
+      "bytes": 11023
+    },
+    {
+      "path": "runtime-props/bridge.png",
+      "sha256": "a5a61d49de001d61858c9e79b69751d38537de21ac26bc33084a0231cf1b23b1",
+      "bytes": 7508
+    }
+  ],
+  "outputs": [],
+  "tool": {
+    "name": "map_bundle.py",
+    "version": "0.4.0"
+  },
+  "bundle": {
+    "id": "japan",
+    "version": 2,
+    "world": [
+      2048.0,
+      2048.0
+    ],
+    "counts": {
+      "tilesets": 0,
+      "layers": 2,
+      "props": 0,
+      "objects": 152,
+      "portals": 0,
+      "spawns": 1,
+      "anchors": 6,
+      "interactions": 0
+    }
+  },
+  "problems": [
+    {
+      "severity": "warning",
+      "path": "$.nav.cell",
+      "message": "nav.cell 16 differs from max(1, round(actorRadius/2)) = 3, which map_nav uses",
+      "code": "rule"
+    }
+  ]
+}

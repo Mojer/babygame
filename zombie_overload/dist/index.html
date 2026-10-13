@@ -7,8 +7,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="description" content="屍潮超載：超大量殭屍生存 × 極致連鎖清場（原型）" />
     <title>屍潮超載</title>
-    <script type="module" crossorigin src="./assets/index-Bvc30xnB.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DIw6LonW.css">
+    <script type="module" crossorigin src="./assets/index-C2fiDk0r.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CLlnJ3fE.css">
   </head>
   <body>
     <div id="game"></div>
@@ -21,6 +21,7 @@
         <div id="lv">Lv 1</div>
       </div>
       <div class="center">
+        <div id="hudStage"></div>
         <div id="timer">00:00</div>
       </div>
       <div class="right">
@@ -62,17 +63,35 @@
       <div class="keyhint"><kbd>↑</kbd><kbd>↓</kbd> 選擇 <kbd>ENTER</kbd> 確認</div>
     </div>
 
-    <!-- 第 2 頁：同時看得到兩個角色與兩種終極武器 -->
+    <!-- 第 2 頁：關卡選擇 -->
+    <div id="stageSelect" class="overlay stage-select hidden">
+      <header class="sel-head">
+        <span class="brand">ZOMBIE OVERLOAD</span>
+        <ol class="steps"><li class="on"><b>1</b>關卡</li><li><b>2</b>裝備</li><li><b>3</b>出發</li></ol>
+      </header>
+      <div class="sel-body stage-body">
+        <div class="stage-heading"><h2 class="sel-title"><span>選擇戰場</span><small>SELECT STAGE</small></h2><p>兩座戰場，同一場生存挑戰。撐過 10 分鐘，擊倒最終巨獸。</p></div>
+        <div id="stageCards" class="stage-cards" role="radiogroup" aria-label="選擇關卡"></div>
+      </div>
+      <footer class="sel-foot">
+        <button id="stageBackBtn" class="slant ghost"><span>‹ 主選單</span></button>
+        <div class="keyhint"><kbd>←</kbd><kbd>→</kbd> 關卡 <kbd>ENTER</kbd> 確認</div>
+        <button id="stageNextBtn" class="slant go"><span>選擇裝備 ›</span></button>
+      </footer>
+    </div>
+
+    <!-- 第 3 頁：角色與終極武器 -->
     <div id="select" class="overlay select hidden">
       <header class="sel-head">
         <span class="brand">ZOMBIE OVERLOAD</span>
         <ol class="steps">
-          <li class="on"><b>1</b>角色</li>
-          <li class="on"><b>2</b>終極武器</li>
+          <li><b>1</b>關卡</li>
+          <li class="on"><b>2</b>裝備</li>
           <li><b>3</b>出發</li>
         </ol>
       </header>
       <div class="sel-body">
+        <div id="selectedStage" class="selected-stage"></div>
         <h2 class="sel-title"><span>選擇角色</span><small>SELECT SURVIVOR</small></h2>
         <div id="charSelect" class="char-select" role="radiogroup" aria-label="選擇角色"></div>
         <h2 class="sel-title sub"><span>終極武器</span><small>ULTIMATE WEAPON</small></h2>
@@ -90,7 +109,7 @@
         </div>
       </div>
       <footer class="sel-foot">
-        <button id="backBtn" class="slant ghost"><span>‹ 返回</span></button>
+        <button id="backBtn" class="slant ghost"><span>‹ 關卡</span></button>
         <div class="keyhint"><kbd>←</kbd><kbd>→</kbd> 角色 <kbd>↑</kbd><kbd>↓</kbd> 武器 <kbd>ENTER</kbd> 出發</div>
         <button id="goBtn" class="slant go"><span>出發 ›</span></button>
       </footer>
@@ -104,7 +123,7 @@
           <li><b>❄️ 冰晶</b> 凍住身邊的殭屍，凍住的會被爆炸、光束「碎裂」成骨牌</li>
           <li><b>🌀 黑洞</b> 把屍群吸成一團，結束時坍縮爆炸</li>
           <li><b>☄️ 軌道光束</b> 橫掃屍群最密集的地方</li>
-          <li><b>☣️ 感染核心</b>（背上發光）死亡會毒爆，讓周圍殭屍變得不穩定、一碰就殉爆</li>
+          <li><b>☣️ 核心型敵人</b>（感染核心／唐傘妖）死亡會毒爆，讓周圍敵人變得不穩定、一碰就殉爆</li>
           <li><b>終極武器</b> 充滿後由你決定時機（E 或右下大按鈕）：整個畫面的殭屍一起清掉</li>
         </ul>
         <p class="params">測試參數：<code>?n=3000&amp;stress&amp;god&amp;skills=0</code> 純屍群壓測 · <code>&amp;bot&amp;auto</code> 無人自動跑 · <code>&amp;fx=low|mid|high</code> 鎖定畫質 · <code>&amp;t=240</code> 從第 4 分鐘開始</p>
@@ -122,7 +141,7 @@
 
     <!-- FINISH 演出（最終波全滅時） -->
     <div id="finish" aria-hidden="true">
-      <div class="finish-band"><b>FINISH!</b><small>ALL MUTANTS DOWN</small></div>
+      <div class="finish-band"><b>FINISH!</b><small id="finishSub">ALL MUTANTS DOWN</small></div>
     </div>
 
     <!-- 結算（延續封面／選角的風格） -->

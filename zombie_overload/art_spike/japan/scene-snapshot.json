@@ -1,0 +1,155 @@
+{
+  "schema": "generate2dmap.scene_snapshot.v1",
+  "runtime": {
+    "name": "map-runtime",
+    "version": "1.1.2"
+  },
+  "world": {
+    "width": 2048,
+    "height": 2048,
+    "actorRadius": 5,
+    "ySquash": 1,
+    "cell": 3,
+    "tickHz": 60,
+    "solids": 440,
+    "portals": 0,
+    "oneWay": false
+  },
+  "actor": {
+    "x": 1024,
+    "y": 1184,
+    "valid": true,
+    "facing": [
+      0,
+      1
+    ],
+    "latched": [],
+    "travelled": 0,
+    "pathLength": 0
+  },
+  "routes": {
+    "ok": true,
+    "speed": 82,
+    "budget": 1.367,
+    "tickHz": 60,
+    "cell": 3,
+    "spawns": [
+      {
+        "id": "start",
+        "valid": true,
+        "reachableCells": 328514
+      }
+    ],
+    "results": [
+      {
+        "target": "main-shrine.approach[0]",
+        "kind": "approach",
+        "from": "start",
+        "ok": true,
+        "reachable": true,
+        "reason": null,
+        "ticks": 200,
+        "distance": 272.282,
+        "maxStep": 1.367,
+        "zeroMotionTicks": 0,
+        "blocked": false,
+        "firedEnRoute": [],
+        "end": [
+          1024,
+          912
+        ]
+      },
+      {
+        "target": "main-torii.approach[0]",
+        "kind": "approach",
+        "from": "start",
+        "ok": true,
+        "reachable": true,
+        "reason": null,
+        "ticks": 65,
+        "distance": 88,
+        "maxStep": 1.367,
+        "zeroMotionTicks": 0,
+        "blocked": false,
+        "firedEnRoute": [],
+        "end": [
+          1024,
+          1096
+        ]
+      },
+      {
+        "target": "north-garden.approach[0]",
+        "kind": "approach",
+        "from": "start",
+        "ok": true,
+        "reachable": true,
+        "reason": null,
+        "ticks": 751,
+        "distance": 1025.227,
+        "maxStep": 1.367,
+        "zeroMotionTicks": 0,
+        "blocked": false,
+        "firedEnRoute": [],
+        "end": [
+          496,
+          624
+        ]
+      },
+      {
+        "target": "east-garden.approach[0]",
+        "kind": "approach",
+        "from": "start",
+        "ok": true,
+        "reachable": true,
+        "reason": null,
+        "ticks": 751,
+        "distance": 1026.165,
+        "maxStep": 1.367,
+        "zeroMotionTicks": 0,
+        "blocked": false,
+        "firedEnRoute": [],
+        "end": [
+          1552,
+          624
+        ]
+      },
+      {
+        "target": "festival-west.approach[0]",
+        "kind": "approach",
+        "from": "start",
+        "ok": true,
+        "reachable": true,
+        "reason": null,
+        "ticks": 717,
+        "distance": 979.325,
+        "maxStep": 1.367,
+        "zeroMotionTicks": 0,
+        "blocked": false,
+        "firedEnRoute": [],
+        "end": [
+          320,
+          1488
+        ]
+      },
+      {
+        "target": "festival-east.approach[0]",
+        "kind": "approach",
+        "from": "start",
+        "ok": true,
+        "reachable": true,
+        "reason": null,
+        "ticks": 690,
+        "distance": 942.79,
+        "maxStep": 1.367,
+        "zeroMotionTicks": 0,
+        "blocked": false,
+        "firedEnRoute": [],
+        "end": [
+          1728,
+          1488
+        ]
+      }
+    ],
+    "portals": []
+  }
+}

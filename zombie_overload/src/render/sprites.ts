@@ -1,6 +1,7 @@
 import { ImageSource, Rectangle, Texture } from 'pixi.js';
 import { CHARACTER_IDS, type CharacterId } from '../sim/characters';
 import type { MapSheet } from './mapPainterOblique';
+import type { StageId } from '../sim/stages';
 
 /**
  * 3/4 斜俯視的正式風格素材（AI 生成 → art_spike/pack_sprites.py 打包成圖集）。
@@ -10,6 +11,7 @@ export type PlayerDir = 'side' | 'down' | 'up';
 const DIRS: PlayerDir[] = ['side', 'down', 'up'];
 
 export interface HordeSprites {
+  stageArt: Record<StageId, { zombie: Texture[][]; anchorY: number[]; corpse: Texture[]; map: MapSheet }>;
   /** [種類][0-3 走路, 4 受擊白, 5 冰凍] */
   zombie: Texture[][];
   /** 每種殭屍的腳底錨點（0-1，相對貼圖高度） */
@@ -60,18 +62,30 @@ async function loadSheet(base: string, name: string) {
 }
 
 export async function loadHordeSprites(base = './sprites/'): Promise<HordeSprites> {
-  const horde = await loadSheet(base, 'horde');
+  // 全關卡、角色、場景物件共用一張來源，維持 ParticleContainer 的單圖集批次。
+  const horde = await loadSheet(base, 'horde_stages');
   const boom = await loadSheet(base, 'explosion');
-  const mapDef = (await (await fetch(`${base}map.json`)).json()) as SheetDef;
-  const mapImage = await createImageBitmap(await (await fetch(`${base}${mapDef.image}`)).blob());
+  const loadMap = async (name: string): Promise<MapSheet> => {
+    const def = (await (await fetch(`${base}${name}.json`)).json()) as SheetDef;
+    const image = await createImageBitmap(await (await fetch(`${base}${def.image}`)).blob());
+    return { image, frames: def.frames };
+  };
+  const [cityMap, japanMap] = await Promise.all([loadMap('map'), loadMap('map_japan')]);
   const props: Record<string, Texture> = {};
   for (const k of Object.keys(horde.def.frames)) if (k.startsWith('prop_')) props[k.slice(5)] = horde.get(k);
   const kinds = [0, 1, 2, 3, 4];
+  const stageArt = (prefix: string, map: MapSheet) => ({
+    zombie: kinds.map(k => [0, 1, 2, 3].map(f => horde.get(`${prefix}${k}_${f}`)).concat([horde.get(`${prefix}${k}_white`), horde.get(`${prefix}${k}_ice`)])),
+    anchorY: kinds.map(k => horde.def.frames[`${prefix}${k}_0`].ay ?? 0.95),
+    corpse: kinds.map(k => horde.get(`${prefix}${k}_corpse`)),
+    map,
+  });
+  const city = stageArt('z', cityMap);
+  const japan = stageArt('y', japanMap);
   const boomFrames = Object.keys(boom.def.frames).filter(k => k.startsWith('ex_')).sort((a, b) => Number(a.slice(3)) - Number(b.slice(3)));
   return {
-    zombie: kinds.map(k => [0, 1, 2, 3].map(f => horde.get(`z${k}_${f}`)).concat([horde.get(`z${k}_white`), horde.get(`z${k}_ice`)])),
-    anchorY: kinds.map(k => horde.def.frames[`z${k}_0`].ay ?? 0.95),
-    corpse: kinds.map(k => horde.get(`z${k}_corpse`)),
+    stageArt: { city, japan },
+    ...city,
     player: Object.fromEntries(
       CHARACTER_IDS.map(c => [c, Object.fromEntries(DIRS.map(d => {
         const pre = d === 'side' ? `p_${c}` : `p_${c}_${d}`;
@@ -94,7 +108,6 @@ export async function loadHordeSprites(base = './sprites/'): Promise<HordeSprite
     ),
     attack: Object.fromEntries(CHARACTER_IDS.map(c => [c, { bolt: horde.get(`atk_${c}`), hit: horde.get(`hit_${c}`) }])) as Record<CharacterId, { bolt: Texture; hit: Texture }>,
     props,
-    map: { image: mapImage, frames: mapDef.frames },
     boom: boomFrames.map(k => boom.get(k)),
     boomSize: boom.def.frames[boomFrames[0]].w,
   };

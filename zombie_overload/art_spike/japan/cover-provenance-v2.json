@@ -1,0 +1,15 @@
+{
+  "art_source": "host_image",
+  "route": "image_gen",
+  "purpose": "Mirror only the upper-right kaiju to face the center",
+  "prompt": "cover-flip-prompt.txt",
+  "reference": "cover-source.png",
+  "source": "cover-source-v2.png",
+  "source_size": [
+    1536,
+    1024
+  ],
+  "runtime": "../../public/covers/japan-cover-v2.jpg",
+  "source_sha256": "a6fd0bf0bc97a07182d96bdf564db89558f948e25340f559ba2e0e57c8212ddf",
+  "runtime_sha256": "9f5e6e1a3e0c6fa3aadec0f853e125a8c70950a60fdb032c5c0b4e60698a79b8"
+}

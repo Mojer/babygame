@@ -1,0 +1,22 @@
+{
+  "art_source": "host_image",
+  "route": "image_gen",
+  "purpose": "Stage 02 百鬼夜行 selection cover",
+  "prompt": "cover-prompt.txt",
+  "source": "cover-source.png",
+  "source_size": [
+    1536,
+    1024
+  ],
+  "runtime": "../../public/covers/japan-cover-v1.jpg",
+  "runtime_size": [
+    1536,
+    1024
+  ],
+  "source_sha256": "6d4ce33774f822e765a5d2501cb65e05dbdf027e72f9c5ba3540772b20071967",
+  "runtime_sha256": "fdd75dc0d32e8a60e83b6be481913b672e4f3895a8bd8f2900aa2b6bd6609d8d",
+  "references": [
+    "../../src/assets/title-bg.jpg",
+    "enemies-source.png"
+  ]
+}

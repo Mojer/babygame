@@ -1,0 +1,387 @@
+{
+  "schema": "generate2dmap.terrain_tile_bundle.v2",
+  "source": {
+    "path": "../terrain-sheet.png",
+    "sha256": "71c31505659d53b63325a3193e92b501622d87f6f33b60f30fd2584a12c313e2",
+    "bytes": 1030972,
+    "size": [
+      362,
+      1448
+    ],
+    "mode": "RGB",
+    "bit_depth": 8,
+    "conversion": "RGB -> RGBA"
+  },
+  "grid": {
+    "rows": 4,
+    "cols": 1,
+    "rounding": "exact",
+    "source_cell_size": [
+      362,
+      362
+    ],
+    "output_tile_size": [
+      128,
+      128
+    ]
+  },
+  "tile": {
+    "shape": "square",
+    "layer": "base",
+    "footprint": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        128.0,
+        0.0
+      ],
+      [
+        128.0,
+        128.0
+      ],
+      [
+        0.0,
+        128.0
+      ]
+    ]
+  },
+  "terrains": {
+    "moss": {
+      "display_name": "moss",
+      "row": 0,
+      "kind": "fill",
+      "variants": [
+        {
+          "path": "moss-1.png",
+          "source_cell": [
+            0,
+            0
+          ],
+          "source_box": [
+            0,
+            0,
+            362,
+            362
+          ],
+          "resized": true,
+          "mean_luminance": 0.140174,
+          "contrast": 0.070272,
+          "border": {
+            "checked": true,
+            "frame": false,
+            "frames": [],
+            "max_delta": 0.0
+          },
+          "wrap": {
+            "x": {
+              "seam": 11.919922,
+              "adjacent_median": 8.851562,
+              "adjacent_p95": 10.965332,
+              "adjacent_max": 12.970703,
+              "seam_over_median": 1.346646,
+              "seam_over_p95": 1.087055,
+              "seam_ratio": 0.918988,
+              "near_median": 8.644531,
+              "verdict": "continuous",
+              "method": "premultiplied RGBA column steps (0-255); join vs interior steps within 8 columns per side, whole edge and worst 4-row window"
+            },
+            "y": {
+              "seam": 9.558594,
+              "adjacent_median": 8.71582,
+              "adjacent_p95": 10.492188,
+              "adjacent_max": 11.078125,
+              "seam_over_median": 1.096695,
+              "seam_over_p95": 0.91102,
+              "seam_ratio": 0.862835,
+              "near_median": 8.542969,
+              "verdict": "continuous",
+              "method": "premultiplied RGBA column steps (0-255); join vs interior steps within 8 columns per side, whole edge and worst 4-row window"
+            }
+          },
+          "sha256": "d0e5d8e725707b98a818cca132e972a6275f8bc97e2a4f3efed4c531e29729ac"
+        }
+      ],
+      "variant_difference_min": 1.0
+    },
+    "stone": {
+      "display_name": "stone",
+      "row": 1,
+      "kind": "fill",
+      "variants": [
+        {
+          "path": "stone-1.png",
+          "source_cell": [
+            1,
+            0
+          ],
+          "source_box": [
+            0,
+            362,
+            362,
+            724
+          ],
+          "resized": true,
+          "mean_luminance": 0.25506,
+          "contrast": 0.094364,
+          "border": {
+            "checked": true,
+            "frame": false,
+            "frames": [],
+            "max_delta": 0.0
+          },
+          "wrap": {
+            "x": {
+              "seam": 11.367188,
+              "adjacent_median": 11.292969,
+              "adjacent_p95": 29.0625,
+              "adjacent_max": 36.152344,
+              "seam_over_median": 1.006572,
+              "seam_over_p95": 0.391129,
+              "seam_ratio": 0.396898,
+              "near_median": 9.24707,
+              "verdict": "continuous",
+              "method": "premultiplied RGBA column steps (0-255); join vs interior steps within 8 columns per side, whole edge and worst 4-row window"
+            },
+            "y": {
+              "seam": 15.003906,
+              "adjacent_median": 10.994141,
+              "adjacent_p95": 21.829102,
+              "adjacent_max": 22.59375,
+              "seam_over_median": 1.364718,
+              "seam_over_p95": 0.687335,
+              "seam_ratio": 0.681687,
+              "near_median": 11.178711,
+              "verdict": "continuous",
+              "method": "premultiplied RGBA column steps (0-255); join vs interior steps within 8 columns per side, whole edge and worst 4-row window"
+            }
+          },
+          "sha256": "acc128347ce9a665e51352477cd5f5309278c7c1507d2ecf331bc83be1f5804b"
+        }
+      ],
+      "variant_difference_min": 1.0
+    },
+    "wood": {
+      "display_name": "wood",
+      "row": 2,
+      "kind": "fill",
+      "variants": [
+        {
+          "path": "wood-1.png",
+          "source_cell": [
+            2,
+            0
+          ],
+          "source_box": [
+            0,
+            724,
+            362,
+            1086
+          ],
+          "resized": true,
+          "mean_luminance": 0.207088,
+          "contrast": 0.078642,
+          "border": {
+            "checked": true,
+            "frame": false,
+            "frames": [],
+            "max_delta": 0.0
+          },
+          "wrap": {
+            "x": {
+              "seam": 7.490234,
+              "adjacent_median": 3.958984,
+              "adjacent_p95": 15.494141,
+              "adjacent_max": 16.519531,
+              "seam_over_median": 1.891959,
+              "seam_over_p95": 0.483424,
+              "seam_ratio": 0.756757,
+              "near_median": 5.263672,
+              "verdict": "continuous",
+              "method": "premultiplied RGBA column steps (0-255); join vs interior steps within 8 columns per side, whole edge and worst 4-row window"
+            },
+            "y": {
+              "seam": 10.591797,
+              "adjacent_median": 6.867188,
+              "adjacent_p95": 14.442871,
+              "adjacent_max": 24.613281,
+              "seam_over_median": 1.542378,
+              "seam_over_p95": 0.733358,
+              "seam_ratio": 0.885196,
+              "near_median": 6.990234,
+              "verdict": "continuous",
+              "method": "premultiplied RGBA column steps (0-255); join vs interior steps within 8 columns per side, whole edge and worst 4-row window"
+            }
+          },
+          "sha256": "79aab854683c4dc363df2933db7dbd2aeb85d85a5d2fb704a107a128557b5c15"
+        }
+      ],
+      "variant_difference_min": 1.0
+    },
+    "roof": {
+      "display_name": "roof",
+      "row": 3,
+      "kind": "fill",
+      "variants": [
+        {
+          "path": "roof-1.png",
+          "source_cell": [
+            3,
+            0
+          ],
+          "source_box": [
+            0,
+            1086,
+            362,
+            1448
+          ],
+          "resized": true,
+          "mean_luminance": 0.149524,
+          "contrast": 0.089607,
+          "border": {
+            "checked": true,
+            "frame": false,
+            "frames": [],
+            "max_delta": 0.0
+          },
+          "wrap": {
+            "x": {
+              "seam": 8.140625,
+              "adjacent_median": 4.167969,
+              "adjacent_p95": 8.232422,
+              "adjacent_max": 9.246094,
+              "seam_over_median": 1.95314,
+              "seam_over_p95": 0.988849,
+              "seam_ratio": 0.880439,
+              "near_median": 3.980469,
+              "verdict": "continuous",
+              "method": "premultiplied RGBA column steps (0-255); join vs interior steps within 8 columns per side, whole edge and worst 4-row window"
+            },
+            "y": {
+              "seam": 10.412109,
+              "adjacent_median": 9.993164,
+              "adjacent_p95": 20.700684,
+              "adjacent_max": 25.9375,
+              "seam_over_median": 1.041923,
+              "seam_over_p95": 0.502984,
+              "seam_ratio": 0.401431,
+              "near_median": 6.359375,
+              "verdict": "continuous",
+              "method": "premultiplied RGBA column steps (0-255); join vs interior steps within 8 columns per side, whole edge and worst 4-row window"
+            }
+          },
+          "sha256": "056fc94f388efdeccc135c4fc5a4e4018cbd9375e66bf0c91b6b0de00b0d6204"
+        }
+      ],
+      "variant_difference_min": 1.0
+    }
+  },
+  "processing": {
+    "background_mode": "opaque",
+    "background_mode_requested": "auto",
+    "cell_shape": "square",
+    "resampler": "lanczos",
+    "grid_rounding": "exact",
+    "edge_policy": "seamless",
+    "wrap_aware_resize": true
+  },
+  "qc": {
+    "min_contrast": 0.035,
+    "min_variant_difference": 0.025,
+    "max_border_delta": 0.1,
+    "min_shape_coverage": 0.97,
+    "max_shape_spill": 0.03,
+    "max_seam_ratio": 1.25,
+    "warnings": [],
+    "passed": true,
+    "seamless_verified": false
+  },
+  "qa": {
+    "status": "pass",
+    "method": "Grid slices of the atlas, background handled per --background-mode, resized to the tile size (Lanczos or nearest; wrap-aware for the seamless policy). Luminance contrast and mean thumbnail differences; drawn frames along opposite edges; footprint coverage and spill for iso/hex base tiles; for the seamless policy, premultiplied wrap and Wang-join steps normalised by the art's own steps near each edge.",
+    "notProven": [
+      "visual quality, style match and readability at game zoom",
+      "that each variant reads as the named terrain",
+      "seamlessness: no exact seam proof exists for image tiles (seamless_verified stays false)",
+      "joins between different variants of a fill row (measured as diagnostics only)"
+    ],
+    "checks": [
+      {
+        "id": "contrast",
+        "status": "pass",
+        "value": 0.070272,
+        "threshold": 0.035
+      },
+      {
+        "id": "variant_difference",
+        "status": "pass",
+        "value": 1.0,
+        "threshold": 0.025
+      },
+      {
+        "id": "border_frame",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0.1
+      },
+      {
+        "id": "shape_coverage",
+        "status": "skipped",
+        "value": null,
+        "threshold": 0.97
+      },
+      {
+        "id": "shape_spill",
+        "status": "skipped",
+        "value": null,
+        "threshold": 0.03
+      },
+      {
+        "id": "wrap_seams",
+        "status": "pass",
+        "value": 0.918988,
+        "threshold": 1.25
+      },
+      {
+        "id": "wang_seams",
+        "status": "skipped",
+        "value": null,
+        "threshold": null
+      }
+    ],
+    "inputs": [
+      {
+        "path": "../terrain-sheet.png",
+        "sha256": "71c31505659d53b63325a3193e92b501622d87f6f33b60f30fd2584a12c313e2",
+        "bytes": 1030972
+      }
+    ],
+    "outputs": [
+      {
+        "path": "moss-1.png",
+        "sha256": "d0e5d8e725707b98a818cca132e972a6275f8bc97e2a4f3efed4c531e29729ac",
+        "bytes": 43166
+      },
+      {
+        "path": "stone-1.png",
+        "sha256": "acc128347ce9a665e51352477cd5f5309278c7c1507d2ecf331bc83be1f5804b",
+        "bytes": 43100
+      },
+      {
+        "path": "wood-1.png",
+        "sha256": "79aab854683c4dc363df2933db7dbd2aeb85d85a5d2fb704a107a128557b5c15",
+        "bytes": 34153
+      },
+      {
+        "path": "roof-1.png",
+        "sha256": "056fc94f388efdeccc135c4fc5a4e4018cbd9375e66bf0c91b6b0de00b0d6204",
+        "bytes": 37163
+      }
+    ],
+    "tool": {
+      "name": "extract_terrain_tiles.py",
+      "version": "0.4.0"
+    }
+  }
+}

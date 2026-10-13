@@ -1,5 +1,5 @@
 node_modules/
-dist/
+# dist/ 是遊戲首頁使用的正式入口，建置產物需一起保留。
 .DS_Store
 *.log
 # 生圖中間檔與人物參考圖（體積大、可重新生成；打包腳本讀這些產生 public/sprites）

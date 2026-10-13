@@ -1,0 +1,36 @@
+{
+  "art_source": "host_image",
+  "route": "image_gen",
+  "model": "built-in image generation",
+  "animation": "static master stills with runtime bob; no generated walk clips",
+  "world": [
+    2048,
+    2048
+  ],
+  "logical_view": [
+    600,
+    400
+  ],
+  "camera": "3/4 orthographic",
+  "enemy_heights": [
+    26,
+    30,
+    36,
+    30,
+    64
+  ],
+  "prop_widths": {
+    "shrine": 152,
+    "torii": 120,
+    "sakura": 88,
+    "stoneLantern": 20,
+    "yatai": 80,
+    "bamboo": 52,
+    "komainu": 32,
+    "bridge": 88
+  },
+  "sources": {
+    "enemies-source.png": "82bd313b5a18c897a1f06b46a3d584c4800c4da81050c6f35afd1ee75ce6cfcc",
+    "environment-source.png": "e7f08dd33ee12d74560b354b1e252c94bbeb85f9d9e8a59e6bbaff30ec7146e0"
+  }
+}

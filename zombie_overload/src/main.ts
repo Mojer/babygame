@@ -8,6 +8,7 @@ import { CHARACTER_IDS, CHARACTERS, type CharacterId } from './sim/characters';
 import { FX_BURST, FX_PLAGUE } from './sim/logs';
 import { UPGRADES } from './sim/upgrades';
 import { type UltKind, World } from './sim/world';
+import { STAGE_IDS, STAGES, stageId, type StageId } from './sim/stages';
 import { Hud } from './ui/hud';
 import { InputController } from './ui/input';
 import { PerfMonitor } from './ui/perf';
@@ -34,6 +35,7 @@ const params = {
   /** oblique = 3/4 斜俯視正式風格（預設）；topdown = 原本程式畫的 90° 佔位圖 */
   style: q.get('style') === 'topdown' ? 'topdown' : 'oblique',
   mute: flag('mute'),
+  stage: stageId(q.get('stage')),
 };
 
 /** 記住上次選的角色（只是方便，讀寫失敗就算了） */
@@ -56,12 +58,13 @@ const coarse = matchMedia('(pointer: coarse)').matches;
 document.body.classList.add('on-title');
 document.body.classList.toggle('touch', coarse);
 let tier: TierName = params.fx ?? (coarse ? 'mid' : 'high');
+let chosenStage: StageId = params.stage ?? stageId(loadPref('zo.stage')) ?? 'city';
 
-type State = 'title' | 'select' | 'playing' | 'paused' | 'levelup' | 'over';
+type State = 'title' | 'stages' | 'select' | 'playing' | 'paused' | 'levelup' | 'over';
 let state: State = 'title';
 
 async function boot() {
-  const world = new World({
+  const worldOptions = {
     seed: params.seed,
     tier,
     cap: params.n,
@@ -70,9 +73,10 @@ async function boot() {
     autoLevel: params.auto || params.bot,
     startTime: params.t,
     noSkills: !params.skills,
-  });
+  };
+  let world = new World({ ...worldOptions, stage: chosenStage });
   const gr = new GameRenderer();
-  await gr.init($('#game'), world, params.style === 'oblique' ? () => loadHordeSprites() : undefined);
+  await gr.init($('#game'), world, () => loadHordeSprites(), params.style === 'topdown');
   gr.setTier(tier);
   world.setView(gr.viewW, gr.viewH);
 
@@ -135,7 +139,7 @@ async function boot() {
   $('#pauseBtn').addEventListener('click', togglePause);
   $('#muteBtn').addEventListener('click', toggleMute);
   $('#resumeBtn').addEventListener('click', () => setPaused(false));
-  // 重新開始：再來一局直接回到選角頁（記在 sessionStorage，重新載入後讀取），主選單回封面
+  // 重新開始：再來一局回關卡頁並記住選擇，主選單回封面。
   const restart = (toSelect: boolean) => {
     try {
       sessionStorage.setItem('zo.skipCover', toSelect ? '1' : '');
@@ -202,18 +206,56 @@ async function boot() {
   chooseUlt(ultKind);
   choose(chosen);
 
-  // 封面 →（開始遊戲）→ 選角＋終極武器 →（出發）→ 遊戲
-  const openSelect = () => {
-    if (state !== 'title') return;
+  // 封面 → 關卡 → 角色＋武器 → 遊戲；換關卡重建模擬，畫面只重烘地面。
+  const stageCards = $('#stageCards');
+  stageCards.innerHTML = STAGE_IDS.map(id => {
+    const st = STAGES[id];
+    return `<button class="stage-card stage-${id}" role="radio" data-stage="${id}" style="--c:${st.color}">
+      <span class="stage-art">${id === 'japan' ? '<img src="./covers/japan-cover-v2.jpg" alt="月下鳥居與神社，茜與宇迎戰百鬼和荒魂巨獸" />' : ''}<span class="stage-number">${st.number}</span><span class="stage-mark">${id === 'japan' ? '百鬼夜行' : 'DEAD CITY'}</span></span>
+      <span class="check" aria-hidden="true"></span>
+      <span class="stage-info"><span class="stage-kicker">STAGE ${st.number} · 10 MIN SURVIVAL</span><span class="stage-name">${st.name}<em>${st.latin}</em></span><span class="stage-subtitle">${st.subtitle}</span><span class="stage-description">${st.description}</span>
+      <span class="stage-tags">${st.landmarks.map(x => `<span>${x}</span>`).join('')}</span>
+      <span class="stage-enemies"><small>敵人</small>${st.enemies.map((name, k) => `<span>${id === 'japan' ? `<img src="./sprites/yokai_${k}.png" alt="" />` : ''}${name}</span>`).join('')}</span></span></button>`;
+  }).join('');
+  const chooseStage = (id: StageId) => {
+    chosenStage = id;
+    stageCards.querySelectorAll<HTMLElement>('.stage-card').forEach(el => {
+      const selected = el.dataset.stage === id;
+      el.setAttribute('aria-checked', String(selected));
+      el.tabIndex = selected ? 0 : -1;
+    });
+    savePref('zo.stage', id);
+    $('#selectedStage').textContent = `STAGE ${STAGES[id].number} / ${STAGES[id].name}`;
+    $('#selectedStage').style.setProperty('--c', STAGES[id].color);
+  };
+  stageCards.querySelectorAll<HTMLElement>('.stage-card').forEach(el => el.addEventListener('click', () => chooseStage(el.dataset.stage as StageId)));
+  chooseStage(chosenStage);
+  const openStages = () => {
+    if (state !== 'title' && state !== 'select') return;
     sfx.unlock();
-    state = 'select';
+    state = 'stages';
     $('#start').classList.add('hidden');
+    $('#select').classList.add('hidden');
+    $('#stageSelect').classList.remove('hidden');
+    input.consumeEdges();
+  };
+  const openSelect = () => {
+    if (state !== 'stages') return;
+    if (world.stage.id !== chosenStage) {
+      world = new World({ ...worldOptions, stage: chosenStage, character: chosen, ult: ultKind });
+      debug.world = world;
+      gr.setStage(world);
+      world.setView(gr.viewW, gr.viewH);
+    }
+    state = 'select';
+    $('#stageSelect').classList.add('hidden');
     $('#select').classList.remove('hidden');
+    input.consumeEdges();
   };
   const backToCover = () => {
-    if (state !== 'select') return;
+    if (state !== 'stages') return;
     state = 'title';
-    $('#select').classList.add('hidden');
+    $('#stageSelect').classList.add('hidden');
     $('#start').classList.remove('hidden');
   };
   const start = () => {
@@ -221,8 +263,13 @@ async function boot() {
     sfx.unlock();
     $('#start').classList.add('hidden');
     $('#select').classList.add('hidden');
+    $('#stageSelect').classList.add('hidden');
     document.body.classList.remove('on-title');
     state = 'playing';
+    input.consumeEdges();
+    $('#hudStage').textContent = world.stage.name;
+    $('#finishSub').textContent = world.stage.id === 'japan' ? 'ALL KAIJU DOWN' : 'ALL MUTANTS DOWN';
+    hud.toast(`STAGE ${world.stage.number} · ${world.stage.name}`, 3);
     playBgm();
   };
   // 封面選單：↑↓ 移動、Enter 確認（滑鼠移上去也會同步高亮）
@@ -256,6 +303,14 @@ async function boot() {
         e.preventDefault();
         menuItems[menuIdx].click();
       }
+    } else if (state === 'stages') {
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA' || e.code === 'Digit1') chooseStage('city');
+      else if (e.code === 'ArrowRight' || e.code === 'KeyD' || e.code === 'Digit2') chooseStage('japan');
+      else if (e.code === 'Enter' || e.code === 'Space') {
+        e.preventDefault();
+        if (document.activeElement === $('#stageBackBtn')) backToCover();
+        else openSelect();
+      } else if (e.code === 'Escape') backToCover();
     } else if (state === 'over') {
       if (e.code === 'Enter') restart(true);
       else if (e.code === 'Escape') restart(false);
@@ -267,15 +322,17 @@ async function boot() {
       else if (e.code === 'Enter') {
         // 擋掉按鈕的原生 Enter 點擊，避免焦點停在「返回」時同時觸發兩個動作
         e.preventDefault();
-        if (document.activeElement === $('#backBtn')) backToCover();
+        if (document.activeElement === $('#backBtn')) openStages();
         else start();
       }
-      else if (e.code === 'Escape') backToCover();
+      else if (e.code === 'Escape') openStages();
     }
   });
-  $('#startBtn').addEventListener('click', openSelect);
+  $('#startBtn').addEventListener('click', openStages);
+  $('#stageBackBtn').addEventListener('click', backToCover);
+  $('#stageNextBtn').addEventListener('click', openSelect);
   $('#goBtn').addEventListener('click', start);
-  $('#backBtn').addEventListener('click', backToCover);
+  $('#backBtn').addEventListener('click', openStages);
   window.addEventListener('pointerdown', () => sfx.unlock());
   document.addEventListener('visibilitychange', () => {
     if (document.hidden && state === 'playing') setPaused(true);
@@ -295,7 +352,7 @@ async function boot() {
     // 讀不到就照常顯示封面
   }
   if (params.bot) start();
-  else if (skipCover) openSelect();
+  else if (skipCover) openStages();
   if (!params.skills) hud.toast('壓測模式（skills=0）：自動攻擊與技能已關閉', 6);
 
   // 結算：分數＝擊殺＋連鎖＋變異體＋等級＋存活／通關獎勵，換算評等
@@ -331,18 +388,18 @@ async function boot() {
     end.classList.toggle('lose', !win);
     end.style.setProperty('--c', color[chosen]);
     $('#endTag').textContent = win ? 'MISSION COMPLETE' : 'GAME OVER';
-    $('#endTitle').textContent = win ? '撐過屍潮！' : '倒下了';
+    $('#endTitle').textContent = win ? `撐過${world.stage.horde}！` : '倒下了';
     $('#endSub').textContent = win ? 'FINISH' : 'DEFEATED';
     ($('#endPortrait') as HTMLImageElement).src = `./sprites/portrait_${chosen}.png`;
     ($('#endMini') as HTMLImageElement).src = `./sprites/mini_${chosen}.png`;
-    $('#endWho').innerHTML = `<span class="name">${c.name}<em>${latin[chosen]}</em></span><span class="role">${c.title} · ${ultKind === 'ship' ? '星艦砲擊' : '天降巨砲'}</span>`;
+    $('#endWho').innerHTML = `<span class="name">${c.name}<em>${latin[chosen]}</em></span><span class="role">${c.title} · ${ultKind === 'ship' ? '星艦砲擊' : '天降巨砲'}</span><span class="role">STAGE ${world.stage.number} · ${world.stage.name}</span>`;
     const rankEl = $('#endRank');
     rankEl.textContent = rank;
     rankEl.dataset.rank = rank;
     const rows: [string, string, number, (n: number) => string][] = [
       ['存活時間', 'TIME', Math.floor(survived), fmtTime],
       ['擊殺數', 'KILLS', st.kills, n => n.toLocaleString()],
-      ['巨大變異體', 'MUTANTS', st.mutantKills, n => `×${n}`],
+      [world.stage.boss, world.stage.id === 'japan' ? 'KAIJU' : 'MUTANTS', st.mutantKills, n => `×${n}`],
       ['最大連鎖', 'MAX CHAIN', st.maxChain, n => `×${n.toLocaleString()}`],
       ['等級', 'LEVEL', world.player.level, n => `Lv ${n}`],
       ['終極武器', 'ULTIMATE', st.ults, n => `×${n}`],
@@ -402,19 +459,19 @@ async function boot() {
           if (params.auto || params.bot) sfx.play('level');
           break;
         case 'surge':
-          hud.showBanner('⚠ 屍潮來襲！', 'warn', 2.2);
+          hud.showBanner(`⚠ ${world.stage.horde}來襲！`, 'warn', 2.2);
           sfx.play('alarm');
           break;
         case 'mutant':
-          hud.showBanner('⚠ 巨大變異體出現！', 'warn', 2.4);
+          hud.showBanner(`⚠ ${world.stage.boss}出現！`, 'warn', 2.4);
           sfx.play('alarm');
           break;
         case 'mutantDown':
-          if (world.finale === 'run') hud.showBanner('巨大變異體 擊倒！', 'chain big', 1.8);
+          if (world.finale === 'run') hud.showBanner(`${world.stage.boss} 擊倒！`, 'chain big', 1.8);
           sfx.play('bigboom');
           break;
         case 'finalWave':
-          hud.showBanner(`⚠ 最終波！巨大變異體 ×${e.count}`, 'warn', 3);
+          hud.showBanner(`⚠ 最終波！${world.stage.bossPlural} ×${e.count}`, 'warn', 3);
           sfx.play('alarm');
           break;
         case 'finish':
@@ -486,7 +543,7 @@ async function boot() {
     }
 
     const playing = state === 'playing' && !portrait;
-    if (state === 'title' || state === 'select') return; // 封面與選角是獨立畫面，不畫遊戲
+    if (state === 'title' || state === 'stages' || state === 'select') return;
     const t1 = performance.now();
     gr.consume(world);
     gr.render(world, playing ? acc / FIXED_STEP : 1, playing ? dt : 0);

@@ -1,0 +1,746 @@
+{
+  "schema": "generate2dmap.prop_pack.v2",
+  "tool": {
+    "name": "extract_prop_pack",
+    "version": "0.4.0"
+  },
+  "input": "../props-sheet.png",
+  "source_size": [
+    1448,
+    724
+  ],
+  "source_sha256": "995c46fbc066af9a5ac836133c0b529e92af45f9a00d10f3dcdf1dbcc2360948",
+  "source_mode": "RGB",
+  "layout_mode": "grid",
+  "boxes_file": null,
+  "labels_file": null,
+  "background_mode": "chroma_key",
+  "art_source": "host_image",
+  "rows": 2,
+  "cols": 4,
+  "threshold": 100,
+  "edge_threshold": 150,
+  "despill_radius": 1,
+  "despill": {
+    "mode": "edge",
+    "applied": "edge",
+    "radius": 1,
+    "margin": 12,
+    "changed_px": 17931
+  },
+  "hygiene": {
+    "mode": "none",
+    "floor": 4,
+    "solid_min": 32,
+    "attach_radius": 2,
+    "connectivity": 8,
+    "floor_px": 0,
+    "detached_px": 0,
+    "detached_components": 0,
+    "max_removed_alpha": 0
+  },
+  "alpha_floor": 0,
+  "alpha_floor_pixels_removed": 0,
+  "trim_border": 0,
+  "edge_clean_depth": 0,
+  "component_mode": "all",
+  "component_padding": 8,
+  "min_component_area": "auto",
+  "edge_touch_margin": 0,
+  "geometry": {
+    "connectivity": 8,
+    "alpha_geometry_threshold": 16,
+    "anchor_mode": "stance",
+    "support_band_fraction": 0.25,
+    "anchor_rounding": "whole pixels, half-up",
+    "grid_rounding": "exact",
+    "keep_canvas": false,
+    "world_scale": null
+  },
+  "accepted": [
+    {
+      "index": 0,
+      "label": "shrine",
+      "display_name": "shrine",
+      "status": "accepted",
+      "image": "shrine/prop.png",
+      "sha256": "56b60000c6df89a7fefd9197d55f03fe2016e2d89743a32bf92e8490554c3136",
+      "output_size": [
+        353,
+        344
+      ],
+      "grid": [
+        0,
+        0
+      ],
+      "cell_box": [
+        0,
+        0,
+        362,
+        362
+      ],
+      "source_box": [
+        0,
+        0,
+        362,
+        362
+      ],
+      "source_rect": [
+        5,
+        8,
+        358,
+        352
+      ],
+      "trim_offset": [
+        5,
+        8
+      ],
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "anchor_px": [
+        176,
+        336
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 1,
+      "min_component_area": 75,
+      "trim_applied": 0,
+      "crop_bbox": [
+        13,
+        16,
+        350,
+        344
+      ],
+      "padded_crop_bbox": [
+        5,
+        8,
+        358,
+        352
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 79893,
+      "dropped_components": 0,
+      "dropped_area": 0,
+      "edge_touch": false,
+      "edge_fringe_px": 35
+    },
+    {
+      "index": 1,
+      "label": "torii",
+      "display_name": "torii",
+      "status": "accepted",
+      "image": "torii/prop.png",
+      "sha256": "16192fbcfc0104cd499719221450773102aedbe39704235dc7fb1b25b07fa5ba",
+      "output_size": [
+        362,
+        318
+      ],
+      "grid": [
+        0,
+        1
+      ],
+      "cell_box": [
+        362,
+        0,
+        724,
+        362
+      ],
+      "source_box": [
+        362,
+        0,
+        724,
+        362
+      ],
+      "source_rect": [
+        362,
+        19,
+        724,
+        337
+      ],
+      "trim_offset": [
+        0,
+        19
+      ],
+      "padding": [
+        6,
+        8,
+        6,
+        8
+      ],
+      "anchor_px": [
+        181,
+        310
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 1,
+      "min_component_area": 75,
+      "trim_applied": 0,
+      "crop_bbox": [
+        6,
+        27,
+        356,
+        329
+      ],
+      "padded_crop_bbox": [
+        0,
+        19,
+        362,
+        337
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 38595,
+      "dropped_components": 0,
+      "dropped_area": 0,
+      "edge_touch": false,
+      "edge_fringe_px": 175
+    },
+    {
+      "index": 2,
+      "label": "sakura",
+      "display_name": "sakura",
+      "status": "accepted",
+      "image": "sakura/prop.png",
+      "sha256": "dfed771b899e92c5e83b2494d5a9dd7e1dd6c7a78ad91b98da513b0682a4fdc0",
+      "output_size": [
+        352,
+        316
+      ],
+      "grid": [
+        0,
+        2
+      ],
+      "cell_box": [
+        724,
+        0,
+        1086,
+        362
+      ],
+      "source_box": [
+        724,
+        0,
+        1086,
+        362
+      ],
+      "source_rect": [
+        734,
+        22,
+        1086,
+        338
+      ],
+      "trim_offset": [
+        10,
+        22
+      ],
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "anchor_px": [
+        179,
+        308
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 1,
+      "min_component_area": 75,
+      "trim_applied": 0,
+      "crop_bbox": [
+        18,
+        30,
+        354,
+        330
+      ],
+      "padded_crop_bbox": [
+        10,
+        22,
+        362,
+        338
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 58105,
+      "dropped_components": 73,
+      "dropped_area": 862,
+      "edge_touch": false,
+      "edge_fringe_px": 2327
+    },
+    {
+      "index": 3,
+      "label": "stonelantern",
+      "display_name": "stoneLantern",
+      "status": "accepted",
+      "image": "stonelantern/prop.png",
+      "sha256": "7561041341a6a5b20651c1d5106e8e750df384fab5f5d117600cd0a45601c68c",
+      "output_size": [
+        166,
+        327
+      ],
+      "grid": [
+        0,
+        3
+      ],
+      "cell_box": [
+        1086,
+        0,
+        1448,
+        362
+      ],
+      "source_box": [
+        1086,
+        0,
+        1448,
+        362
+      ],
+      "source_rect": [
+        1184,
+        17,
+        1350,
+        344
+      ],
+      "trim_offset": [
+        98,
+        17
+      ],
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "anchor_px": [
+        83,
+        319
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 1,
+      "min_component_area": 75,
+      "trim_applied": 0,
+      "crop_bbox": [
+        106,
+        25,
+        256,
+        336
+      ],
+      "padded_crop_bbox": [
+        98,
+        17,
+        264,
+        344
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 24867,
+      "dropped_components": 0,
+      "dropped_area": 0,
+      "edge_touch": false,
+      "edge_fringe_px": 65
+    },
+    {
+      "index": 4,
+      "label": "yatai",
+      "display_name": "yatai",
+      "status": "accepted",
+      "image": "yatai/prop.png",
+      "sha256": "ae829148b0aec5f620c122394fff2cb8984a67dba08d0a7a6ff2d3617b7da4bb",
+      "output_size": [
+        334,
+        284
+      ],
+      "grid": [
+        1,
+        0
+      ],
+      "cell_box": [
+        0,
+        362,
+        362,
+        724
+      ],
+      "source_box": [
+        0,
+        362,
+        362,
+        724
+      ],
+      "source_rect": [
+        24,
+        388,
+        358,
+        672
+      ],
+      "trim_offset": [
+        24,
+        26
+      ],
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "anchor_px": [
+        177,
+        276
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 1,
+      "min_component_area": 75,
+      "trim_applied": 0,
+      "crop_bbox": [
+        32,
+        34,
+        350,
+        302
+      ],
+      "padded_crop_bbox": [
+        24,
+        26,
+        358,
+        310
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 58459,
+      "dropped_components": 0,
+      "dropped_area": 0,
+      "edge_touch": false,
+      "edge_fringe_px": 202
+    },
+    {
+      "index": 5,
+      "label": "bamboo",
+      "display_name": "bamboo",
+      "status": "accepted",
+      "image": "bamboo/prop.png",
+      "sha256": "92fe2f7b810c3da427171fcad689455fdda012c7059002ae34f6b60fd8d6d973",
+      "output_size": [
+        302,
+        343
+      ],
+      "grid": [
+        1,
+        1
+      ],
+      "cell_box": [
+        362,
+        362,
+        724,
+        724
+      ],
+      "source_box": [
+        362,
+        362,
+        724,
+        724
+      ],
+      "source_rect": [
+        396,
+        365,
+        698,
+        708
+      ],
+      "trim_offset": [
+        34,
+        3
+      ],
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "anchor_px": [
+        149,
+        335
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 1,
+      "min_component_area": 75,
+      "trim_applied": 0,
+      "crop_bbox": [
+        42,
+        11,
+        328,
+        338
+      ],
+      "padded_crop_bbox": [
+        34,
+        3,
+        336,
+        346
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 63951,
+      "dropped_components": 2,
+      "dropped_area": 3,
+      "edge_touch": false,
+      "edge_fringe_px": 851
+    },
+    {
+      "index": 6,
+      "label": "komainu",
+      "display_name": "komainu",
+      "status": "accepted",
+      "image": "komainu/prop.png",
+      "sha256": "6042c2523fa3484361e3644c043166e4b62a0fae458a5797e2da093ddcd8aa1d",
+      "output_size": [
+        257,
+        338
+      ],
+      "grid": [
+        1,
+        2
+      ],
+      "cell_box": [
+        724,
+        362,
+        1086,
+        724
+      ],
+      "source_box": [
+        724,
+        362,
+        1086,
+        724
+      ],
+      "source_rect": [
+        776,
+        368,
+        1033,
+        706
+      ],
+      "trim_offset": [
+        52,
+        6
+      ],
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "anchor_px": [
+        129,
+        330
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 1,
+      "min_component_area": 75,
+      "trim_applied": 0,
+      "crop_bbox": [
+        60,
+        14,
+        301,
+        336
+      ],
+      "padded_crop_bbox": [
+        52,
+        6,
+        309,
+        344
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 49751,
+      "dropped_components": 0,
+      "dropped_area": 0,
+      "edge_touch": false,
+      "edge_fringe_px": 60
+    },
+    {
+      "index": 7,
+      "label": "bridge",
+      "display_name": "bridge",
+      "status": "accepted",
+      "image": "bridge/prop.png",
+      "sha256": "99c5a0fe3936cc27562b18662dc4b040f32cf9b5a2fba6a194eda18fb6e6a31f",
+      "output_size": [
+        344,
+        281
+      ],
+      "grid": [
+        1,
+        3
+      ],
+      "cell_box": [
+        1086,
+        362,
+        1448,
+        724
+      ],
+      "source_box": [
+        1086,
+        362,
+        1448,
+        724
+      ],
+      "source_rect": [
+        1093,
+        385,
+        1437,
+        666
+      ],
+      "trim_offset": [
+        7,
+        23
+      ],
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "anchor_px": [
+        240,
+        273
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 1,
+      "min_component_area": 75,
+      "trim_applied": 0,
+      "crop_bbox": [
+        15,
+        31,
+        343,
+        296
+      ],
+      "padded_crop_bbox": [
+        7,
+        23,
+        351,
+        304
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 41086,
+      "dropped_components": 0,
+      "dropped_area": 0,
+      "edge_touch": false,
+      "edge_fringe_px": 494
+    }
+  ],
+  "rejected": [],
+  "edge_touch_props": [],
+  "warnings": [
+    "props dropped more than 1% of their cell's visible pixels (see dropped_components and dropped_area): {'sakura': 0.0146}",
+    "tall or wide props in a square grid (aspect > 1.6): ['stonelantern 150x311']; generate them one by one or in custom cells, or extract with --auto-boxes",
+    "magenta edge fringe above 2% of edge pixels: {'torii': 0.0372, 'sakura': 0.2913, 'stonelantern': 0.0273, 'yatai': 0.0523, 'bamboo': 0.0818, 'komainu': 0.0211, 'bridge': 0.104}; raise --despill-radius"
+  ],
+  "qa": {
+    "status": "warn",
+    "method": "legacy #FF00FF key (100/150) and edge despill radius 1; alpha hygiene none; 8-connected components (all); checks measured on the published pixels",
+    "notProven": [
+      "that each label names the art in its cell or box",
+      "that a prop is complete: clipping is detected only where art meets the cell edge",
+      "keyed-edge quality beyond the edge fringe count",
+      "that anchors and suggested footprints match gameplay contact (both are measured from alpha)",
+      "runtime placement, collision or occlusion"
+    ],
+    "checks": [
+      {
+        "id": "accepted",
+        "status": "pass",
+        "value": 8,
+        "threshold": ">= 1"
+      },
+      {
+        "id": "edge_touch",
+        "status": "pass",
+        "value": [],
+        "threshold": 0
+      },
+      {
+        "id": "dropped_area",
+        "status": "warn",
+        "value": {
+          "sakura": 0.0146,
+          "bamboo": 0.0
+        },
+        "threshold": 0.01
+      },
+      {
+        "id": "strategy_aspect",
+        "status": "warn",
+        "value": [
+          "stonelantern 150x311"
+        ],
+        "threshold": 1.6
+      },
+      {
+        "id": "edge_fringe",
+        "status": "warn",
+        "value": 0.2913,
+        "threshold": 0.02
+      }
+    ],
+    "inputs": [
+      {
+        "path": "../props-sheet.png",
+        "sha256": "995c46fbc066af9a5ac836133c0b529e92af45f9a00d10f3dcdf1dbcc2360948",
+        "bytes": 1509164
+      }
+    ],
+    "outputs": [
+      {
+        "path": "shrine/prop.png",
+        "sha256": "56b60000c6df89a7fefd9197d55f03fe2016e2d89743a32bf92e8490554c3136",
+        "bytes": 194618
+      },
+      {
+        "path": "torii/prop.png",
+        "sha256": "16192fbcfc0104cd499719221450773102aedbe39704235dc7fb1b25b07fa5ba",
+        "bytes": 91543
+      },
+      {
+        "path": "sakura/prop.png",
+        "sha256": "dfed771b899e92c5e83b2494d5a9dd7e1dd6c7a78ad91b98da513b0682a4fdc0",
+        "bytes": 185458
+      },
+      {
+        "path": "stonelantern/prop.png",
+        "sha256": "7561041341a6a5b20651c1d5106e8e750df384fab5f5d117600cd0a45601c68c",
+        "bytes": 72321
+      },
+      {
+        "path": "yatai/prop.png",
+        "sha256": "ae829148b0aec5f620c122394fff2cb8984a67dba08d0a7a6ff2d3617b7da4bb",
+        "bytes": 161699
+      },
+      {
+        "path": "bamboo/prop.png",
+        "sha256": "92fe2f7b810c3da427171fcad689455fdda012c7059002ae34f6b60fd8d6d973",
+        "bytes": 174093
+      },
+      {
+        "path": "komainu/prop.png",
+        "sha256": "6042c2523fa3484361e3644c043166e4b62a0fae458a5797e2da093ddcd8aa1d",
+        "bytes": 138517
+      },
+      {
+        "path": "bridge/prop.png",
+        "sha256": "99c5a0fe3936cc27562b18662dc4b040f32cf9b5a2fba6a194eda18fb6e6a31f",
+        "bytes": 116525
+      }
+    ],
+    "tool": {
+      "name": "extract_prop_pack",
+      "version": "0.4.0"
+    }
+  }
+}

@@ -1,7 +1,10 @@
 import { BORDER, CELL, GRID_H, GRID_W, MAP_H, MAP_W } from './content';
 import { Rng } from './rng';
+import type { StageId } from './stages';
+import { buildJapanMap } from './mapJapan';
 
-export type PropKind = 'building' | 'car' | 'wreck' | 'planter' | 'fountain' | 'bench' | 'bin' | 'barrier' | 'lamp' | 'hydrant' | 'cones' | 'crates' | 'cart';
+export type PropKind = 'building' | 'car' | 'wreck' | 'planter' | 'fountain' | 'bench' | 'bin' | 'barrier' | 'lamp' | 'hydrant' | 'cones' | 'crates' | 'cart'
+  | 'shrine' | 'torii' | 'sakura' | 'stoneLantern' | 'yatai' | 'bamboo' | 'komainu' | 'bridge';
 
 export interface Prop {
   kind: PropKind;
@@ -16,6 +19,7 @@ export interface Prop {
 }
 
 export interface MapLayout {
+  stage: StageId;
   props: Prop[];
   roadsH: [number, number][];
   roadsV: [number, number][];
@@ -27,7 +31,8 @@ export interface MapLayout {
 }
 
 /** 都市廣場：外圍建築、十字道路與停放車輛、中央噴水池、花台 */
-export function buildMap(seed: number): MapLayout {
+export function buildMap(seed: number, stage: StageId = 'city'): MapLayout {
+  if (stage === 'japan') return buildJapanMap(seed);
   const rng = new Rng(seed ^ 0x5eed);
   const props: Prop[] = [];
   const roadsH: [number, number][] = [[592, 688], [1360, 1456]];
@@ -158,7 +163,7 @@ export function buildMap(seed: number): MapLayout {
     }
   }
 
-  return { props, roadsH, roadsV, blocked, spawn: { x: cx, y: cy + 160 }, fountain };
+  return { stage: 'city', props, roadsH, roadsV, blocked, spawn: { x: cx, y: cy + 160 }, fountain };
 }
 
 function onRoad(x: number, y: number, w: number, h: number, roadsH: [number, number][], roadsV: [number, number][], pad: number) {

@@ -35,6 +35,7 @@ import { bgr, FxSystem } from './fx';
 import { LensFilter } from './lens';
 import { paintMap } from './mapPainter';
 import { paintMapOblique } from './mapPainterOblique';
+import { paintMapJapan } from './mapPainterJapan';
 import type { CharacterId } from '../sim/characters';
 import type { HordeSprites, PlayerDir } from './sprites';
 
@@ -117,6 +118,8 @@ export class GameRenderer {
   private readonly holeGlows: Sprite[] = [];
   /** 3/4 斜俯視風格素材；沒有時用程式畫的 90° 俯視佔位圖 */
   sprites: HordeSprites | null = null;
+  private allSprites: HordeSprites | null = null;
+  private topdown = false;
   private shadowPC!: ParticleContainer;
   private readonly shadowParts: Particle[] = [];
   private sortKeys = new Float64Array(4096);
@@ -151,7 +154,8 @@ export class GameRenderer {
   private time = 0;
   private atlasTexture!: Texture;
 
-  async init(parent: HTMLElement, world: World, loadSprites?: () => Promise<HordeSprites>) {
+  async init(parent: HTMLElement, world: World, loadSprites?: () => Promise<HordeSprites>, topdown = false) {
+    this.topdown = topdown;
     TextureStyle.defaultOptions.scaleMode = 'nearest';
     this.renderer = await autoDetectRenderer({
       preference: 'webgl',
@@ -169,7 +173,8 @@ export class GameRenderer {
     this.atlas = buildAtlas();
     if (loadSprites) {
       try {
-        this.sprites = await loadSprites();
+        this.allSprites = await loadSprites();
+        this.sprites = topdown && world.stage.id === 'city' ? null : { ...this.allSprites, ...this.allSprites.stageArt[world.stage.id] };
       } catch (e) {
         console.warn('3/4 風格素材載入失敗，改用佔位圖', e);
       }
@@ -178,7 +183,7 @@ export class GameRenderer {
     const atlasTex = this.atlasTexture;
 
     this.chunks = new ChunkLayer(atlasTex);
-    this.chunks.paintStatic(this.renderer, this.sprites ? paintMapOblique(world.map, this.sprites.map) : paintMap(world.map));
+    this.paintStage(world);
     if (this.sprites) this.buildProps(world, this.sprites);
 
     // 粒子數量每幀變動且 slot 會重排，所有屬性都設為 dynamic（static 屬性只在 update() 時上傳）
@@ -253,6 +258,26 @@ export class GameRenderer {
 
   setCharacter(id: CharacterId) {
     this.charId = id;
+  }
+
+  /** 開局前換關卡：重烘靜態地面，所有關卡共用同一張粒子圖集。 */
+  setStage(world: World) {
+    this.sprites = this.allSprites && !(this.topdown && world.stage.id === 'city')
+      ? { ...this.allSprites, ...this.allSprites.stageArt[world.stage.id] } : null;
+    this.paintStage(world);
+    this.props.length = 0;
+    if (this.sprites) this.buildProps(world, this.sprites);
+    this.zombiesPC.texture = this.sprites?.zombie[0][0] ?? this.atlasTexture;
+    this.boltsPC.texture = this.sprites?.zombie[0][0] ?? this.atlasTexture;
+    this.shipSprite.texture = this.sprites?.props.ship ?? this.atlas.glow[64];
+    this.deviceSprite.texture = this.sprites?.props.device ?? this.atlas.glow[64];
+  }
+
+  private paintStage(world: World) {
+    const map = this.sprites
+      ? world.stage.id === 'japan' ? paintMapJapan(world.map, this.sprites.map) : paintMapOblique(world.map, this.sprites.map)
+      : paintMap(world.map);
+    this.chunks.paintStatic(this.renderer, map);
   }
 
   /** 外觀提案（null = 該角色預設外觀）；只在素材存在時生效 */
@@ -529,6 +554,14 @@ export class GameRenderer {
         case 'cones':
         case 'crates':
         case 'cart':
+        case 'shrine':
+        case 'torii':
+        case 'sakura':
+        case 'stoneLantern':
+        case 'yatai':
+        case 'bamboo':
+        case 'komainu':
+        case 'bridge':
           tex = P[p.kind];
           f = p.kind === 'cart' || p.kind === 'cones' ? flip : 1;
           break;
@@ -536,7 +569,7 @@ export class GameRenderer {
       if (tex) this.props.push({ tex, x: cx, y: bottom, sortY: p.y + p.h / 2, flip: f });
     }
     const ft = world.map.fountain;
-    this.props.push({ tex: P.fountain, x: ft.x, y: ft.y + ft.ry + 6, sortY: ft.y, flip: 1 });
+    if (world.stage.id === 'city') this.props.push({ tex: P.fountain, x: ft.x, y: ft.y + ft.ry + 6, sortY: ft.y, flip: 1 });
   }
 
   /** 逐格爆炸（只有 3/4 風格素材時才有），回傳是否有生成 */
@@ -586,6 +619,10 @@ export class GameRenderer {
     this.drawPlayer(w, px, py);
     this.drawHoles(w, dt);
     this.drawGfx(w, dt, px, py);
+    if (w.stage.id === 'japan' && dt > 0 && Math.random() < dt * 18) {
+      this.fxNormal.spawn(this.atlas.t.dot, camX + Math.random() * this.viewW, camY - 8,
+        -6 - Math.random() * 8, 12 + Math.random() * 9, 5, bgr(0xffadc8), 0.65, 1.5, 0.7, 0, 0, 1);
+    }
     this.fxNormal.update(dt);
     this.fxAdd.update(dt);
     this.fxBoom?.update(dt);
@@ -746,6 +783,7 @@ export class GameRenderer {
       const st = z.status[s];
       pt.x = x;
       pt.y = y;
+      if (w.stage.id === 'japan' && !(st & (FROZEN | PULLED))) pt.y -= Math.abs(Math.sin(z.anim[s] * Math.PI / 2)) * 1.2;
       pt.rotation = 0;
       pt.anchorY = sp.anchorY[kd];
       // 巨大變異體被打時只染淡紅（全白閃爍在機槍連射下會一直白掉）

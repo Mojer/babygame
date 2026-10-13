@@ -52,7 +52,7 @@ export class Hud {
       const left = w.finale === 'final' ? w.finalLeft : 0;
       if (left !== L.final) {
         L.final = left;
-        this.timer.innerHTML = w.finale === 'final' ? `<b class="final-tag">FINAL</b> 巨大變異體 ×${left}` : '<b class="final-tag">CLEAR</b>';
+        this.timer.innerHTML = w.finale === 'final' ? `<b class="final-tag">FINAL</b> ${w.stage.bossPlural} ×${left}` : '<b class="final-tag">CLEAR</b>';
         this.timer.classList.add('final');
       }
     } else if (sec !== L.sec) {

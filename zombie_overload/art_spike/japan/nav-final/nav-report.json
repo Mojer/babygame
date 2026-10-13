@@ -1,0 +1,286 @@
+{
+  "schema": "generate2dmap.nav_report.v1",
+  "status": "pass",
+  "method": "plan Appendix C validity (centre + 8 footprint samples against walk regions, solids, object footprints scaled once, tile collision and material classes) on a grid of cell max(1, round(r/2)) px; 4-neighbour moves open when segmentClear holds between node centres (samples every cell/2, plus the exact thin-gap centre path and one_way direction); BFS from every spawn and portal arrival to every interaction, exit, anchor slot and approach point",
+  "notProven": [
+    "that the collision data matches the painted art",
+    "positions closer than one grid cell to a blocker (the grid samples cell centres)",
+    "runtime movement code: map-runtime.mjs parity is tested during integration",
+    "links to maps not passed with --link"
+  ],
+  "checks": [
+    {
+      "id": "starts_valid",
+      "status": "pass",
+      "value": {
+        "starts": 1,
+        "blocked": []
+      },
+      "threshold": {
+        "blocked": 0
+      }
+    },
+    {
+      "id": "targets_reachable",
+      "status": "pass",
+      "value": {
+        "reachable": 6,
+        "total": 6,
+        "unreachable": []
+      },
+      "threshold": {
+        "unreachable": 0
+      }
+    },
+    {
+      "id": "portals_inside_world",
+      "status": "pass",
+      "value": {
+        "outside": []
+      },
+      "threshold": {
+        "outside": 0
+      }
+    },
+    {
+      "id": "arrivals_outside_triggers",
+      "status": "pass",
+      "value": {
+        "problems": 0
+      },
+      "threshold": {
+        "problems": 0
+      }
+    },
+    {
+      "id": "reciprocal_links",
+      "status": "pass",
+      "value": {
+        "links": [],
+        "notChecked": []
+      },
+      "threshold": {
+        "errors": 0
+      }
+    },
+    {
+      "id": "thin_gaps",
+      "status": "pass",
+      "value": 0,
+      "threshold": "reported: moves the thin-gap rule closed although every footprint sample was valid"
+    },
+    {
+      "id": "unreachable_walkable_area",
+      "status": "pass",
+      "value": {
+        "pockets": 0,
+        "cells": 0
+      },
+      "threshold": "reported"
+    },
+    {
+      "id": "blocked_rects_union",
+      "status": "pass",
+      "value": {
+        "rects": 300,
+        "blockedCells": 137975
+      },
+      "threshold": "union == blocked cells"
+    },
+    {
+      "id": "footprints_scaled_once",
+      "status": "pass",
+      "value": {
+        "objectSolids": 0
+      },
+      "threshold": "object footprint x scale, never inflated by the actor radius"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "../map-bundle.json",
+      "sha256": "4ed9fc90eb57de6a23dfe37986f8e4f313e0b01017edee14a67170942bbfdc6f",
+      "bytes": 31913
+    },
+    {
+      "path": "../ground.png",
+      "sha256": "e6e20a971c5270467156b21554879ad48fd0f63009f2c80df7320040d0ff518a",
+      "bytes": 2022016
+    },
+    {
+      "path": "../runtime-props/yatai.png",
+      "sha256": "7744f518c007da5374108fc0a7cfb9ce67fbe125b99eccabba29a96211e972a0",
+      "bytes": 8825
+    },
+    {
+      "path": "../runtime-props/bamboo.png",
+      "sha256": "d40d49db530d90fafeea1d5649d71e94ab6183b0e59e8ed12cd9c6cbaa6faea1",
+      "bytes": 5883
+    },
+    {
+      "path": "../runtime-props/shrine.png",
+      "sha256": "7a2ffb548a8bee49a92b9ae9a29ce82fc2debcc621353d3b27d73c20614fcabd",
+      "bytes": 28060
+    },
+    {
+      "path": "../runtime-props/torii.png",
+      "sha256": "b6bd5f715b30889358c2e9ab03d22962fa82eec7338a2c750f6e9c20b497d5ac",
+      "bytes": 8552
+    },
+    {
+      "path": "../runtime-props/komainu.png",
+      "sha256": "b3a81a1d8a2d10365af6bc424ef8f98f74aa17507bf9d1236b02b444d8dd17b9",
+      "bytes": 2826
+    },
+    {
+      "path": "../runtime-props/stoneLantern.png",
+      "sha256": "0b752a96dbd680fecf364021a5031cd6aeb85bc698812e54058a78a003c892f8",
+      "bytes": 1591
+    },
+    {
+      "path": "../runtime-props/sakura.png",
+      "sha256": "54ed9b70388e0aa304d8399be5dc79aae774e3dee20e024e9942544fecfed3b1",
+      "bytes": 11023
+    },
+    {
+      "path": "../runtime-props/bridge.png",
+      "sha256": "a5a61d49de001d61858c9e79b69751d38537de21ac26bc33084a0231cf1b23b1",
+      "bytes": 7508
+    }
+  ],
+  "outputs": [
+    {
+      "path": "nav-grid.json",
+      "sha256": "7ac1113fa0365295e950b00a02d49e7c8ea4fe143ebe8d9b421beff02b573f30",
+      "bytes": 961404
+    },
+    {
+      "path": "nav-debug.png",
+      "sha256": "90eee1e81de6c95ea760c1043debc56aca45aef68a32c590cd6389bfac28c23d",
+      "bytes": 2331187
+    }
+  ],
+  "tool": {
+    "name": "map_nav.py",
+    "version": "0.4.0"
+  },
+  "map": "japan",
+  "cell": 3,
+  "starts": [
+    {
+      "kind": "spawn",
+      "id": "start",
+      "point": [
+        1024.0,
+        1184.0
+      ],
+      "reachable": true,
+      "steps": 0,
+      "node": [
+        1024.5,
+        1183.5
+      ],
+      "reason": null
+    }
+  ],
+  "targets": [
+    {
+      "kind": "approach",
+      "id": "main-shrine/approach[0]",
+      "point": [
+        1024.0,
+        912.0
+      ],
+      "reachable": true,
+      "steps": 86,
+      "node": [
+        1018.5,
+        919.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "main-torii/approach[0]",
+      "point": [
+        1024.0,
+        1096.0
+      ],
+      "reachable": true,
+      "steps": 25,
+      "node": [
+        1018.5,
+        1102.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "north-garden/approach[0]",
+      "point": [
+        496.0,
+        624.0
+      ],
+      "reachable": true,
+      "steps": 354,
+      "node": [
+        502.5,
+        631.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "east-garden/approach[0]",
+      "point": [
+        1552.0,
+        624.0
+      ],
+      "reachable": true,
+      "steps": 354,
+      "node": [
+        1546.5,
+        631.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "festival-west/approach[0]",
+      "point": [
+        320.0,
+        1488.0
+      ],
+      "reachable": true,
+      "steps": 329,
+      "node": [
+        325.5,
+        1483.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "festival-east/approach[0]",
+      "point": [
+        1728.0,
+        1488.0
+      ],
+      "reachable": true,
+      "steps": 329,
+      "node": [
+        1723.5,
+        1483.5
+      ],
+      "reason": null
+    }
+  ],
+  "links": [],
+  "thinGaps": [],
+  "unreachablePockets": [],
+  "bundleNav": {
+    "cell": 3,
+    "grid": "nav-grid.json"
+  },
+  "problems": []
+}

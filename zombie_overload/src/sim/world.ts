@@ -50,6 +50,7 @@ import { DEATH_REACTIONS, REACTIVE_STATUS, STATUS_REACTIONS } from './reactions'
 import { Rng } from './rng';
 import { baseMods, FALLBACK_UPGRADE, type Mods, type Upgrade, UPGRADES } from './upgrades';
 import { Zombies } from './zombies';
+import { STAGES, type StageId } from './stages';
 
 export interface WorldOptions {
   seed?: number;
@@ -69,6 +70,7 @@ export interface WorldOptions {
   noSkills?: boolean;
   character?: CharacterId;
   ult?: UltKind;
+  stage?: StageId;
 }
 
 export interface Input {
@@ -215,6 +217,7 @@ const KIND_XP = Float32Array.from(ZOMBIE_KINDS, k => k.xp);
 const now = () => performance.now();
 
 export class World {
+  readonly stage: (typeof STAGES)[StageId];
   readonly rng: Rng;
   readonly map: MapLayout;
   readonly zombies: Zombies;
@@ -293,7 +296,8 @@ export class World {
     this.opts = opts;
     const seed = opts.seed ?? 1;
     this.rng = new Rng(seed);
-    this.map = buildMap(seed);
+    this.stage = STAGES[opts.stage ?? 'city'];
+    this.map = buildMap(seed, this.stage.id);
     this.tier = opts.tier ?? 'high';
     this.cap = opts.cap ?? TIERS[this.tier].cap;
     this.sepNeighbors = TIERS[this.tier].sepNeighbors;
