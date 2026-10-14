@@ -12,7 +12,7 @@ const DIRS: PlayerDir[] = ['side', 'down', 'up'];
 
 export interface HordeSprites {
   stageArt: Record<StageId, { zombie: Texture[][]; anchorY: number[]; corpse: Texture[]; map: MapSheet }>;
-  /** [種類][0-3 走路, 4 受擊白, 5 冰凍] */
+  /** [種類][走路影格…, 受擊白, 冰凍]；都市 4 格、百鬼夜行 8 格 */
   zombie: Texture[][];
   /** 每種殭屍的腳底錨點（0-1，相對貼圖高度） */
   anchorY: number[];
@@ -74,14 +74,14 @@ export async function loadHordeSprites(base = './sprites/'): Promise<HordeSprite
   const props: Record<string, Texture> = {};
   for (const k of Object.keys(horde.def.frames)) if (k.startsWith('prop_')) props[k.slice(5)] = horde.get(k);
   const kinds = [0, 1, 2, 3, 4];
-  const stageArt = (prefix: string, map: MapSheet) => ({
-    zombie: kinds.map(k => [0, 1, 2, 3].map(f => horde.get(`${prefix}${k}_${f}`)).concat([horde.get(`${prefix}${k}_white`), horde.get(`${prefix}${k}_ice`)])),
+  const stageArt = (prefix: string, map: MapSheet, walkCount = 4) => ({
+    zombie: kinds.map(k => Array.from({ length: walkCount }, (_, f) => horde.get(`${prefix}${k}_${f}`)).concat([horde.get(`${prefix}${k}_white`), horde.get(`${prefix}${k}_ice`)])),
     anchorY: kinds.map(k => horde.def.frames[`${prefix}${k}_0`].ay ?? 0.95),
     corpse: kinds.map(k => horde.get(`${prefix}${k}_corpse`)),
     map,
   });
   const city = stageArt('z', cityMap);
-  const japan = stageArt('y', japanMap);
+  const japan = stageArt('y', japanMap, 8);
   const boomFrames = Object.keys(boom.def.frames).filter(k => k.startsWith('ex_')).sort((a, b) => Number(a.slice(3)) - Number(b.slice(3)));
   return {
     stageArt: { city, japan },

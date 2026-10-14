@@ -1,0 +1,11 @@
+Create exactly ONE square image (1024x1024): a sheet of 4 building facade modules in 2 rows x 2 columns, read left to right, top row first.
+
+Style: premium 16-bit pixel art (SNES era), crisp visible chunky pixels, limited palette, strong dark outline, 3-tone cel shading, no smooth gradients, no blur. Slightly muted, desaturated urban colours (the scene must stay calmer than the colourful characters that walk on it). Camera: three-quarter top-down view for a top-down action game, like a classic top-down RPG: we see the top surfaces AND the front (south-facing) side of every object, orthographic, no perspective vanishing, no isometric diamond angle.
+
+Each cell holds ONE rectangular front wall section of a small city building seen from three-quarter top-down, i.e. drawn mostly straight-on as the south-facing front wall, with a narrow strip of flat grey roof edge (parapet) along the very top. Each module is the same width and the same height (slightly taller than wide), fills its cell width to about 90 percent, and its left and right edges are straight vertical cuts so modules can be placed side by side to form a long street of shops. Ground line at the bottom of each module.
+(1) a closed shop with a faded green awning and a pulled-down metal shutter with a little graffiti;
+(2) a convenience store with a lit window, broken glass and a red awning;
+(3) an apartment block wall in grey-beige plaster with two windows and a door;
+(4) a brick wall with a boarded-up window and a fire escape ladder.
+Abandoned zombie-apocalypse town mood: grime, cracks, a few dark stains. No text, no letters, no numbers, no logo, no watermark, no signature, no UI, no border, no frame, no grid lines, no gutters.
+Background: solid flat pure magenta #FF00FF outside the four modules.

@@ -1,7 +1,7 @@
 """Pack generated Japanese assets alongside the existing atlas. Python 3.10+, Pillow, numpy.
 
 Run from zombie_overload: python art_spike/japan/pack_japan.py
-Sources: built-in image_gen, static creature masters (no generated walk clips).
+Sources: built-in image_gen masters, programmatically animated cutout poses.
 """
 from __future__ import annotations
 import hashlib
@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 import numpy as np
 from PIL import Image
+from animate_yokai import poses, save_review
 
 HERE = Path(__file__).resolve().parent
 OUT = HERE.parent.parent / 'public' / 'sprites'
@@ -35,7 +36,7 @@ def finish(im: Image.Image, *, height=None, width=None) -> Image.Image:
 
 def main():
     base = Image.open(OUT / 'horde.png').convert('RGBA')
-    atlas = Image.new('RGBA', (1024, 512))
+    atlas = Image.new('RGBA', (1024, 1024))
     atlas.paste(base, (0, 0))
     defs = json.loads((OUT / 'horde.json').read_text())
     defs['image'] = 'horde_stages.png'
@@ -55,12 +56,17 @@ def main():
 
     source = Image.open(HERE / 'enemies-source.png').convert('RGBA')
     bands = [(19, 310), (317, 735), (745, 1197), (1203, 1526), (1543, 2158)]
+    animations = []
     for k, ((left, right), height) in enumerate(zip(bands, [26, 30, 36, 30, 64])):
         master = source.crop((left, 0, right, source.height))
-        # One accepted still, shared by four walk-frame slots; motion is a small runtime bob.
-        im = finish(master, height=height)
-        add(f'y{k}_0', im)
-        for f in [1, 2, 3]: frames[f'y{k}_{f}'] = dict(frames[f'y{k}_0'])
+        # Ignore near-invisible generation fringe before sizing and locating joints.
+        master = master.crop(master.getchannel('A').point(lambda a: 255 if a >= 110 else 0).getbbox())
+        walk, anchor = poses(finish(master, height=height), k)
+        animations.append(walk)
+        for f, pose in enumerate(walk):
+            add(f'y{k}_{f}', pose)
+            frames[f'y{k}_{f}']['ay'] = anchor
+        im = walk[0]
         white = np.array(im)
         white[white[..., 3] > 0, :3] = 255
         add(f'y{k}_white', Image.fromarray(white))
@@ -76,6 +82,7 @@ def main():
         add(f'y{k}_corpse', Image.fromarray(corpse))
         finish(master, height=72).save(OUT / f'yokai_{k}.png')
 
+    save_review(animations)
     props = {}
     for name, width in PROP_WIDTHS.items():
         props[name] = finish(Image.open(HERE / 'props-clean' / name.lower() / 'prop.png'), width=width)
@@ -151,7 +158,8 @@ def main():
     ground.save(HERE / 'map-preview.png')
     ground.crop((672, 712, 1376, 1144)).resize((1056, 648), Image.Resampling.NEAREST).convert('RGB').save(OUT / 'japan-preview.png')
     provenance = {'art_source': 'host_image', 'route': 'image_gen', 'model': 'built-in image generation',
-                  'animation': 'static master stills with runtime bob; no generated walk clips',
+                  'animation': 'eight unique code-driven cutout poses per enemy; no generated video',
+                  'motion_source': 'code', 'motion_spec': 'animation/motion.json',
                   'world': [2048, 2048], 'logical_view': [600, 400], 'camera': '3/4 orthographic',
                   'enemy_heights': [26, 30, 36, 30, 64], 'prop_widths': PROP_WIDTHS,
                   'sources': {n: hashlib.sha256((HERE / n).read_bytes()).hexdigest()

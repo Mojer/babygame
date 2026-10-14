@@ -1,5 +1,7 @@
 # 屍潮超載（Zombie Overload）— Phase 1+2 原型
 
+圖片素材與生成 prompt 已集中整理於 **[artwork/README.md](artwork/README.md)**，包含都市與百鬼夜行的原圖、封面版本、提示詞、遊戲用圖集及來源對照。
+
 超大量敵人生存 × 連鎖清場。驗證兩件事：**效能**（數千敵人在網頁上能不能穩定 60 FPS）和**爽感**（連鎖清場好不好玩）。PixiJS 8、TypeScript、Vite，預設使用 AI 生成並縮成像素風的角色與場景素材。
 
 ```sh

@@ -1,0 +1,1417 @@
+{
+  "schema": "zombie-overload.artwork.v1",
+  "root": "zombie_overload/artwork",
+  "images": 124,
+  "prompts": 62,
+  "files": [
+    {
+      "file": "prompts/city/runs/akane_cannon-1.txt",
+      "source": "art_spike/gen/akane_cannon-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "697e39b67e7f4381bed3e04eaa5efaaef7127297e33fa38f73614236bc1bc4a5",
+      "bytes": 2063
+    },
+    {
+      "file": "originals/city/characters/akane_cannon-1/generated.png",
+      "source": "art_spike/gen/akane_cannon-1/generated.png",
+      "category": "original",
+      "sha256": "e0556ce2b9f87422777850a6f669e5aee690fbc021289d40e799538acaabe90b",
+      "bytes": 1677988,
+      "prompt": "prompts/city/runs/akane_cannon-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/akane_dirs-1.txt",
+      "source": "art_spike/gen/akane_dirs-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "e9bd776c47bd480a840159ac2fb36c2dfe3d594bc669e19a960a8cb721adcc80",
+      "bytes": 2434
+    },
+    {
+      "file": "originals/city/characters/akane_dirs-1/generated.png",
+      "source": "art_spike/gen/akane_dirs-1/generated.png",
+      "category": "original",
+      "sha256": "bfc3669ddc6bdece667536fc5f250a324c7465d371c7c9f0a110716c207e28bc",
+      "bytes": 1835746,
+      "prompt": "prompts/city/runs/akane_dirs-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/akane_heavy_dirs-1.txt",
+      "source": "art_spike/gen/akane_heavy_dirs-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "683073032dfc062cdd64f88085cb1473a4be69c9ac61793448b96d95351a0eec",
+      "bytes": 2367
+    },
+    {
+      "file": "originals/city/characters/akane_heavy_dirs-1/generated.png",
+      "source": "art_spike/gen/akane_heavy_dirs-1/generated.png",
+      "category": "original",
+      "sha256": "b6894f2b0509e7468b55584cdc774555bdb484bf581b7e87e69eda433742c2a6",
+      "bytes": 1962151,
+      "prompt": "prompts/city/runs/akane_heavy_dirs-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/akane_heavy_side-1.txt",
+      "source": "art_spike/gen/akane_heavy_side-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "033c005a9b444bf4e8c0a9ea9717b3a44701b5497850d325715dda52308e132e",
+      "bytes": 2277
+    },
+    {
+      "file": "originals/city/characters/akane_heavy_side-1/generated.png",
+      "source": "art_spike/gen/akane_heavy_side-1/generated.png",
+      "category": "original",
+      "sha256": "3d7949e997e7f49f38411dae15f1f566b51def3115fee14adced6dc42944d8d6",
+      "bytes": 1851268,
+      "prompt": "prompts/city/runs/akane_heavy_side-1.txt"
+    },
+    {
+      "file": "originals/city/characters/akane_heavy_side-1/relayout.png",
+      "source": "art_spike/gen/akane_heavy_side-1/relayout.png",
+      "category": "original",
+      "sha256": "dcbe36459a9f18277ab016eed68b185dd6d3f04d6ab7f62e3812f769af751047",
+      "bytes": 1191285,
+      "prompt": "prompts/city/runs/akane_heavy_side-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/akane_level_dirs-1.txt",
+      "source": "art_spike/gen/akane_level_dirs-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "fb927cb9b3c536fe4b540e14e4c7ca3a6c7ad89fc981ff96b49c47df5154721f",
+      "bytes": 2798
+    },
+    {
+      "file": "originals/city/characters/akane_level_dirs-1/generated.png",
+      "source": "art_spike/gen/akane_level_dirs-1/generated.png",
+      "category": "original",
+      "sha256": "89e9d118b6568fd0a217d34e5ffda100de059fe1b3afa499fd37cf5551c4471b",
+      "bytes": 1963761,
+      "prompt": "prompts/city/runs/akane_level_dirs-1.txt"
+    },
+    {
+      "file": "originals/city/characters/akane_level_dirs-1/relayout.png",
+      "source": "art_spike/gen/akane_level_dirs-1/relayout.png",
+      "category": "original",
+      "sha256": "2e0d4cdd1badebe231b465beed4b9586e69389df02ed4006b8d59993509472b8",
+      "bytes": 1320028,
+      "prompt": "prompts/city/runs/akane_level_dirs-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/akane_level_side-1.txt",
+      "source": "art_spike/gen/akane_level_side-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "f28aa7e139ee5f6a385b0439000cf55c883ccf78d1ed3351ec7b4714543cd3e8",
+      "bytes": 2824
+    },
+    {
+      "file": "originals/city/characters/akane_level_side-1/generated.png",
+      "source": "art_spike/gen/akane_level_side-1/generated.png",
+      "category": "original",
+      "sha256": "33ec5066f17a9540123c5265a5f4654551c38458eae399e3fc53d2c415b8bdf1",
+      "bytes": 1846793,
+      "prompt": "prompts/city/runs/akane_level_side-1.txt"
+    },
+    {
+      "file": "originals/city/characters/akane_level_side-1/relayout.png",
+      "source": "art_spike/gen/akane_level_side-1/relayout.png",
+      "category": "original",
+      "sha256": "1da9b1bc00593f0f48fad44521300d36943ee1a0d3180da8d1e055c7057b42ad",
+      "bytes": 1179008,
+      "prompt": "prompts/city/runs/akane_level_side-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/akane_run-1.txt",
+      "source": "art_spike/gen/akane_run-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "44d7c4235260be666f4730230bf0376f55da8d8300e1ef2bec4104e989cba137",
+      "bytes": 1840
+    },
+    {
+      "file": "originals/city/characters/akane_run-1/generated.png",
+      "source": "art_spike/gen/akane_run-1/generated.png",
+      "category": "original",
+      "sha256": "4bd0b8850eaf6a49b342835b3006e8b7d85577a5aa328080cb23b939bd2a4bf6",
+      "bytes": 1597849,
+      "prompt": "prompts/city/runs/akane_run-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/akane_sling_dirs-1.txt",
+      "source": "art_spike/gen/akane_sling_dirs-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "606a64daf89be39cc4666e710911d2a549102b0d5ea5db500961630fee2cc8ac",
+      "bytes": 2583
+    },
+    {
+      "file": "originals/city/characters/akane_sling_dirs-1/generated.png",
+      "source": "art_spike/gen/akane_sling_dirs-1/generated.png",
+      "category": "original",
+      "sha256": "d82e56f97de1fd1b4c99d95d5d9945bac56edd528b72491def5a89a718144c4b",
+      "bytes": 2027540,
+      "prompt": "prompts/city/runs/akane_sling_dirs-1.txt"
+    },
+    {
+      "file": "originals/city/characters/akane_sling_dirs-1/relayout.png",
+      "source": "art_spike/gen/akane_sling_dirs-1/relayout.png",
+      "category": "original",
+      "sha256": "8cc1e4c85efb5b7f4ff95eb8c271183fa8ca6d995737922859d76142972e9ec8",
+      "bytes": 1377433,
+      "prompt": "prompts/city/runs/akane_sling_dirs-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/akane_sling_side-1.txt",
+      "source": "art_spike/gen/akane_sling_side-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "a38cb34bdfa45d060439e245612c9b64d39cba5ba7bf14d6f862c902feee6a2c",
+      "bytes": 2560
+    },
+    {
+      "file": "originals/city/characters/akane_sling_side-1/generated.png",
+      "source": "art_spike/gen/akane_sling_side-1/generated.png",
+      "category": "original",
+      "sha256": "c6713a31b5225e12c0b73b08321e88bef96240d8158540bd63d1736bb2e107d3",
+      "bytes": 1908473,
+      "prompt": "prompts/city/runs/akane_sling_side-1.txt"
+    },
+    {
+      "file": "originals/city/characters/akane_sling_side-1/relayout.png",
+      "source": "art_spike/gen/akane_sling_side-1/relayout.png",
+      "category": "original",
+      "sha256": "4d78ab1e4755013f48104d07144fea70fcd1318f479fc5547ab2bd1d3b324667",
+      "bytes": 1272870,
+      "prompt": "prompts/city/runs/akane_sling_side-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/akane_slingup_dirs-1.txt",
+      "source": "art_spike/gen/akane_slingup_dirs-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "18e529a2f6a1b4c777a46e08cd9f4700f4610e4e1cfa9c2a882d80debe62ef9b",
+      "bytes": 2741
+    },
+    {
+      "file": "originals/city/characters/akane_slingup_dirs-1/generated.png",
+      "source": "art_spike/gen/akane_slingup_dirs-1/generated.png",
+      "category": "original",
+      "sha256": "da6244c66a92976a6b39b005a153a729d81ee9b95c3933613f8345c88b3639f7",
+      "bytes": 1995976,
+      "prompt": "prompts/city/runs/akane_slingup_dirs-1.txt"
+    },
+    {
+      "file": "originals/city/characters/akane_slingup_dirs-1/relayout.png",
+      "source": "art_spike/gen/akane_slingup_dirs-1/relayout.png",
+      "category": "original",
+      "sha256": "cbba07c533b93dcc8c9e3ea777c6ca31a95d697259edac22ac4affe479fe5df9",
+      "bytes": 1353420,
+      "prompt": "prompts/city/runs/akane_slingup_dirs-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/akane_slingup_side-1.txt",
+      "source": "art_spike/gen/akane_slingup_side-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "bdcbfc39d4cbf58b9d6300599ab4a53545f41bcab93735033e597a701071bde6",
+      "bytes": 2751
+    },
+    {
+      "file": "originals/city/characters/akane_slingup_side-1/generated.png",
+      "source": "art_spike/gen/akane_slingup_side-1/generated.png",
+      "category": "original",
+      "sha256": "2ea5aefe14644a0b9544b570245dd2c0bfe5429982e58286d541c0c933bcb91b",
+      "bytes": 1847348,
+      "prompt": "prompts/city/runs/akane_slingup_side-1.txt"
+    },
+    {
+      "file": "originals/city/characters/akane_slingup_side-1/relayout.png",
+      "source": "art_spike/gen/akane_slingup_side-1/relayout.png",
+      "category": "original",
+      "sha256": "03b2fe3abf1526c0ddaa04c3cd25302666506261e46481f379ee74d75f05fc68",
+      "bytes": 1197352,
+      "prompt": "prompts/city/runs/akane_slingup_side-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/attacks-1.txt",
+      "source": "art_spike/gen/attacks-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "11e2f3efc2926d69b74b329d1305b81ea7db2c59e6103d7a8d819f7f854c9307",
+      "bytes": 1030
+    },
+    {
+      "file": "originals/city/effects/attacks-1/generated.png",
+      "source": "art_spike/gen/attacks-1/generated.png",
+      "category": "original",
+      "sha256": "08e6adccc309038b1ff2b3bdf841f3b4b838ab45c950b03362666da6ce61b63c",
+      "bytes": 1139141,
+      "prompt": "prompts/city/runs/attacks-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/attacks2-1.txt",
+      "source": "art_spike/gen/attacks2-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "209b4dd449bcc707d8dac13929fb7e32f5ee1c6b4782fd77ea15f7d297ff1a74",
+      "bytes": 1014
+    },
+    {
+      "file": "originals/city/effects/attacks2-1/generated.png",
+      "source": "art_spike/gen/attacks2-1/generated.png",
+      "category": "original",
+      "sha256": "131b130781d0ed630040613671a186b1734ca249206a1acee800ade7af05684a",
+      "bytes": 1331380,
+      "prompt": "prompts/city/runs/attacks2-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/device-1.txt",
+      "source": "art_spike/gen/device-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "1807e4f45b0609b97f53a72484264af953af710dd1f04f84a8669cdacd6aef2b",
+      "bytes": 1284
+    },
+    {
+      "file": "originals/city/effects/device-1/generated.png",
+      "source": "art_spike/gen/device-1/generated.png",
+      "category": "original",
+      "sha256": "6ddc27b1f4a2df0f13ce413bb3ada286b4b453e9b087dcd89b4936e93c000dad",
+      "bytes": 1691464,
+      "prompt": "prompts/city/runs/device-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/explosion-1.txt",
+      "source": "art_spike/gen/explosion-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "a67e14734bafe201a3743184bba5cafcf52ba4c589311cbc31b31b6c79ec589b",
+      "bytes": 1495
+    },
+    {
+      "file": "originals/city/effects/explosion-1/generated.png",
+      "source": "art_spike/gen/explosion-1/generated.png",
+      "category": "original",
+      "sha256": "31247ee00b4ffcadf2b85e77c7509273d1b13240e6c6f820fa23466ecd45103f",
+      "bytes": 1671304,
+      "prompt": "prompts/city/runs/explosion-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/facades-1.txt",
+      "source": "art_spike/gen/facades-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "7696b8fb166fe2fbc28f533aec737bcdafa5b3c5e934f78945ddcdb8bb2fc172",
+      "bytes": 1780
+    },
+    {
+      "file": "originals/city/environment/facades-1/generated.png",
+      "source": "art_spike/gen/facades-1/generated.png",
+      "category": "original",
+      "sha256": "797c8bf9295366b86d9a0430ce5658d53e400464c52bbd1075000b3071d1f822",
+      "bytes": 2148261,
+      "prompt": "prompts/city/runs/facades-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/fountain-1.txt",
+      "source": "art_spike/gen/fountain-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "020fa299a5c4576d4db9d3c3b5f103a2353137aa1299872a318d1e7c02221bfb",
+      "bytes": 1345
+    },
+    {
+      "file": "originals/city/environment/fountain-1/generated.png",
+      "source": "art_spike/gen/fountain-1/generated.png",
+      "category": "original",
+      "sha256": "d8479425ced5aa8fd4539c7afa969127a6712301cee531ae630bc53c5671b233",
+      "bytes": 1667282,
+      "prompt": "prompts/city/runs/fountain-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/keyart-1.txt",
+      "source": "art_spike/gen/keyart-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "2a78497d8be8514db91aa38b9fd8eea809d9df20b7a6f9c437712056d07ec0b7",
+      "bytes": 1529
+    },
+    {
+      "file": "originals/city/covers/keyart-1/generated.png",
+      "source": "art_spike/gen/keyart-1/generated.png",
+      "category": "original",
+      "sha256": "db37a19ef561c93440efdc751f4befdca61f88fdc7d1a2b6b7ec308ea391f209",
+      "bytes": 2990618,
+      "prompt": "prompts/city/runs/keyart-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/mutant-1.txt",
+      "source": "art_spike/gen/mutant-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "2713999e64cecb52812fa9646bf912b4c1e6a81fe74371773b81551011d7f1dd",
+      "bytes": 1876
+    },
+    {
+      "file": "originals/city/enemies/mutant-1/generated.png",
+      "source": "art_spike/gen/mutant-1/generated.png",
+      "category": "original",
+      "sha256": "9f47da8d443ca3eb661db1755c9587d7d85cc725fb943593abcfeac810639f99",
+      "bytes": 1961508,
+      "prompt": "prompts/city/runs/mutant-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/player-1.txt",
+      "source": "art_spike/gen/player-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "9bd57a70104d6d87fa24ff30aaee98611bb62a14d1a5311a269331f475177b7b",
+      "bytes": 1795
+    },
+    {
+      "file": "originals/city/characters/player-1/generated.png",
+      "source": "art_spike/gen/player-1/generated.png",
+      "category": "original",
+      "sha256": "a1bcd2609a8afa7fd4d08fd45896d7b4262d92601c7222ba9b1318b1d53a9dda",
+      "bytes": 1531774,
+      "prompt": "prompts/city/runs/player-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/portraits-1.txt",
+      "source": "art_spike/gen/portraits-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "adcf0c23d49411f55bd1ca57c48f95a784bc7e051e07841eb0c1ff616ce56d39",
+      "bytes": 1338
+    },
+    {
+      "file": "originals/city/characters/portraits-1/generated.png",
+      "source": "art_spike/gen/portraits-1/generated.png",
+      "category": "original",
+      "sha256": "4cc8e47acf96dcb9d171f2e4ac00429e928cb8f1098d9c22c7624bf46b3b83c0",
+      "bytes": 1751598,
+      "prompt": "prompts/city/runs/portraits-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/portraits2-1.txt",
+      "source": "art_spike/gen/portraits2-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "fb13db18903d61c8e4747334db17f1ef8d6943570a658dcfc33b28e00b383683",
+      "bytes": 1382
+    },
+    {
+      "file": "originals/city/characters/portraits2-1/generated.png",
+      "source": "art_spike/gen/portraits2-1/generated.png",
+      "category": "original",
+      "sha256": "6987af7a90d4d285b26888d42fd5cfb225eaafc79e91165acee8a7835fc52cbb",
+      "bytes": 1847984,
+      "prompt": "prompts/city/runs/portraits2-1.txt"
+    },
+    {
+      "file": "originals/city/characters/portraits2-1/relayout.png",
+      "source": "art_spike/gen/portraits2-1/relayout.png",
+      "category": "original",
+      "sha256": "c7c1de91ee5d9426f56d5b93f9cd3f33b42c7e7d9409f6d4a8752bfe74b7a2ee",
+      "bytes": 1410691,
+      "prompt": "prompts/city/runs/portraits2-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/props-1.txt",
+      "source": "art_spike/gen/props-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "aa6bea0ba9e43600ad233f9ece7c204bc84b149577181d665104dbc455bd0501",
+      "bytes": 2223
+    },
+    {
+      "file": "originals/city/environment/props-1/generated.png",
+      "source": "art_spike/gen/props-1/generated.png",
+      "category": "original",
+      "sha256": "052b3490c2e12ea52a8c31b2136ee334349d65553717b37781bc4941deccd8ee",
+      "bytes": 1700690,
+      "prompt": "prompts/city/runs/props-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/ship-1.txt",
+      "source": "art_spike/gen/ship-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "8a557fa07383a2d3dec7922eaa127ff2b7599664dce158ebd14968edb4b682ae",
+      "bytes": 1251
+    },
+    {
+      "file": "originals/city/effects/ship-1/generated.png",
+      "source": "art_spike/gen/ship-1/generated.png",
+      "category": "original",
+      "sha256": "bcd5d03c2138a472dff46b2f0b201b1c0260f6b502be3f698a53739d3e54bb22",
+      "bytes": 1655448,
+      "prompt": "prompts/city/runs/ship-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/terrain-1.txt",
+      "source": "art_spike/gen/terrain-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "b4f8395cf7f882da5e36d82797744dc229c485ea7d680ae61b7feb563fe369d4",
+      "bytes": 1126
+    },
+    {
+      "file": "originals/city/environment/terrain-1/generated.png",
+      "source": "art_spike/gen/terrain-1/generated.png",
+      "category": "original",
+      "sha256": "c7496ed371c5bfaa4cb6608f159788b428eaf6880b41b1f7672d26d50fa7e3b0",
+      "bytes": 3141307,
+      "prompt": "prompts/city/runs/terrain-1.txt"
+    },
+    {
+      "file": "originals/city/environment/terrain-1/quads/asphalt.png",
+      "source": "art_spike/gen/terrain-1/quads/asphalt.png",
+      "category": "original",
+      "sha256": "ba2713ad2be45cd385b7ae684c43f8b1257fc324dcde1aefbdb67b6872059294",
+      "bytes": 765283,
+      "prompt": "prompts/city/runs/terrain-1.txt"
+    },
+    {
+      "file": "originals/city/environment/terrain-1/quads/plaza.png",
+      "source": "art_spike/gen/terrain-1/quads/plaza.png",
+      "category": "original",
+      "sha256": "dee6e2665540300a819d78bfc61701e29dd5867dabf6f8b08aa3ba1c475c52b7",
+      "bytes": 645428,
+      "prompt": "prompts/city/runs/terrain-1.txt"
+    },
+    {
+      "file": "originals/city/environment/terrain-1/quads/roof.png",
+      "source": "art_spike/gen/terrain-1/quads/roof.png",
+      "category": "original",
+      "sha256": "30967881517654af02c6710e41b3163b77e805be8e923712547f37e58694a1f0",
+      "bytes": 674193,
+      "prompt": "prompts/city/runs/terrain-1.txt"
+    },
+    {
+      "file": "originals/city/environment/terrain-1/quads/sidewalk.png",
+      "source": "art_spike/gen/terrain-1/quads/sidewalk.png",
+      "category": "original",
+      "sha256": "d20c3c7ff2c95face99c97a5630954998ff45b4b3b3961db5130efb6678f02d1",
+      "bytes": 722120,
+      "prompt": "prompts/city/runs/terrain-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/yu_dirs-1.txt",
+      "source": "art_spike/gen/yu_dirs-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "66d6e8f74c8a695876703737f3e86bb89d96e1c5eb5b13dad9cf2a32722ac671",
+      "bytes": 2328
+    },
+    {
+      "file": "originals/city/characters/yu_dirs-1/generated.png",
+      "source": "art_spike/gen/yu_dirs-1/generated.png",
+      "category": "original",
+      "sha256": "0ffb18c71bd97e90480e0c7124c3ea1fe09ea5573e787c660f5d1df43617355e",
+      "bytes": 1781231,
+      "prompt": "prompts/city/runs/yu_dirs-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/yu_mg-1.txt",
+      "source": "art_spike/gen/yu_mg-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "b487b73b3a942159f392ad8ec1dab0a4e4e8f7601bdd9e7b41b0e8e0fcf31baa",
+      "bytes": 1997
+    },
+    {
+      "file": "originals/city/characters/yu_mg-1/generated.png",
+      "source": "art_spike/gen/yu_mg-1/generated.png",
+      "category": "original",
+      "sha256": "3872fbbf483be9852273549ac40fe22819d65e0f40c6ad77b30f6dd9e372707d",
+      "bytes": 1577047,
+      "prompt": "prompts/city/runs/yu_mg-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/yu_run-1.txt",
+      "source": "art_spike/gen/yu_run-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "ea0893fd15a6195273f417b0326f1ef21b2ce64ca6bc4f9e0a66abbb0469f511",
+      "bytes": 1810
+    },
+    {
+      "file": "originals/city/characters/yu_run-1/generated.png",
+      "source": "art_spike/gen/yu_run-1/generated.png",
+      "category": "original",
+      "sha256": "d08b449c584c90f7a3c2fd5ae1207f6f1a182f5d7723fccc9a3b713fc5de9bb6",
+      "bytes": 1599025,
+      "prompt": "prompts/city/runs/yu_run-1.txt"
+    },
+    {
+      "file": "prompts/city/runs/zombies-1.txt",
+      "source": "art_spike/gen/zombies-1/prompt.txt",
+      "category": "prompt",
+      "sha256": "c66ad1871d378a72a1b7322531912a1d8f0d7325c918e1ce92d8e8e4f47dc7b1",
+      "bytes": 2519
+    },
+    {
+      "file": "originals/city/enemies/zombies-1/generated.png",
+      "source": "art_spike/gen/zombies-1/generated.png",
+      "category": "original",
+      "sha256": "bb124e0b4adf1d41dfa5b6a66a8a6df6f605f479b25c38b859803c82171b8701",
+      "bytes": 1450888,
+      "prompt": "prompts/city/runs/zombies-1.txt"
+    },
+    {
+      "file": "prompts/city/library/akane_cannon.txt",
+      "source": "art_spike/prompts/akane_cannon.txt",
+      "category": "prompt",
+      "sha256": "697e39b67e7f4381bed3e04eaa5efaaef7127297e33fa38f73614236bc1bc4a5",
+      "bytes": 2063
+    },
+    {
+      "file": "prompts/city/library/akane_dirs.txt",
+      "source": "art_spike/prompts/akane_dirs.txt",
+      "category": "prompt",
+      "sha256": "e9bd776c47bd480a840159ac2fb36c2dfe3d594bc669e19a960a8cb721adcc80",
+      "bytes": 2434
+    },
+    {
+      "file": "prompts/city/library/akane_heavy_dirs.txt",
+      "source": "art_spike/prompts/akane_heavy_dirs.txt",
+      "category": "prompt",
+      "sha256": "683073032dfc062cdd64f88085cb1473a4be69c9ac61793448b96d95351a0eec",
+      "bytes": 2367
+    },
+    {
+      "file": "prompts/city/library/akane_heavy_side.txt",
+      "source": "art_spike/prompts/akane_heavy_side.txt",
+      "category": "prompt",
+      "sha256": "033c005a9b444bf4e8c0a9ea9717b3a44701b5497850d325715dda52308e132e",
+      "bytes": 2277
+    },
+    {
+      "file": "prompts/city/library/akane_run.txt",
+      "source": "art_spike/prompts/akane_run.txt",
+      "category": "prompt",
+      "sha256": "44d7c4235260be666f4730230bf0376f55da8d8300e1ef2bec4104e989cba137",
+      "bytes": 1840
+    },
+    {
+      "file": "prompts/city/library/akane_sling_dirs.txt",
+      "source": "art_spike/prompts/akane_sling_dirs.txt",
+      "category": "prompt",
+      "sha256": "606a64daf89be39cc4666e710911d2a549102b0d5ea5db500961630fee2cc8ac",
+      "bytes": 2583
+    },
+    {
+      "file": "prompts/city/library/akane_sling_dirs_level.txt",
+      "source": "art_spike/prompts/akane_sling_dirs_level.txt",
+      "category": "prompt",
+      "sha256": "fb927cb9b3c536fe4b540e14e4c7ca3a6c7ad89fc981ff96b49c47df5154721f",
+      "bytes": 2798
+    },
+    {
+      "file": "prompts/city/library/akane_sling_dirs_up.txt",
+      "source": "art_spike/prompts/akane_sling_dirs_up.txt",
+      "category": "prompt",
+      "sha256": "18e529a2f6a1b4c777a46e08cd9f4700f4610e4e1cfa9c2a882d80debe62ef9b",
+      "bytes": 2741
+    },
+    {
+      "file": "prompts/city/library/akane_sling_side.txt",
+      "source": "art_spike/prompts/akane_sling_side.txt",
+      "category": "prompt",
+      "sha256": "a38cb34bdfa45d060439e245612c9b64d39cba5ba7bf14d6f862c902feee6a2c",
+      "bytes": 2560
+    },
+    {
+      "file": "prompts/city/library/akane_sling_side_level.txt",
+      "source": "art_spike/prompts/akane_sling_side_level.txt",
+      "category": "prompt",
+      "sha256": "f28aa7e139ee5f6a385b0439000cf55c883ccf78d1ed3351ec7b4714543cd3e8",
+      "bytes": 2824
+    },
+    {
+      "file": "prompts/city/library/akane_sling_side_up.txt",
+      "source": "art_spike/prompts/akane_sling_side_up.txt",
+      "category": "prompt",
+      "sha256": "bdcbfc39d4cbf58b9d6300599ab4a53545f41bcab93735033e597a701071bde6",
+      "bytes": 2751
+    },
+    {
+      "file": "prompts/city/library/attacks.txt",
+      "source": "art_spike/prompts/attacks.txt",
+      "category": "prompt",
+      "sha256": "11e2f3efc2926d69b74b329d1305b81ea7db2c59e6103d7a8d819f7f854c9307",
+      "bytes": 1030
+    },
+    {
+      "file": "prompts/city/library/attacks2.txt",
+      "source": "art_spike/prompts/attacks2.txt",
+      "category": "prompt",
+      "sha256": "209b4dd449bcc707d8dac13929fb7e32f5ee1c6b4782fd77ea15f7d297ff1a74",
+      "bytes": 1014
+    },
+    {
+      "file": "prompts/city/library/device.txt",
+      "source": "art_spike/prompts/device.txt",
+      "category": "prompt",
+      "sha256": "1807e4f45b0609b97f53a72484264af953af710dd1f04f84a8669cdacd6aef2b",
+      "bytes": 1284
+    },
+    {
+      "file": "prompts/city/library/explosion.txt",
+      "source": "art_spike/prompts/explosion.txt",
+      "category": "prompt",
+      "sha256": "a67e14734bafe201a3743184bba5cafcf52ba4c589311cbc31b31b6c79ec589b",
+      "bytes": 1495
+    },
+    {
+      "file": "prompts/city/library/facades.txt",
+      "source": "art_spike/prompts/facades.txt",
+      "category": "prompt",
+      "sha256": "7696b8fb166fe2fbc28f533aec737bcdafa5b3c5e934f78945ddcdb8bb2fc172",
+      "bytes": 1780
+    },
+    {
+      "file": "prompts/city/library/fountain.txt",
+      "source": "art_spike/prompts/fountain.txt",
+      "category": "prompt",
+      "sha256": "020fa299a5c4576d4db9d3c3b5f103a2353137aa1299872a318d1e7c02221bfb",
+      "bytes": 1345
+    },
+    {
+      "file": "prompts/city/library/keyart.txt",
+      "source": "art_spike/prompts/keyart.txt",
+      "category": "prompt",
+      "sha256": "2a78497d8be8514db91aa38b9fd8eea809d9df20b7a6f9c437712056d07ec0b7",
+      "bytes": 1529
+    },
+    {
+      "file": "prompts/city/library/mutant.txt",
+      "source": "art_spike/prompts/mutant.txt",
+      "category": "prompt",
+      "sha256": "2713999e64cecb52812fa9646bf912b4c1e6a81fe74371773b81551011d7f1dd",
+      "bytes": 1876
+    },
+    {
+      "file": "prompts/city/library/player.txt",
+      "source": "art_spike/prompts/player.txt",
+      "category": "prompt",
+      "sha256": "9bd57a70104d6d87fa24ff30aaee98611bb62a14d1a5311a269331f475177b7b",
+      "bytes": 1795
+    },
+    {
+      "file": "prompts/city/library/portraits.txt",
+      "source": "art_spike/prompts/portraits.txt",
+      "category": "prompt",
+      "sha256": "adcf0c23d49411f55bd1ca57c48f95a784bc7e051e07841eb0c1ff616ce56d39",
+      "bytes": 1338
+    },
+    {
+      "file": "prompts/city/library/portraits2.txt",
+      "source": "art_spike/prompts/portraits2.txt",
+      "category": "prompt",
+      "sha256": "fb13db18903d61c8e4747334db17f1ef8d6943570a658dcfc33b28e00b383683",
+      "bytes": 1382
+    },
+    {
+      "file": "prompts/city/library/props.txt",
+      "source": "art_spike/prompts/props.txt",
+      "category": "prompt",
+      "sha256": "aa6bea0ba9e43600ad233f9ece7c204bc84b149577181d665104dbc455bd0501",
+      "bytes": 2223
+    },
+    {
+      "file": "prompts/city/library/ship.txt",
+      "source": "art_spike/prompts/ship.txt",
+      "category": "prompt",
+      "sha256": "8a557fa07383a2d3dec7922eaa127ff2b7599664dce158ebd14968edb4b682ae",
+      "bytes": 1251
+    },
+    {
+      "file": "prompts/city/library/terrain.txt",
+      "source": "art_spike/prompts/terrain.txt",
+      "category": "prompt",
+      "sha256": "b4f8395cf7f882da5e36d82797744dc229c485ea7d680ae61b7feb563fe369d4",
+      "bytes": 1126
+    },
+    {
+      "file": "prompts/city/library/yu_dirs.txt",
+      "source": "art_spike/prompts/yu_dirs.txt",
+      "category": "prompt",
+      "sha256": "66d6e8f74c8a695876703737f3e86bb89d96e1c5eb5b13dad9cf2a32722ac671",
+      "bytes": 2328
+    },
+    {
+      "file": "prompts/city/library/yu_mg.txt",
+      "source": "art_spike/prompts/yu_mg.txt",
+      "category": "prompt",
+      "sha256": "b487b73b3a942159f392ad8ec1dab0a4e4e8f7601bdd9e7b41b0e8e0fcf31baa",
+      "bytes": 1997
+    },
+    {
+      "file": "prompts/city/library/yu_run.txt",
+      "source": "art_spike/prompts/yu_run.txt",
+      "category": "prompt",
+      "sha256": "ea0893fd15a6195273f417b0326f1ef21b2ce64ca6bc4f9e0a66abbb0469f511",
+      "bytes": 1810
+    },
+    {
+      "file": "prompts/city/library/zombies.txt",
+      "source": "art_spike/prompts/zombies.txt",
+      "category": "prompt",
+      "sha256": "c66ad1871d378a72a1b7322531912a1d8f0d7325c918e1ce92d8e8e4f47dc7b1",
+      "bytes": 2519
+    },
+    {
+      "file": "prompts/japan/enemies.txt",
+      "source": "art_spike/japan/enemies-prompt.txt",
+      "category": "prompt",
+      "sha256": "8969a4f7a12b56109ccff190e77a707c70d8270b906bc11fceadc87167734b83",
+      "bytes": 1612
+    },
+    {
+      "file": "originals/japan/enemies.png",
+      "source": "art_spike/japan/enemies-source.png",
+      "category": "original",
+      "sha256": "82bd313b5a18c897a1f06b46a3d584c4800c4da81050c6f35afd1ee75ce6cfcc",
+      "bytes": 1868160,
+      "prompt": "prompts/japan/enemies.txt"
+    },
+    {
+      "file": "prompts/japan/environment.txt",
+      "source": "art_spike/japan/environment-prompt.txt",
+      "category": "prompt",
+      "sha256": "67ffad341e5f41fa299e4f3820c166da38138e07296a7ba56e17d4699b1845f2",
+      "bytes": 1804
+    },
+    {
+      "file": "originals/japan/environment.png",
+      "source": "art_spike/japan/environment-source.png",
+      "category": "original",
+      "sha256": "e7f08dd33ee12d74560b354b1e252c94bbeb85f9d9e8a59e6bbaff30ec7146e0",
+      "bytes": 2772958,
+      "prompt": "prompts/japan/environment.txt"
+    },
+    {
+      "file": "prompts/japan/cover.txt",
+      "source": "art_spike/japan/cover-prompt.txt",
+      "category": "prompt",
+      "sha256": "770c2d18aa4ec3159f46da461ef452972949942ff4f6a9771044485faa146398",
+      "bytes": 10
+    },
+    {
+      "file": "originals/japan/cover-v1.png",
+      "source": "art_spike/japan/cover-source.png",
+      "category": "original",
+      "sha256": "6d4ce33774f822e765a5d2501cb65e05dbdf027e72f9c5ba3540772b20071967",
+      "bytes": 3388169,
+      "prompt": "prompts/japan/cover.txt"
+    },
+    {
+      "file": "prompts/japan/cover-flip.txt",
+      "source": "art_spike/japan/cover-flip-prompt.txt",
+      "category": "prompt",
+      "sha256": "770c2d18aa4ec3159f46da461ef452972949942ff4f6a9771044485faa146398",
+      "bytes": 10
+    },
+    {
+      "file": "originals/japan/cover-v2.png",
+      "source": "art_spike/japan/cover-source-v2.png",
+      "category": "original",
+      "sha256": "a6fd0bf0bc97a07182d96bdf564db89558f948e25340f559ba2e0e57c8212ddf",
+      "bytes": 3228931,
+      "prompt": "prompts/japan/cover-flip.txt"
+    },
+    {
+      "file": "processed/japan/props/bamboo.png",
+      "source": "art_spike/japan/props-clean/bamboo/prop.png",
+      "category": "processed",
+      "sha256": "6878a500dd768feb2513f072b27b346226062da91971c8677bd3ee90506214e4",
+      "bytes": 173590,
+      "prompt": "prompts/japan/environment.txt"
+    },
+    {
+      "file": "processed/japan/props/bridge.png",
+      "source": "art_spike/japan/props-clean/bridge/prop.png",
+      "category": "processed",
+      "sha256": "2aa33a5602a18cf0734299ab2cc6dc58cde5ed8364d642028a5472b2634cf161",
+      "bytes": 116429,
+      "prompt": "prompts/japan/environment.txt"
+    },
+    {
+      "file": "processed/japan/props/komainu.png",
+      "source": "art_spike/japan/props-clean/komainu/prop.png",
+      "category": "processed",
+      "sha256": "4020db7aba044a8221b81a7d4a95a1cd469eedb4dde915984f5cb0f60b389d16",
+      "bytes": 138493,
+      "prompt": "prompts/japan/environment.txt"
+    },
+    {
+      "file": "processed/japan/props/sakura.png",
+      "source": "art_spike/japan/props-clean/sakura/prop.png",
+      "category": "processed",
+      "sha256": "ff3118d3a0ba577a609605bca93d565f729ce7cd24c5cb73a050c10d1baba04a",
+      "bytes": 190117,
+      "prompt": "prompts/japan/environment.txt"
+    },
+    {
+      "file": "processed/japan/props/shrine.png",
+      "source": "art_spike/japan/props-clean/shrine/prop.png",
+      "category": "processed",
+      "sha256": "731d4705992efe798c41f5272662ef5aa52d659c8af52fe823af35a9b0045568",
+      "bytes": 194615,
+      "prompt": "prompts/japan/environment.txt"
+    },
+    {
+      "file": "processed/japan/props/stonelantern.png",
+      "source": "art_spike/japan/props-clean/stonelantern/prop.png",
+      "category": "processed",
+      "sha256": "8cf1b2ea7349e8fe4c29858e6e409f4c0bb2d93c307146532fe7640cfc2c4ebe",
+      "bytes": 72326,
+      "prompt": "prompts/japan/environment.txt"
+    },
+    {
+      "file": "processed/japan/props/torii.png",
+      "source": "art_spike/japan/props-clean/torii/prop.png",
+      "category": "processed",
+      "sha256": "501b7218737c7ffafb7afa38a4e16377aa3686a9032380a9dacc1de7c8ed5707",
+      "bytes": 91534,
+      "prompt": "prompts/japan/environment.txt"
+    },
+    {
+      "file": "processed/japan/props/yatai.png",
+      "source": "art_spike/japan/props-clean/yatai/prop.png",
+      "category": "processed",
+      "sha256": "fe1e1300def4f5b6fee56dc7a44c16dfcaf873ee51c2c3ac3c03a022251d492c",
+      "bytes": 161651,
+      "prompt": "prompts/japan/environment.txt"
+    },
+    {
+      "file": "processed/japan/terrain/moss-1.png",
+      "source": "art_spike/japan/terrain/moss-1.png",
+      "category": "processed",
+      "sha256": "d0e5d8e725707b98a818cca132e972a6275f8bc97e2a4f3efed4c531e29729ac",
+      "bytes": 43166,
+      "prompt": "prompts/japan/environment.txt"
+    },
+    {
+      "file": "processed/japan/terrain/roof-1.png",
+      "source": "art_spike/japan/terrain/roof-1.png",
+      "category": "processed",
+      "sha256": "056fc94f388efdeccc135c4fc5a4e4018cbd9375e66bf0c91b6b0de00b0d6204",
+      "bytes": 37163,
+      "prompt": "prompts/japan/environment.txt"
+    },
+    {
+      "file": "processed/japan/terrain/stone-1.png",
+      "source": "art_spike/japan/terrain/stone-1.png",
+      "category": "processed",
+      "sha256": "acc128347ce9a665e51352477cd5f5309278c7c1507d2ecf331bc83be1f5804b",
+      "bytes": 43100,
+      "prompt": "prompts/japan/environment.txt"
+    },
+    {
+      "file": "processed/japan/terrain/wood-1.png",
+      "source": "art_spike/japan/terrain/wood-1.png",
+      "category": "processed",
+      "sha256": "79aab854683c4dc363df2933db7dbd2aeb85d85a5d2fb704a107a128557b5c15",
+      "bytes": 34153,
+      "prompt": "prompts/japan/environment.txt"
+    },
+    {
+      "file": "processed/japan/animation/gameplay.jpg",
+      "source": "art_spike/japan/animation/gameplay.jpg",
+      "category": "processed",
+      "sha256": "0ebfc0f7b945de94d78adea8c44713321ce30d032ceb255c18ec1d1a38b4025d",
+      "bytes": 162002
+    },
+    {
+      "file": "processed/japan/animation/kaiju-0.png",
+      "source": "art_spike/japan/animation/kaiju-0.png",
+      "category": "processed",
+      "sha256": "0d208110cfc154d1726fc74f11e48349e1e64be40f115dfef065d82f1d5504fd",
+      "bytes": 6377
+    },
+    {
+      "file": "processed/japan/animation/kaiju-1.png",
+      "source": "art_spike/japan/animation/kaiju-1.png",
+      "category": "processed",
+      "sha256": "c819f514c4d36bed96930743383a1409e304dfda7b3d88a5cca2eb3433ce1b0a",
+      "bytes": 6402
+    },
+    {
+      "file": "processed/japan/animation/kaiju-2.png",
+      "source": "art_spike/japan/animation/kaiju-2.png",
+      "category": "processed",
+      "sha256": "4bbf487683780509158e8114a0067e32533d70a6fa47d8de60f0bc221bce5caa",
+      "bytes": 6477
+    },
+    {
+      "file": "processed/japan/animation/kaiju-3.png",
+      "source": "art_spike/japan/animation/kaiju-3.png",
+      "category": "processed",
+      "sha256": "94bb04753f0e2e224b577ca8cae238d7edb8f337f626db08b3c64e3cb32d4ea9",
+      "bytes": 6471
+    },
+    {
+      "file": "processed/japan/animation/kaiju-4.png",
+      "source": "art_spike/japan/animation/kaiju-4.png",
+      "category": "processed",
+      "sha256": "bc4b7cc7a1e003c5daf91655c49685e50e27876ec5bda8e8d7189ca0c32013e5",
+      "bytes": 6440
+    },
+    {
+      "file": "processed/japan/animation/kaiju-5.png",
+      "source": "art_spike/japan/animation/kaiju-5.png",
+      "category": "processed",
+      "sha256": "d2678b889917585d2efc5dbaeb3a4bb2ec5b08c55904415aa81929e1e8998cef",
+      "bytes": 6378
+    },
+    {
+      "file": "processed/japan/animation/kaiju-6.png",
+      "source": "art_spike/japan/animation/kaiju-6.png",
+      "category": "processed",
+      "sha256": "014fd177094969231ee24cdd1b9cc6f3232d0037f6b761d5a6378a8000e75cd5",
+      "bytes": 6403
+    },
+    {
+      "file": "processed/japan/animation/kaiju-7.png",
+      "source": "art_spike/japan/animation/kaiju-7.png",
+      "category": "processed",
+      "sha256": "15053e17ce1efaae562811964633c2aea6be4c9831951f27f5affefce29e5db6",
+      "bytes": 6373
+    },
+    {
+      "file": "processed/japan/animation/kappa-0.png",
+      "source": "art_spike/japan/animation/kappa-0.png",
+      "category": "processed",
+      "sha256": "f274b388812f8f0c215947b049ec4c64a3bdcd9b744bea7d7ee8e18222f59d40",
+      "bytes": 1222
+    },
+    {
+      "file": "processed/japan/animation/kappa-1.png",
+      "source": "art_spike/japan/animation/kappa-1.png",
+      "category": "processed",
+      "sha256": "6ffc9e045cc8ce57b93451b99d40d5c1ece42b27f9e97937f069ae68bb794d78",
+      "bytes": 1197
+    },
+    {
+      "file": "processed/japan/animation/kappa-2.png",
+      "source": "art_spike/japan/animation/kappa-2.png",
+      "category": "processed",
+      "sha256": "2948af98d15a2e54c6cece54dfa94241d990adaffdb2f86de877aec2358db9dd",
+      "bytes": 1216
+    },
+    {
+      "file": "processed/japan/animation/kappa-3.png",
+      "source": "art_spike/japan/animation/kappa-3.png",
+      "category": "processed",
+      "sha256": "688abac7315b2ef151f49939a4cf6463c3869498c332740812b30ad087c10392",
+      "bytes": 1238
+    },
+    {
+      "file": "processed/japan/animation/kappa-4.png",
+      "source": "art_spike/japan/animation/kappa-4.png",
+      "category": "processed",
+      "sha256": "8b810331340df0b6ff1289d18c3213888e31bd07144a48e274f9eb8445660291",
+      "bytes": 1226
+    },
+    {
+      "file": "processed/japan/animation/kappa-5.png",
+      "source": "art_spike/japan/animation/kappa-5.png",
+      "category": "processed",
+      "sha256": "3cf6d91296643a693740398839500a38dddf92265f781b0877df46adea8c469a",
+      "bytes": 1214
+    },
+    {
+      "file": "processed/japan/animation/kappa-6.png",
+      "source": "art_spike/japan/animation/kappa-6.png",
+      "category": "processed",
+      "sha256": "3a1f3eb8f7a236289ec3b8e201c46de1667d08bb0fd4627e662586d5fd318260",
+      "bytes": 1195
+    },
+    {
+      "file": "processed/japan/animation/kappa-7.png",
+      "source": "art_spike/japan/animation/kappa-7.png",
+      "category": "processed",
+      "sha256": "1e4ffc8d31707f295cf202a5df85175c370beee8c4f0147f8a7b5d3996f969a4",
+      "bytes": 1202
+    },
+    {
+      "file": "processed/japan/animation/kasa-0.png",
+      "source": "art_spike/japan/animation/kasa-0.png",
+      "category": "processed",
+      "sha256": "c0e833e063d82952c85f05f02890d5b3b392b8b1b2797c527d072d48f28d0c83",
+      "bytes": 1126
+    },
+    {
+      "file": "processed/japan/animation/kasa-1.png",
+      "source": "art_spike/japan/animation/kasa-1.png",
+      "category": "processed",
+      "sha256": "a5803899fff52783b93114989666995215a2d11929af733d6fa257f8dfaaa650",
+      "bytes": 1152
+    },
+    {
+      "file": "processed/japan/animation/kasa-2.png",
+      "source": "art_spike/japan/animation/kasa-2.png",
+      "category": "processed",
+      "sha256": "6f502a47e22783aa2e8640b64cfe158bed9cd2b7be8314abdc0f8c88cc81ee89",
+      "bytes": 1116
+    },
+    {
+      "file": "processed/japan/animation/kasa-3.png",
+      "source": "art_spike/japan/animation/kasa-3.png",
+      "category": "processed",
+      "sha256": "035a61bcc3e191b6b1d87f2d00ec6da8bdc28ce59940f76c43c91768e6c734f0",
+      "bytes": 1133
+    },
+    {
+      "file": "processed/japan/animation/kasa-4.png",
+      "source": "art_spike/japan/animation/kasa-4.png",
+      "category": "processed",
+      "sha256": "2faa96d81a953ab5299bc22d476728647e76603d3629b62e60c765556f600bfe",
+      "bytes": 1065
+    },
+    {
+      "file": "processed/japan/animation/kasa-5.png",
+      "source": "art_spike/japan/animation/kasa-5.png",
+      "category": "processed",
+      "sha256": "461a0d0890329f5011bec4a22be24fb6e9c7246f5dc7638b6e0ebce80a540c1a",
+      "bytes": 1066
+    },
+    {
+      "file": "processed/japan/animation/kasa-6.png",
+      "source": "art_spike/japan/animation/kasa-6.png",
+      "category": "processed",
+      "sha256": "539db376696f42e12dcaaa9352c74c8e9f8dfa94ac668aa143efd57d4b39507b",
+      "bytes": 1094
+    },
+    {
+      "file": "processed/japan/animation/kasa-7.png",
+      "source": "art_spike/japan/animation/kasa-7.png",
+      "category": "processed",
+      "sha256": "716df5b98aeebf1753e2d6ccc728cc2020cdb3e18ad6330268dda052250b8659",
+      "bytes": 1124
+    },
+    {
+      "file": "processed/japan/animation/motion-preview.gif",
+      "source": "art_spike/japan/animation/motion-preview.gif",
+      "category": "processed",
+      "sha256": "5955d6e8812bc8da1812993e9ea59134632db1360b774103810d29f417b64bc7",
+      "bytes": 86714
+    },
+    {
+      "file": "processed/japan/animation/motion.json",
+      "source": "art_spike/japan/animation/motion.json",
+      "category": "processed",
+      "sha256": "4009e8cc441542d3c13f45587bd433964a355b8c3f683553cc04b8c023268ba0",
+      "bytes": 2429
+    },
+    {
+      "file": "processed/japan/animation/oni-0.png",
+      "source": "art_spike/japan/animation/oni-0.png",
+      "category": "processed",
+      "sha256": "b7a9826e79cac1a54493ed63393fe56acd29580c9d52a5e81ac0d650a5c21957",
+      "bytes": 2011
+    },
+    {
+      "file": "processed/japan/animation/oni-1.png",
+      "source": "art_spike/japan/animation/oni-1.png",
+      "category": "processed",
+      "sha256": "d9c4cdd06b912267d4b2b91a6a7359fd9fc0d0feb5d062dd4be90c767d80f954",
+      "bytes": 2017
+    },
+    {
+      "file": "processed/japan/animation/oni-2.png",
+      "source": "art_spike/japan/animation/oni-2.png",
+      "category": "processed",
+      "sha256": "acd59ba773a59b70a1a42df6a781535513b1fbc84f3c18f48ef1921c5a3e60d7",
+      "bytes": 2043
+    },
+    {
+      "file": "processed/japan/animation/oni-3.png",
+      "source": "art_spike/japan/animation/oni-3.png",
+      "category": "processed",
+      "sha256": "5bce76182540be8f7dbde3c5013d1aad150cd937a58051ec67ca345e2588a489",
+      "bytes": 2031
+    },
+    {
+      "file": "processed/japan/animation/oni-4.png",
+      "source": "art_spike/japan/animation/oni-4.png",
+      "category": "processed",
+      "sha256": "9bde750432e325e763bb1de90630438217874246efc6be557bb92a124a91972e",
+      "bytes": 2043
+    },
+    {
+      "file": "processed/japan/animation/oni-5.png",
+      "source": "art_spike/japan/animation/oni-5.png",
+      "category": "processed",
+      "sha256": "59f3ae894310443681ab8dbdccc4fc0101414aada566b881993c7cb1e27d28e2",
+      "bytes": 1960
+    },
+    {
+      "file": "processed/japan/animation/oni-6.png",
+      "source": "art_spike/japan/animation/oni-6.png",
+      "category": "processed",
+      "sha256": "5d80e4b6975393732304c4dc2b13fde59621b4f22a7ae589fcdbd07c6d5e59f3",
+      "bytes": 1944
+    },
+    {
+      "file": "processed/japan/animation/oni-7.png",
+      "source": "art_spike/japan/animation/oni-7.png",
+      "category": "processed",
+      "sha256": "7cc5c8e717f1aabb205fbaca2d0e3b065ca1ef0a2e47d7c51b16488e665d40e4",
+      "bytes": 1973
+    },
+    {
+      "file": "processed/japan/animation/qa.json",
+      "source": "art_spike/japan/animation/qa.json",
+      "category": "processed",
+      "sha256": "ae5ca4b1a514afced84be42494a4e9979873adf066295a00c1a36cb685bc1d31",
+      "bytes": 748
+    },
+    {
+      "file": "processed/japan/animation/review.png",
+      "source": "art_spike/japan/animation/review.png",
+      "category": "processed",
+      "sha256": "b02e33ac675505f5fbe6fe7011d02c7d5c8e58c999bb5c1ce86894977f26d0a8",
+      "bytes": 42257
+    },
+    {
+      "file": "processed/japan/animation/tengu-0.png",
+      "source": "art_spike/japan/animation/tengu-0.png",
+      "category": "processed",
+      "sha256": "9edafd0514336df01654232e9a36d10ebc52f6b0aa1f8840d6767de6a3061873",
+      "bytes": 1506
+    },
+    {
+      "file": "processed/japan/animation/tengu-1.png",
+      "source": "art_spike/japan/animation/tengu-1.png",
+      "category": "processed",
+      "sha256": "5994a2108cf75d6eb58876f1a9e5f9cd63893619176b92ece6d5a7a62b9ad98b",
+      "bytes": 1503
+    },
+    {
+      "file": "processed/japan/animation/tengu-2.png",
+      "source": "art_spike/japan/animation/tengu-2.png",
+      "category": "processed",
+      "sha256": "a59627f25f49e5325d24c01272a9eb5833c712d12c93b38723116de930e5db9a",
+      "bytes": 1519
+    },
+    {
+      "file": "processed/japan/animation/tengu-3.png",
+      "source": "art_spike/japan/animation/tengu-3.png",
+      "category": "processed",
+      "sha256": "ec6e13136ba61f33cf440ab156b3049b9a3e736e1d3246d35b266063d943e28e",
+      "bytes": 1539
+    },
+    {
+      "file": "processed/japan/animation/tengu-4.png",
+      "source": "art_spike/japan/animation/tengu-4.png",
+      "category": "processed",
+      "sha256": "ad0e54c8625b6b6b1ef3888c343d363529171fb020075597e6f55fc5296bfa64",
+      "bytes": 1583
+    },
+    {
+      "file": "processed/japan/animation/tengu-5.png",
+      "source": "art_spike/japan/animation/tengu-5.png",
+      "category": "processed",
+      "sha256": "e15914534923d011d3477592fa21efa2e6a79139ec83c81511c62a3133ba4132",
+      "bytes": 1623
+    },
+    {
+      "file": "processed/japan/animation/tengu-6.png",
+      "source": "art_spike/japan/animation/tengu-6.png",
+      "category": "processed",
+      "sha256": "dfb54e5c6b41a7b5873438645746a3a3aeec000c12d3f3cb632949232293b611",
+      "bytes": 1631
+    },
+    {
+      "file": "processed/japan/animation/tengu-7.png",
+      "source": "art_spike/japan/animation/tengu-7.png",
+      "category": "processed",
+      "sha256": "0d7b74d07b128e749012c5a6915071a54aefb556806bb5befde07008657a1c5c",
+      "bytes": 1580
+    },
+    {
+      "file": "runtime/covers/city-title.jpg",
+      "source": "src/assets/title-bg.jpg",
+      "category": "runtime",
+      "sha256": "1f748a02fe1a940027a2d2d3fafa0d6dc51208439f090cb04eeffb722aef2fa1",
+      "bytes": 484537,
+      "prompt": "prompts/city/runs/keyart-1.txt"
+    },
+    {
+      "file": "runtime/covers/japan-cover-v1.jpg",
+      "source": "public/covers/japan-cover-v1.jpg",
+      "category": "runtime",
+      "sha256": "fdd75dc0d32e8a60e83b6be481913b672e4f3895a8bd8f2900aa2b6bd6609d8d",
+      "bytes": 741226
+    },
+    {
+      "file": "runtime/covers/japan-cover-v2.jpg",
+      "source": "public/covers/japan-cover-v2.jpg",
+      "category": "runtime",
+      "sha256": "9f5e6e1a3e0c6fa3aadec0f853e125a8c70950a60fdb032c5c0b4e60698a79b8",
+      "bytes": 698775
+    },
+    {
+      "file": "runtime/sprites/explosion.json",
+      "source": "public/sprites/explosion.json",
+      "category": "runtime",
+      "sha256": "d62ef50b1a80cc5846a48e21193c6598bbdf8afac97918fdb8043954c3128ef3",
+      "bytes": 1080
+    },
+    {
+      "file": "runtime/sprites/explosion.png",
+      "source": "public/sprites/explosion.png",
+      "category": "runtime",
+      "sha256": "148faf0a580a83da4792f184dcb65af75be842551f734a87f03db46f5ff1fb8c",
+      "bytes": 119069
+    },
+    {
+      "file": "runtime/sprites/horde.json",
+      "source": "public/sprites/horde.json",
+      "category": "runtime",
+      "sha256": "fca6e898a205f8dd2603f7d2859b102c87e00d217b353825c00dd2d9dfad5fb6",
+      "bytes": 7512
+    },
+    {
+      "file": "runtime/sprites/horde.png",
+      "source": "public/sprites/horde.png",
+      "category": "runtime",
+      "sha256": "46ae8eb4d35027ce3f3857d38479433283b00f4f9d51279d3a63be6315500008",
+      "bytes": 156014
+    },
+    {
+      "file": "runtime/sprites/horde_stages.json",
+      "source": "public/sprites/horde_stages.json",
+      "category": "runtime",
+      "sha256": "94d1b73b90df23e5841c684c6bbd2586244405317c4d766d41065f549f803d38",
+      "bytes": 8654
+    },
+    {
+      "file": "runtime/sprites/horde_stages.png",
+      "source": "public/sprites/horde_stages.png",
+      "category": "runtime",
+      "sha256": "51e352a12d52d62636030a1761c3b52f3bbad3d81841a48df2b66473e73605a4",
+      "bytes": 297712
+    },
+    {
+      "file": "runtime/sprites/japan-preview.png",
+      "source": "public/sprites/japan-preview.png",
+      "category": "runtime",
+      "sha256": "47a1761e919f3fd9ee362b194a1578cdc5dfc8372841c1932342cb7754b6af3b",
+      "bytes": 570668
+    },
+    {
+      "file": "runtime/sprites/map.json",
+      "source": "public/sprites/map.json",
+      "category": "runtime",
+      "sha256": "dd506c261da343db5c20882b92a363b22f6df2f8449bb174548b016dff9784d5",
+      "bytes": 629
+    },
+    {
+      "file": "runtime/sprites/map.png",
+      "source": "public/sprites/map.png",
+      "category": "runtime",
+      "sha256": "007251321109095d02ac9d844745c2c40191d966fe405486b13736c5f197a37b",
+      "bytes": 176911
+    },
+    {
+      "file": "runtime/sprites/map_japan.json",
+      "source": "public/sprites/map_japan.json",
+      "category": "runtime",
+      "sha256": "f2cdf32c34181c0736fc33526c309dff4d52bcbad2a3fbd55623b548bebb8448",
+      "bytes": 249
+    },
+    {
+      "file": "runtime/sprites/map_japan.png",
+      "source": "public/sprites/map_japan.png",
+      "category": "runtime",
+      "sha256": "8008a55e58b869741640774bc14e48e08dafd71aa0605c4ad076d8d14bc442d7",
+      "bytes": 162193
+    },
+    {
+      "file": "runtime/sprites/mini_akane.png",
+      "source": "public/sprites/mini_akane.png",
+      "category": "runtime",
+      "sha256": "a76f01eda7bc2fdbff33932aeebe0ddecd3f6a8a6d11369e43cd3f682c3049d0",
+      "bytes": 1797
+    },
+    {
+      "file": "runtime/sprites/mini_yu.png",
+      "source": "public/sprites/mini_yu.png",
+      "category": "runtime",
+      "sha256": "fbff4f0caf1133de144783250eb2595e13091fd141bf5d6108f514523da2d282",
+      "bytes": 1429
+    },
+    {
+      "file": "runtime/sprites/portrait_akane.png",
+      "source": "public/sprites/portrait_akane.png",
+      "category": "runtime",
+      "sha256": "cf0c8dd0344fdd4d1ae4eaa1d1993b45daa5a6d20400986ce75b6bdb3f164150",
+      "bytes": 50977
+    },
+    {
+      "file": "runtime/sprites/portrait_yu.png",
+      "source": "public/sprites/portrait_yu.png",
+      "category": "runtime",
+      "sha256": "173706d7ab872b084a16d29d28f024a775ca6a2758a08ddfee74a6e4baeef067",
+      "bytes": 40220
+    },
+    {
+      "file": "runtime/sprites/ult_pylon.png",
+      "source": "public/sprites/ult_pylon.png",
+      "category": "runtime",
+      "sha256": "d2fca68a8ba2c9a7d28a9e6f9df05f0c556a498bc6a6b0bd6895ba51806b7c80",
+      "bytes": 8419
+    },
+    {
+      "file": "runtime/sprites/ult_ship.png",
+      "source": "public/sprites/ult_ship.png",
+      "category": "runtime",
+      "sha256": "1d5bf6cccd0ade429873c5eab0c64e552f8614a6620fd9e805ac53e83c6cfeac",
+      "bytes": 11556
+    },
+    {
+      "file": "runtime/sprites/yokai_0.png",
+      "source": "public/sprites/yokai_0.png",
+      "category": "runtime",
+      "sha256": "358df0cf70a7812b715099de37d0fc10cb030a6cf84d9578fea27884a2e9481f",
+      "bytes": 6175
+    },
+    {
+      "file": "runtime/sprites/yokai_1.png",
+      "source": "public/sprites/yokai_1.png",
+      "category": "runtime",
+      "sha256": "cb819d428df8a887c0a4d6844ea5f2295ee99a8f90c34e85ffbdf91fdf4389bf",
+      "bytes": 6614
+    },
+    {
+      "file": "runtime/sprites/yokai_2.png",
+      "source": "public/sprites/yokai_2.png",
+      "category": "runtime",
+      "sha256": "de5865fd7c41f8edd1f041ecebd6f6cadf02cbe9312877a8c8f4bd81f1cfcedc",
+      "bytes": 6390
+    },
+    {
+      "file": "runtime/sprites/yokai_3.png",
+      "source": "public/sprites/yokai_3.png",
+      "category": "runtime",
+      "sha256": "9f2d2d46919e9b5c1eb30e8780593f9b9c675d84f9ad597c09c2f7dceedbf677",
+      "bytes": 4284
+    },
+    {
+      "file": "runtime/sprites/yokai_4.png",
+      "source": "public/sprites/yokai_4.png",
+      "category": "runtime",
+      "sha256": "143b515f5d9cb6f0499f22460d1811dea843ffa275b344e56685679f43960f51",
+      "bytes": 7688
+    },
+    {
+      "file": "previews/japan/map-preview.png",
+      "source": "art_spike/japan/map-preview.png",
+      "category": "preview",
+      "sha256": "6c83f2e66ff8a269b45ae13c28f3ac65a3cd68368f6a886a02ca51aaa7d6636a",
+      "bytes": 2675607
+    },
+    {
+      "file": "previews/japan/stage-selection.jpg",
+      "source": "art_spike/japan/stage-selection.jpg",
+      "category": "preview",
+      "sha256": "b511fd1f6d7fafaab2a8836d2d4161c8302cd59ff6b42ba3261be54f252d39b0",
+      "bytes": 79531
+    },
+    {
+      "file": "previews/japan/stage-cover-selection-v1.jpg",
+      "source": "art_spike/japan/stage-cover-selection-v1.jpg",
+      "category": "preview",
+      "sha256": "476dfe657a54332eaf8e5b184f9faa4d35dc63599bfcc0593fc4a88396cd12fa",
+      "bytes": 87949
+    },
+    {
+      "file": "previews/japan/stage-cover-selection-v2.jpg",
+      "source": "art_spike/japan/stage-cover-selection-v2.jpg",
+      "category": "preview",
+      "sha256": "b6163be849fa5a362896100db0b1b146403df4b20123bf770e351731d52656e7",
+      "bytes": 93855
+    }
+  ]
+}

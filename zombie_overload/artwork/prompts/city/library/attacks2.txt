@@ -1,0 +1,8 @@
+Create exactly ONE square image (1024x1024): a visual effect sprite sheet of 4 cells in 2 rows x 2 columns, read left to right, top row first. Each effect centred in its cell, about 20 percent empty margin, nothing touching a cell edge.
+Style: premium 16-bit pixel art, crisp chunky pixels, bright glowing colours, 3-tone shading, no blur. Effects for a zombie survival game seen from a three-quarter top-down camera.
+(1) a big glowing pink cannon shell / energy cannonball flying to the RIGHT with a thick pink flame trail behind it on the left;
+(2) a short bright yellow-white machine-gun tracer bullet streak flying to the RIGHT, thin and elongated;
+(3) a round pink explosive impact blast with sparks and a shock ring;
+(4) a small yellow-white bullet impact spark burst.
+No text, no letters, no numbers, no logo, no watermark, no signature, no UI, no border, no frame, no grid lines, no gutters.
+Background: solid flat pure black #000000 everywhere outside the effects (they are drawn with additive blending).

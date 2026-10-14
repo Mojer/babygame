@@ -1,0 +1,7 @@
+Create exactly ONE image in landscape 3:2 format (1536x1024): two character portrait busts side by side, LEFT half and RIGHT half, each centred in its half with generous empty margin, nothing crossing the middle line.
+The FIRST attached image shows the approved portrait style and framing of these two characters: keep exactly the same faces, hair, outfits, pixel style, size and framing, but CHANGE THE WEAPONS. The SECOND attached image is AKANE's in-game sprite sheet with her big pink-trimmed cannon; the THIRD is YU's in-game sprite sheet with his machine gun.
+Style: premium 16-bit pixel art (SNES era), crisp visible chunky pixels, limited palette, strong dark outline, 3-tone cel shading, no smooth gradients, no blur.
+LEFT: AKANE head-and-shoulders portrait, confident smile, long black hair with blunt bangs, pink polo with white collar, pink backpack strap; resting a big dark-grey cannon with pink trim and a glowing pink muzzle ring on her shoulder, both hands on it.
+RIGHT: YU head-and-shoulders portrait, serious brave expression, bowl-cut hair, navy hoodie, cream henley with orange trim; holding a compact gunmetal machine gun with blue stripes diagonally across his chest.
+No glow on the background, no text, no letters, no numbers, no logo, no watermark, no UI, no border, no frame.
+Background: solid flat pure green #00FF00 everywhere outside the two portraits.

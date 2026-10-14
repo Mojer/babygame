@@ -1,0 +1,6 @@
+Create exactly ONE square image (1024x1024).
+The FIRST attached image is an in-game zombie sprite sheet: match its pixel style, outline weight and three-quarter top-down camera; do NOT copy the zombies.
+Style: premium 16-bit pixel art (SNES era), crisp visible chunky pixels, limited palette, strong dark outline, 3-tone cel shading, no smooth gradients, no blur.
+Subject: ONE giant orbital weapon device that has just slammed into the ground from outer space and stands planted upright: a tall heavy armoured spike-pylon (white and gunmetal hull with pink and cyan stripes), its pointed tip buried in a cracked crater of broken paving stones, four folding fins near the base, and at the top a big rotating energy emitter ring with glowing cyan crystal coils ready to fire a shockwave. Seen from three-quarter top-down: we see its front side and the top of the emitter. It is about 2.5 times as tall as a person. Centred, filling about 75 percent of the image height, empty margin on every side, nothing touching an edge. Solid opaque pixels only (no soft glow on the background).
+No text, no letters, no numbers, no logo, no watermark, no UI, no border, no frame.
+Background: solid flat pure magenta #FF00FF everywhere outside the device and its crater, no shadow beyond the crater.

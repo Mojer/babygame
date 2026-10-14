@@ -1,0 +1,14 @@
+Create exactly ONE square image (1024x1024): a visual effect sprite sheet of 16 frames in 4 rows x 4 columns, read left to right, top row first. No gutters, no separators, no grid lines drawn.
+
+Style: premium 16-bit pixel art (SNES era), crisp visible chunky pixels, limited fiery palette (white, pale yellow, bright yellow, orange, red-orange, deep red, dark smoke grey), strong readable shapes, 3-tone cel shading, no smooth gradients, no blur. Seen from a three-quarter top-down game camera.
+
+Subject: ONE big fiery explosion burst animation for a zombie horde game, centred in every cell at the same position:
+frames 1-2: a small hot white-yellow core flash with sharp star spikes;
+frames 3-5: a rapidly expanding round fireball, white-yellow centre, orange and red rim, flying sparks and tiny debris chunks;
+frames 6-10: the biggest billowing fireball with cauliflower fire puffs, dark red edges and the first dark grey smoke puffs, embers flying out;
+frames 11-14: the fire collapses into rolling dark grey smoke puffs with glowing orange embers inside;
+frames 15-16: thin fading smoke wisps and a few last embers, almost gone.
+Even the largest frame stays inside its cell with about 10 percent empty margin; nothing touches or crosses a cell edge.
+
+No text, no letters, no numbers, no logo, no watermark, no UI, no border, no frame, no grid.
+Background: solid flat pure black #000000 everywhere outside the effect (it will be drawn with additive blending), no gradient on the background.

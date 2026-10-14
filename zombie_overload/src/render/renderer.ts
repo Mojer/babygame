@@ -783,17 +783,30 @@ export class GameRenderer {
       const st = z.status[s];
       pt.x = x;
       pt.y = y;
-      if (w.stage.id === 'japan' && !(st & (FROZEN | PULLED))) pt.y -= Math.abs(Math.sin(z.anim[s] * Math.PI / 2)) * 1.2;
+      const japan = w.stage.id === 'japan';
+      // Distance-driven gait stays planted when blocked; flight/hopping have distinct silhouettes.
+      const gait = z.anim[s] * (japan ? 0.75 : 1);
+      const phase = gait * Math.PI / 4;
+      const motion = japan && !(st & (FROZEN | PULLED));
+      if (motion) pt.y -= Math.abs(Math.sin(phase)) * (kd === 3 ? 5 : kd === 1 ? 3 : kd === MUTANT ? 0.7 : 1.4);
       pt.rotation = 0;
       pt.anchorY = sp.anchorY[kd];
       // 巨大變異體被打時只染淡紅（全白閃爍在機槍連射下會一直白掉）
       const boss = kd === MUTANT;
       const hit = z.flash[s] > 0;
-      pt.texture = hit && !boss ? zt[kd][4] : st & FROZEN ? zt[kd][5] : zt[kd][(z.anim[s] | 0) & 3];
+      const walkCount = zt[kd].length - 2;
+      pt.texture = hit && !boss ? zt[kd][walkCount] : st & FROZEN ? zt[kd][walkCount + 1] : zt[kd][(gait | 0) % walkCount];
       pt.color = boss && hit ? BOSS_HIT : st & VOLATILE ? (pulse > 0.5 ? volatile : volatile2) : WHITE;
       const scale = this.pullScale(holes, z.hole[s], st, x, y);
       pt.scaleX = Math.cos(z.facing[s]) < 0 ? -scale : scale;
       pt.scaleY = scale;
+      if (motion && kd === 3) {
+        // Umbrella compresses on landing and extends through its one-legged hop.
+        const stretch = Math.cos(phase * 2) * 0.07;
+        pt.scaleY *= 1 - stretch;
+        pt.scaleX *= 1 + stretch;
+      }
+      if (motion && kd === MUTANT) pt.rotation = Math.sin(phase) * 0.025;
       if (st & PULLED) pt.rotation = Math.sin(this.time * 20 + s) * 0.5;
       ch[i] = pt;
       const sh = shadows[si++];

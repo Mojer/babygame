@@ -1,0 +1,40 @@
+{
+  "status": "pass",
+  "checks": [
+    {
+      "kind": "kappa",
+      "frames": 8,
+      "unique_frames": 8,
+      "fixed_canvas": true,
+      "transparent_border": true
+    },
+    {
+      "kind": "tengu",
+      "frames": 8,
+      "unique_frames": 8,
+      "fixed_canvas": true,
+      "transparent_border": true
+    },
+    {
+      "kind": "oni",
+      "frames": 8,
+      "unique_frames": 8,
+      "fixed_canvas": true,
+      "transparent_border": true
+    },
+    {
+      "kind": "kasa",
+      "frames": 8,
+      "unique_frames": 8,
+      "fixed_canvas": true,
+      "transparent_border": true
+    },
+    {
+      "kind": "kaiju",
+      "frames": 8,
+      "unique_frames": 8,
+      "fixed_canvas": true,
+      "transparent_border": true
+    }
+  ]
+}

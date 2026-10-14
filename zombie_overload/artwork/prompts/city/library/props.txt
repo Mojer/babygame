@@ -1,0 +1,12 @@
+Create exactly ONE square image (1024x1024): a game prop sprite sheet of 16 cells in 4 rows x 4 columns, read left to right, top row first.
+
+Style: premium 16-bit pixel art (SNES era), crisp visible chunky pixels, limited palette, strong dark outline, 3-tone cel shading, no smooth gradients, no blur. Slightly muted, desaturated urban colours (the scene must stay calmer than the colourful characters that walk on it). Camera: three-quarter top-down view for a top-down action game, like a classic top-down RPG: we see the top surfaces AND the front (south-facing) side of every object, orthographic, no perspective vanishing, no isometric diamond angle.
+
+Cells (one object per cell, centred, about 15 percent empty margin on every side, nothing touching a cell edge, all objects at one consistent world scale where a sedan is about 4.5 metres long):
+Row 1: (1) a small dull red sedan parked side-on, its nose pointing RIGHT, seen from three-quarter top-down (roof, windows, right side doors and wheels visible); (2) the same sedan model in dull blue, nose pointing RIGHT; (3) a black and white police car, nose pointing RIGHT; (4) a faded yellow taxi, nose pointing RIGHT.
+Row 2: (5) a burnt-out wrecked sedan, rusty black, broken windows, nose pointing RIGHT; (6) a dull red sedan parked nose-down pointing toward the viewer (we see its roof, windscreen, bonnet and front bumper with headlights); (7) a burnt-out wrecked sedan pointing toward the viewer; (8) a square concrete planter box with a round green bush, front face of the box visible.
+Row 3: (9) a wooden park bench with metal legs, long side facing the viewer; (10) a dark green metal trash bin; (11) a striped yellow and black road barrier; (12) a tall street lamp post with a lantern head, standing upright.
+Row 4: (13) a red fire hydrant; (14) a stack of two wooden crates; (15) two orange traffic cones; (16) an overturned shopping cart.
+
+Every object is drawn with solid, fully opaque pixels: no transparency, no glow, no cast shadow on the background. No text, no letters, no numbers, no logo, no watermark, no signature, no UI, no border, no frame, no grid lines, no gutters.
+Background: solid flat pure magenta #FF00FF everywhere outside the objects.

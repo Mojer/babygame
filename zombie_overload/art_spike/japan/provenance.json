@@ -2,7 +2,9 @@
   "art_source": "host_image",
   "route": "image_gen",
   "model": "built-in image generation",
-  "animation": "static master stills with runtime bob; no generated walk clips",
+  "animation": "eight unique code-driven cutout poses per enemy; no generated video",
+  "motion_source": "code",
+  "motion_spec": "animation/motion.json",
   "world": [
     2048,
     2048

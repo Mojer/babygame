@@ -1,0 +1,6 @@
+Create exactly ONE square image (1024x1024).
+
+Style: premium 16-bit pixel art (SNES era), crisp visible chunky pixels, limited palette, strong dark outline, 3-tone cel shading, no smooth gradients, no blur. Slightly muted, desaturated urban colours (the scene must stay calmer than the colourful characters that walk on it). Camera: three-quarter top-down view for a top-down action game, like a classic top-down RPG: we see the top surfaces AND the front (south-facing) side of every object, orthographic, no perspective vanishing, no isometric diamond angle.
+
+Subject: ONE large round stone plaza fountain seen from three-quarter top-down: a circular grey stone basin rim (we see the top of the rim and its front outer wall), dark blue-green water inside with small ripples, a central stone pedestal with a two-tier bowl spilling water, a few cracks and moss, slightly neglected. The basin is a horizontal ellipse about 1.6 times wider than tall when seen from this camera. Centred, filling about 80 percent of the image width, generous empty margin on every side, nothing touching an edge. Solid opaque pixels, no shadow on the background. No text, no letters, no numbers, no logo, no watermark, no signature, no UI, no border, no frame, no grid lines, no gutters.
+Background: solid flat pure magenta #FF00FF everywhere outside the fountain.
