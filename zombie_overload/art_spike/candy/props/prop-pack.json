@@ -1,0 +1,830 @@
+{
+  "schema": "generate2dmap.prop_pack.v2",
+  "tool": {
+    "name": "extract_prop_pack",
+    "version": "0.4.0"
+  },
+  "input": "../environment-source.png",
+  "source_size": [
+    1448,
+    1086
+  ],
+  "source_sha256": "84e9ce77eb234d79b96789643f8257c43ad3937635369a63d7379db739920a96",
+  "source_mode": "RGBA",
+  "layout_mode": "grid",
+  "boxes_file": null,
+  "labels_file": null,
+  "background_mode": "native_alpha",
+  "art_source": "host_image",
+  "rows": 3,
+  "cols": 4,
+  "threshold": 100,
+  "edge_threshold": 150,
+  "despill_radius": 0,
+  "despill": {
+    "mode": "off",
+    "applied": "off",
+    "radius": 0,
+    "margin": 12,
+    "changed_px": 0
+  },
+  "hygiene": {
+    "mode": "floor",
+    "floor": 110,
+    "solid_min": 32,
+    "attach_radius": 2,
+    "connectivity": 8,
+    "floor_px": 142741,
+    "detached_px": 0,
+    "detached_components": 0,
+    "max_removed_alpha": 110
+  },
+  "alpha_floor": 110,
+  "alpha_floor_pixels_removed": 142741,
+  "trim_border": 0,
+  "edge_clean_depth": 0,
+  "component_mode": "all",
+  "component_padding": 8,
+  "min_component_area": 1,
+  "edge_touch_margin": 0,
+  "geometry": {
+    "connectivity": 8,
+    "alpha_geometry_threshold": 16,
+    "anchor_mode": "stance",
+    "support_band_fraction": 0.25,
+    "anchor_rounding": "whole pixels, half-up",
+    "grid_rounding": "exact",
+    "keep_canvas": false,
+    "world_scale": null
+  },
+  "accepted": [
+    {
+      "index": 4,
+      "label": "candyhouse",
+      "display_name": "candyHouse",
+      "status": "accepted",
+      "image": "candyhouse/prop.png",
+      "sha256": "70b46f90a5bfde51dd482937ccde7658437538b0bd4005adcf7ad6b43f0b967d",
+      "output_size": [
+        355,
+        362
+      ],
+      "grid": [
+        1,
+        0
+      ],
+      "cell_box": [
+        0,
+        362,
+        362,
+        724
+      ],
+      "source_box": [
+        0,
+        362,
+        362,
+        724
+      ],
+      "source_rect": [
+        5,
+        362,
+        360,
+        724
+      ],
+      "trim_offset": [
+        5,
+        0
+      ],
+      "padding": [
+        8,
+        5,
+        8,
+        0
+      ],
+      "anchor_px": [
+        178,
+        362
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 2,
+      "min_component_area": 1,
+      "trim_applied": 0,
+      "crop_bbox": [
+        13,
+        5,
+        352,
+        362
+      ],
+      "padded_crop_bbox": [
+        5,
+        0,
+        360,
+        362
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 81864,
+      "dropped_components": 0,
+      "dropped_area": 0,
+      "edge_touch": true
+    },
+    {
+      "index": 5,
+      "label": "rainbowarch",
+      "display_name": "rainbowArch",
+      "status": "accepted",
+      "image": "rainbowarch/prop.png",
+      "sha256": "b412283ba620e051744da99b7c288b47c34ac8f3e26670d28e8d71be777cd5ea",
+      "output_size": [
+        362,
+        334
+      ],
+      "grid": [
+        1,
+        1
+      ],
+      "cell_box": [
+        362,
+        362,
+        724,
+        724
+      ],
+      "source_box": [
+        362,
+        362,
+        724,
+        724
+      ],
+      "source_rect": [
+        362,
+        384,
+        724,
+        718
+      ],
+      "trim_offset": [
+        0,
+        22
+      ],
+      "padding": [
+        5,
+        8,
+        0,
+        8
+      ],
+      "anchor_px": [
+        184,
+        326
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 1,
+      "min_component_area": 1,
+      "trim_applied": 0,
+      "crop_bbox": [
+        5,
+        30,
+        362,
+        348
+      ],
+      "padded_crop_bbox": [
+        0,
+        22,
+        362,
+        356
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 74551,
+      "dropped_components": 0,
+      "dropped_area": 0,
+      "edge_touch": true
+    },
+    {
+      "index": 6,
+      "label": "lollipoptree",
+      "display_name": "lollipopTree",
+      "status": "accepted",
+      "image": "lollipoptree/prop.png",
+      "sha256": "7bc4e3847ce9fa5310a19c1f23e01f8c75fb2b7840b29f4e1a1e16a2c6ff5d0a",
+      "output_size": [
+        334,
+        362
+      ],
+      "grid": [
+        1,
+        2
+      ],
+      "cell_box": [
+        724,
+        362,
+        1086,
+        724
+      ],
+      "source_box": [
+        724,
+        362,
+        1086,
+        724
+      ],
+      "source_rect": [
+        724,
+        362,
+        1058,
+        724
+      ],
+      "trim_offset": [
+        0,
+        0
+      ],
+      "padding": [
+        0,
+        0,
+        8,
+        4
+      ],
+      "anchor_px": [
+        140,
+        358
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 2,
+      "min_component_area": 1,
+      "trim_applied": 0,
+      "crop_bbox": [
+        0,
+        0,
+        326,
+        358
+      ],
+      "padded_crop_bbox": [
+        0,
+        0,
+        334,
+        362
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 64455,
+      "dropped_components": 0,
+      "dropped_area": 0,
+      "edge_touch": true
+    },
+    {
+      "index": 7,
+      "label": "rainbowcandy",
+      "display_name": "rainbowCandy",
+      "status": "accepted",
+      "image": "rainbowcandy/prop.png",
+      "sha256": "795338327cc75d2ec598d8c5f6dfa34d50dad59852366681031b2fc533b519c1",
+      "output_size": [
+        346,
+        320
+      ],
+      "grid": [
+        1,
+        3
+      ],
+      "cell_box": [
+        1086,
+        362,
+        1448,
+        724
+      ],
+      "source_box": [
+        1086,
+        362,
+        1448,
+        724
+      ],
+      "source_rect": [
+        1094,
+        391,
+        1440,
+        711
+      ],
+      "trim_offset": [
+        8,
+        29
+      ],
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "anchor_px": [
+        175,
+        312
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 3,
+      "min_component_area": 1,
+      "trim_applied": 0,
+      "crop_bbox": [
+        16,
+        37,
+        346,
+        341
+      ],
+      "padded_crop_bbox": [
+        8,
+        29,
+        354,
+        349
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 66679,
+      "dropped_components": 0,
+      "dropped_area": 0,
+      "edge_touch": false
+    },
+    {
+      "index": 8,
+      "label": "cupcaketower",
+      "display_name": "cupcakeTower",
+      "status": "accepted",
+      "image": "cupcaketower/prop.png",
+      "sha256": "d9e049196eea4e3e0c17f543c46495d9cb9f777e4566aad57e3588368527f9d8",
+      "output_size": [
+        328,
+        350
+      ],
+      "grid": [
+        2,
+        0
+      ],
+      "cell_box": [
+        0,
+        724,
+        362,
+        1086
+      ],
+      "source_box": [
+        0,
+        724,
+        362,
+        1086
+      ],
+      "source_rect": [
+        17,
+        724,
+        345,
+        1074
+      ],
+      "trim_offset": [
+        17,
+        0
+      ],
+      "padding": [
+        8,
+        0,
+        8,
+        8
+      ],
+      "anchor_px": [
+        164,
+        342
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 1,
+      "min_component_area": 1,
+      "trim_applied": 0,
+      "crop_bbox": [
+        25,
+        0,
+        337,
+        342
+      ],
+      "padded_crop_bbox": [
+        17,
+        0,
+        345,
+        350
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 61433,
+      "dropped_components": 0,
+      "dropped_area": 0,
+      "edge_touch": true
+    },
+    {
+      "index": 9,
+      "label": "candycane",
+      "display_name": "candyCane",
+      "status": "accepted",
+      "image": "candycane/prop.png",
+      "sha256": "c5c290bf78878a37ca9c8b58ac9e85cf34fe76e298847236e9c442d41fbad11f",
+      "output_size": [
+        280,
+        343
+      ],
+      "grid": [
+        2,
+        1
+      ],
+      "cell_box": [
+        362,
+        724,
+        724,
+        1086
+      ],
+      "source_box": [
+        362,
+        724,
+        724,
+        1086
+      ],
+      "source_rect": [
+        400,
+        727,
+        680,
+        1070
+      ],
+      "trim_offset": [
+        38,
+        3
+      ],
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "anchor_px": [
+        135,
+        335
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 1,
+      "min_component_area": 1,
+      "trim_applied": 0,
+      "crop_bbox": [
+        46,
+        11,
+        310,
+        338
+      ],
+      "padded_crop_bbox": [
+        38,
+        3,
+        318,
+        346
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 43877,
+      "dropped_components": 0,
+      "dropped_area": 0,
+      "edge_touch": false
+    },
+    {
+      "index": 10,
+      "label": "chocolatefountain",
+      "display_name": "chocolateFountain",
+      "status": "accepted",
+      "image": "chocolatefountain/prop.png",
+      "sha256": "e580dc72a1383bb534907b9ba8033a70ff8b862ce312c902df8e369cca904b0d",
+      "output_size": [
+        304,
+        341
+      ],
+      "grid": [
+        2,
+        2
+      ],
+      "cell_box": [
+        724,
+        724,
+        1086,
+        1086
+      ],
+      "source_box": [
+        724,
+        724,
+        1086,
+        1086
+      ],
+      "source_rect": [
+        743,
+        729,
+        1047,
+        1070
+      ],
+      "trim_offset": [
+        19,
+        5
+      ],
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "anchor_px": [
+        154,
+        333
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 1,
+      "min_component_area": 1,
+      "trim_applied": 0,
+      "crop_bbox": [
+        27,
+        13,
+        315,
+        338
+      ],
+      "padded_crop_bbox": [
+        19,
+        5,
+        323,
+        346
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 56738,
+      "dropped_components": 0,
+      "dropped_area": 0,
+      "edge_touch": false
+    },
+    {
+      "index": 11,
+      "label": "biscuitbridge",
+      "display_name": "biscuitBridge",
+      "status": "accepted",
+      "image": "biscuitbridge/prop.png",
+      "sha256": "3cd4b6bf6b0338345590f9fb556eaf09e3f3028b6aa7db2f6e557b3deae50be7",
+      "output_size": [
+        351,
+        298
+      ],
+      "grid": [
+        2,
+        3
+      ],
+      "cell_box": [
+        1086,
+        724,
+        1448,
+        1086
+      ],
+      "source_box": [
+        1086,
+        724,
+        1448,
+        1086
+      ],
+      "source_rect": [
+        1091,
+        762,
+        1442,
+        1060
+      ],
+      "trim_offset": [
+        5,
+        38
+      ],
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "anchor_px": [
+        113,
+        290
+      ],
+      "anchor_source": "measured",
+      "component_mode": "all",
+      "component_count": 1,
+      "min_component_area": 1,
+      "trim_applied": 0,
+      "crop_bbox": [
+        13,
+        46,
+        348,
+        328
+      ],
+      "padded_crop_bbox": [
+        5,
+        38,
+        356,
+        336
+      ],
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "kept_area": 54179,
+      "dropped_components": 0,
+      "dropped_area": 0,
+      "edge_touch": false
+    }
+  ],
+  "rejected": [
+    {
+      "index": 0,
+      "label": "",
+      "display_name": "skip",
+      "grid": [
+        0,
+        0
+      ],
+      "cell_box": [
+        0,
+        0,
+        362,
+        362
+      ],
+      "source_box": [
+        0,
+        0,
+        362,
+        362
+      ],
+      "status": "skipped-label"
+    },
+    {
+      "index": 1,
+      "label": "",
+      "display_name": "skip",
+      "grid": [
+        0,
+        1
+      ],
+      "cell_box": [
+        362,
+        0,
+        724,
+        362
+      ],
+      "source_box": [
+        362,
+        0,
+        724,
+        362
+      ],
+      "status": "skipped-label"
+    },
+    {
+      "index": 2,
+      "label": "",
+      "display_name": "skip",
+      "grid": [
+        0,
+        2
+      ],
+      "cell_box": [
+        724,
+        0,
+        1086,
+        362
+      ],
+      "source_box": [
+        724,
+        0,
+        1086,
+        362
+      ],
+      "status": "skipped-label"
+    },
+    {
+      "index": 3,
+      "label": "",
+      "display_name": "skip",
+      "grid": [
+        0,
+        3
+      ],
+      "cell_box": [
+        1086,
+        0,
+        1448,
+        362
+      ],
+      "source_box": [
+        1086,
+        0,
+        1448,
+        362
+      ],
+      "status": "skipped-label"
+    }
+  ],
+  "edge_touch_props": [
+    "candyhouse",
+    "rainbowarch",
+    "lollipoptree",
+    "cupcaketower"
+  ],
+  "warnings": [
+    "props touch a cell edge (possible clipping): ['candyhouse', 'rainbowarch', 'lollipoptree', 'cupcaketower']"
+  ],
+  "qa": {
+    "status": "warn",
+    "method": "native alpha, not keyed; alpha hygiene floor; 8-connected components (all); checks measured on the published pixels",
+    "notProven": [
+      "that each label names the art in its cell or box",
+      "that a prop is complete: clipping is detected only where art meets the cell edge",
+      "keyed-edge quality beyond the edge fringe count",
+      "that anchors and suggested footprints match gameplay contact (both are measured from alpha)",
+      "runtime placement, collision or occlusion"
+    ],
+    "checks": [
+      {
+        "id": "accepted",
+        "status": "pass",
+        "value": 8,
+        "threshold": ">= 1"
+      },
+      {
+        "id": "edge_touch",
+        "status": "warn",
+        "value": [
+          "candyhouse",
+          "rainbowarch",
+          "lollipoptree",
+          "cupcaketower"
+        ],
+        "threshold": 0
+      },
+      {
+        "id": "dropped_area",
+        "status": "pass",
+        "value": {},
+        "threshold": 0.01
+      },
+      {
+        "id": "strategy_aspect",
+        "status": "pass",
+        "value": [],
+        "threshold": 1.6
+      },
+      {
+        "id": "edge_fringe",
+        "status": "skipped",
+        "value": null,
+        "threshold": 0.02
+      }
+    ],
+    "inputs": [
+      {
+        "path": "../environment-source.png",
+        "sha256": "84e9ce77eb234d79b96789643f8257c43ad3937635369a63d7379db739920a96",
+        "bytes": 2247153
+      }
+    ],
+    "outputs": [
+      {
+        "path": "candyhouse/prop.png",
+        "sha256": "70b46f90a5bfde51dd482937ccde7658437538b0bd4005adcf7ad6b43f0b967d",
+        "bytes": 209825
+      },
+      {
+        "path": "rainbowarch/prop.png",
+        "sha256": "b412283ba620e051744da99b7c288b47c34ac8f3e26670d28e8d71be777cd5ea",
+        "bytes": 169747
+      },
+      {
+        "path": "lollipoptree/prop.png",
+        "sha256": "7bc4e3847ce9fa5310a19c1f23e01f8c75fb2b7840b29f4e1a1e16a2c6ff5d0a",
+        "bytes": 171074
+      },
+      {
+        "path": "rainbowcandy/prop.png",
+        "sha256": "795338327cc75d2ec598d8c5f6dfa34d50dad59852366681031b2fc533b519c1",
+        "bytes": 173826
+      },
+      {
+        "path": "cupcaketower/prop.png",
+        "sha256": "d9e049196eea4e3e0c17f543c46495d9cb9f777e4566aad57e3588368527f9d8",
+        "bytes": 166906
+      },
+      {
+        "path": "candycane/prop.png",
+        "sha256": "c5c290bf78878a37ca9c8b58ac9e85cf34fe76e298847236e9c442d41fbad11f",
+        "bytes": 115248
+      },
+      {
+        "path": "chocolatefountain/prop.png",
+        "sha256": "e580dc72a1383bb534907b9ba8033a70ff8b862ce312c902df8e369cca904b0d",
+        "bytes": 149208
+      },
+      {
+        "path": "biscuitbridge/prop.png",
+        "sha256": "3cd4b6bf6b0338345590f9fb556eaf09e3f3028b6aa7db2f6e557b3deae50be7",
+        "bytes": 141289
+      }
+    ],
+    "tool": {
+      "name": "extract_prop_pack",
+      "version": "0.4.0"
+    }
+  }
+}

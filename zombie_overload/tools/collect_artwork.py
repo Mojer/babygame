@@ -84,6 +84,22 @@ def main():
         if asset.suffix.lower() in IMAGE_EXTENSIONS | {'.json'}:
             collect(asset.relative_to(ROOT).as_posix(), f'processed/japan/animation/{asset.name}', 'processed')
 
+    candy_sources = [('enemies-source.png', 'enemies-prompt.txt'), ('enemies-source-v2.png', 'enemies-layout-prompt.txt'),
+                     ('environment-source.png', 'environment-prompt.txt'), ('props-source.png', 'props-prompt.txt'), ('cover-source.png', 'cover-prompt.txt'),
+                     ('cloud-ground-source-v2.png', 'cloud-ground-prompt-v2.txt')]
+    for image, prompt_name in candy_sources:
+        prompt = 'prompts/candy/' + prompt_name
+        collect('art_spike/candy/' + prompt_name, prompt, 'prompt')
+        collect('art_spike/candy/' + image, 'originals/candy/' + image, 'original', prompt)
+    for folder in ['animation', 'runtime-props', 'terrain']:
+        for asset in sorted((ROOT / 'art_spike/candy' / folder).glob('*')):
+            if asset.is_file() and asset.suffix.lower() in IMAGE_EXTENSIONS | {'.json'}:
+                collect(asset.relative_to(ROOT).as_posix(), f'processed/candy/{folder}/{asset.name}', 'processed')
+    for name in ['map-preview.png', 'stage-selection.jpg', 'mobile-selection.jpg', 'gameplay.jpg', 'gameplay-v2.jpg', 'motion-runtime-v2.gif']:
+        collect('art_spike/candy/' + name, 'previews/candy/' + name, 'preview')
+    for name in ['provenance.json', 'plan.json', 'scene-snapshot.json']:
+        collect('art_spike/candy/' + name, 'processed/candy/' + name, 'processed')
+
     collect('src/assets/title-bg.jpg', 'runtime/covers/city-title.jpg', 'runtime', 'prompts/city/runs/keyart-1.txt')
     for folder in ['covers', 'sprites']:
         for asset in sorted((ROOT / 'public' / folder).iterdir()):
@@ -101,10 +117,14 @@ def main():
 
     lines = [
         '# Zombie Overload 圖片素材與生成提示詞', '',
-        f'集中整理 {images} 張圖片、{counts["prompt"]} 份提示詞，包含都市關卡、百鬼夜行、角色、敵人、場景、特效與封面版本。', '',
+        f'集中整理 {images} 張圖片、{counts["prompt"]} 份提示詞，包含都市關卡、百鬼夜行、糖果夢境、角色、敵人、場景、特效與封面版本。', '',
         '| 目錄 | 內容 |', '|---|---|',
         '| [originals/city](originals/city/) | 都市／共用素材原圖，依封面、角色、敵人、場景、特效分類，保留生成版本與重排圖 |',
         '| [originals/japan](originals/japan/) | 百鬼夜行妖怪、場景，以及封面 v1／巨獸朝左的 v2 原圖 |',
+        '| [originals/candy](originals/candy/) | 糖果怪物、場景物件與第三關封面原圖 |',
+        '| [prompts/candy](prompts/candy/) | 糖果關卡原圖生成與排版修正提示詞 |',
+        '| [processed/candy](processed/candy/) | 怪物動作、地磚、場景物件、來源與路線驗證 |',
+        '| [previews/candy](previews/candy/) | 第三關地圖、選關與實機畫面 |',
         '| [prompts/city/runs](prompts/city/runs/) | 每次實際生成所用的完整 prompt，與原圖一一對應 |',
         '| [prompts/city/library](prompts/city/library/) | 原本的提示詞庫與造型變體 |',
         '| [prompts/japan](prompts/japan/) | 妖怪、場景、封面生成與巨獸反轉的 prompt |',

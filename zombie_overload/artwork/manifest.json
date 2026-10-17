@@ -1,8 +1,8 @@
 {
   "schema": "zombie-overload.artwork.v1",
   "root": "zombie_overload/artwork",
-  "images": 124,
-  "prompts": 62,
+  "images": 198,
+  "prompts": 68,
   "files": [
     {
       "file": "prompts/city/runs/akane_cannon-1.txt",
@@ -1210,12 +1210,578 @@
       "bytes": 1580
     },
     {
+      "file": "prompts/candy/enemies-prompt.txt",
+      "source": "art_spike/candy/enemies-prompt.txt",
+      "category": "prompt",
+      "sha256": "408c325b9fc4fffb68452cfd67f238bc3c3faa1ad2e392e12cd5a06a14f72dcd",
+      "bytes": 1438
+    },
+    {
+      "file": "originals/candy/enemies-source.png",
+      "source": "art_spike/candy/enemies-source.png",
+      "category": "original",
+      "sha256": "da1d6b952292f10ce0fa92c5b787c30da15dd82cba7c2bc6132ce63e4f292884",
+      "bytes": 2190544,
+      "prompt": "prompts/candy/enemies-prompt.txt"
+    },
+    {
+      "file": "prompts/candy/enemies-layout-prompt.txt",
+      "source": "art_spike/candy/enemies-layout-prompt.txt",
+      "category": "prompt",
+      "sha256": "ee9d3035f0d5584605bd4069cbc6c37546dd316e7169b1307459dd14dd639067",
+      "bytes": 630
+    },
+    {
+      "file": "originals/candy/enemies-source-v2.png",
+      "source": "art_spike/candy/enemies-source-v2.png",
+      "category": "original",
+      "sha256": "a87553261f4c76d8496b65b3ecec7f5b39c42fcba525f4af9b77767c1aae07c4",
+      "bytes": 1630362,
+      "prompt": "prompts/candy/enemies-layout-prompt.txt"
+    },
+    {
+      "file": "prompts/candy/environment-prompt.txt",
+      "source": "art_spike/candy/environment-prompt.txt",
+      "category": "prompt",
+      "sha256": "b772e49ad68e702a8bdc0110fd96d7528e71f4e5f0e5f30a45bb4e89f0ba2223",
+      "bytes": 1431
+    },
+    {
+      "file": "originals/candy/environment-source.png",
+      "source": "art_spike/candy/environment-source.png",
+      "category": "original",
+      "sha256": "84e9ce77eb234d79b96789643f8257c43ad3937635369a63d7379db739920a96",
+      "bytes": 2247153,
+      "prompt": "prompts/candy/environment-prompt.txt"
+    },
+    {
+      "file": "prompts/candy/props-prompt.txt",
+      "source": "art_spike/candy/props-prompt.txt",
+      "category": "prompt",
+      "sha256": "1d8787bc5cc34ed4331616517c519096eaf29bdf976621cb944aa65d1ee39c48",
+      "bytes": 947
+    },
+    {
+      "file": "originals/candy/props-source.png",
+      "source": "art_spike/candy/props-source.png",
+      "category": "original",
+      "sha256": "6691e269e2f62c2ad8d63c54d33ba1e6ead81c03588315156c266ceaf0f30b70",
+      "bytes": 1930782,
+      "prompt": "prompts/candy/props-prompt.txt"
+    },
+    {
+      "file": "prompts/candy/cover-prompt.txt",
+      "source": "art_spike/candy/cover-prompt.txt",
+      "category": "prompt",
+      "sha256": "21dceb35573853d9b8fee411e403e57ac17261571a8fcf00a830ce5af858cad7",
+      "bytes": 1118
+    },
+    {
+      "file": "originals/candy/cover-source.png",
+      "source": "art_spike/candy/cover-source.png",
+      "category": "original",
+      "sha256": "bb34b544513646cf91328a72fd53fabe8554d1ac8159b2671cfe4ac11be64699",
+      "bytes": 3100645,
+      "prompt": "prompts/candy/cover-prompt.txt"
+    },
+    {
+      "file": "prompts/candy/cloud-ground-prompt-v2.txt",
+      "source": "art_spike/candy/cloud-ground-prompt-v2.txt",
+      "category": "prompt",
+      "sha256": "3700b107146ef68f4d378bdd647442eba59649a96e0d56fc99bb375f6054bc50",
+      "bytes": 1080
+    },
+    {
+      "file": "originals/candy/cloud-ground-source-v2.png",
+      "source": "art_spike/candy/cloud-ground-source-v2.png",
+      "category": "original",
+      "sha256": "5900857d8fc6a5cc48f894a3e85311491567067411ac23efc099a9477545be67",
+      "bytes": 1732224,
+      "prompt": "prompts/candy/cloud-ground-prompt-v2.txt"
+    },
+    {
+      "file": "processed/candy/animation/chocolate-lava-0.png",
+      "source": "art_spike/candy/animation/chocolate-lava-0.png",
+      "category": "processed",
+      "sha256": "00b15065cc8b41b20be651c33426565b7449ef3a8c4ba52e86564b550c3aa4f1",
+      "bytes": 8095
+    },
+    {
+      "file": "processed/candy/animation/chocolate-lava-1.png",
+      "source": "art_spike/candy/animation/chocolate-lava-1.png",
+      "category": "processed",
+      "sha256": "a495cb53ffed4d0bbcf3fe4334c7801936785c92d940266a8a038378faae603b",
+      "bytes": 8256
+    },
+    {
+      "file": "processed/candy/animation/chocolate-lava-2.png",
+      "source": "art_spike/candy/animation/chocolate-lava-2.png",
+      "category": "processed",
+      "sha256": "790286b0d5c5bdcc9b18af6c6be1476ed5a02c7774b6bf4d0f3c1ad301f02e5e",
+      "bytes": 8381
+    },
+    {
+      "file": "processed/candy/animation/chocolate-lava-3.png",
+      "source": "art_spike/candy/animation/chocolate-lava-3.png",
+      "category": "processed",
+      "sha256": "178a5c47f97c67be9e8a2a41bfe8511d083c9c6f5cc82fedcad6efdc20f3a2df",
+      "bytes": 8308
+    },
+    {
+      "file": "processed/candy/animation/chocolate-lava-4.png",
+      "source": "art_spike/candy/animation/chocolate-lava-4.png",
+      "category": "processed",
+      "sha256": "d68613c98583e38897bdab8827f1fbbcd119d3cd7cc39e52e3c173c258b48963",
+      "bytes": 8133
+    },
+    {
+      "file": "processed/candy/animation/chocolate-lava-5.png",
+      "source": "art_spike/candy/animation/chocolate-lava-5.png",
+      "category": "processed",
+      "sha256": "16cc77f78b0c126d512ff60cf70af093fc822b1f57accd9424eee21ad8db9496",
+      "bytes": 7960
+    },
+    {
+      "file": "processed/candy/animation/chocolate-lava-6.png",
+      "source": "art_spike/candy/animation/chocolate-lava-6.png",
+      "category": "processed",
+      "sha256": "da736fa3c260581d0fc235536d406bd5a774146b6cfcbf79700c4e797b7793bc",
+      "bytes": 7830
+    },
+    {
+      "file": "processed/candy/animation/chocolate-lava-7.png",
+      "source": "art_spike/candy/animation/chocolate-lava-7.png",
+      "category": "processed",
+      "sha256": "df116fe01ae1d8c44e34cde944578c3deb0bf2a62b800cebef142988a5c3d5aa",
+      "bytes": 7869
+    },
+    {
+      "file": "processed/candy/animation/cookie-0.png",
+      "source": "art_spike/candy/animation/cookie-0.png",
+      "category": "processed",
+      "sha256": "2407c99efd85d211a42c6f6ec0b0eac178fc8b83f4e4a5f0a1e09d6709d24d02",
+      "bytes": 2025
+    },
+    {
+      "file": "processed/candy/animation/cookie-1.png",
+      "source": "art_spike/candy/animation/cookie-1.png",
+      "category": "processed",
+      "sha256": "ca3caf896f805b1298b545f09a43bc5e7b41c155e225bcb34ffb97bbe831afed",
+      "bytes": 2067
+    },
+    {
+      "file": "processed/candy/animation/cookie-2.png",
+      "source": "art_spike/candy/animation/cookie-2.png",
+      "category": "processed",
+      "sha256": "376f60cdfb2911c472de2e05b3adaa79e0b7a820fea0ec641be1667e55ff0c97",
+      "bytes": 2117
+    },
+    {
+      "file": "processed/candy/animation/cookie-3.png",
+      "source": "art_spike/candy/animation/cookie-3.png",
+      "category": "processed",
+      "sha256": "742e7cfb02b5d387a4798ab38e2bc4ed4e972c0110e7e26e43b7327b9c84c0b6",
+      "bytes": 2113
+    },
+    {
+      "file": "processed/candy/animation/cookie-4.png",
+      "source": "art_spike/candy/animation/cookie-4.png",
+      "category": "processed",
+      "sha256": "e1b314745149ff400899a41562ef9a44bc2241dcb4f8e9185430cfea4d84310b",
+      "bytes": 2056
+    },
+    {
+      "file": "processed/candy/animation/cookie-5.png",
+      "source": "art_spike/candy/animation/cookie-5.png",
+      "category": "processed",
+      "sha256": "96f602ee0e295e468a9e6f527842771147c5bcf56fe8106d1d52c04526b4f880",
+      "bytes": 1978
+    },
+    {
+      "file": "processed/candy/animation/cookie-6.png",
+      "source": "art_spike/candy/animation/cookie-6.png",
+      "category": "processed",
+      "sha256": "205f0c13c0e33d2f0469f0cbd587e40da738489b534fbb3aee04bf6c59f59e52",
+      "bytes": 1919
+    },
+    {
+      "file": "processed/candy/animation/cookie-7.png",
+      "source": "art_spike/candy/animation/cookie-7.png",
+      "category": "processed",
+      "sha256": "4fd4d7569a5f3b81de50ae70c1b5a3407434eec4717121a183a11f178ff91896",
+      "bytes": 1936
+    },
+    {
+      "file": "processed/candy/animation/cotton-candy-0.png",
+      "source": "art_spike/candy/animation/cotton-candy-0.png",
+      "category": "processed",
+      "sha256": "44e99535d05129554a83e02678995ec34aec3b7cc2e1d28c14f7d556c429ab6a",
+      "bytes": 1834
+    },
+    {
+      "file": "processed/candy/animation/cotton-candy-1.png",
+      "source": "art_spike/candy/animation/cotton-candy-1.png",
+      "category": "processed",
+      "sha256": "fc599cdea41009080d3cfb2d0fed27e2fa7fd1fc1609bfe252c5556f226eb1f3",
+      "bytes": 1706
+    },
+    {
+      "file": "processed/candy/animation/cotton-candy-2.png",
+      "source": "art_spike/candy/animation/cotton-candy-2.png",
+      "category": "processed",
+      "sha256": "1a24ccb353b8bd13d2a5d6a535ca9236f092e13de24eb78c3ab44be06543dcf6",
+      "bytes": 1688
+    },
+    {
+      "file": "processed/candy/animation/cotton-candy-3.png",
+      "source": "art_spike/candy/animation/cotton-candy-3.png",
+      "category": "processed",
+      "sha256": "6104250b2a7f2452b2da790d7b5be8f26097bfafba69050227417dbb1cfcfaa8",
+      "bytes": 1802
+    },
+    {
+      "file": "processed/candy/animation/cotton-candy-4.png",
+      "source": "art_spike/candy/animation/cotton-candy-4.png",
+      "category": "processed",
+      "sha256": "07c044d00327328d3ffbb8e144286f3e9a57715a117cd61460f419287b0f809e",
+      "bytes": 1916
+    },
+    {
+      "file": "processed/candy/animation/cotton-candy-5.png",
+      "source": "art_spike/candy/animation/cotton-candy-5.png",
+      "category": "processed",
+      "sha256": "1a85f40db819a6182558a7d33a19b79060806259dd3543e1ea99f1b005b13029",
+      "bytes": 1989
+    },
+    {
+      "file": "processed/candy/animation/cotton-candy-6.png",
+      "source": "art_spike/candy/animation/cotton-candy-6.png",
+      "category": "processed",
+      "sha256": "2aa2df6295f6dadaf1f0d72f9c4d176e3d682474545af1366bd8e19be0ab7554",
+      "bytes": 1996
+    },
+    {
+      "file": "processed/candy/animation/cotton-candy-7.png",
+      "source": "art_spike/candy/animation/cotton-candy-7.png",
+      "category": "processed",
+      "sha256": "5948c981a00246e293a805506f90cc552222961e7c7c00aa5da3a7ae98e4582c",
+      "bytes": 1907
+    },
+    {
+      "file": "processed/candy/animation/gummy-bear-0.png",
+      "source": "art_spike/candy/animation/gummy-bear-0.png",
+      "category": "processed",
+      "sha256": "21ef258a22e3979408a92393842fe73af75c24a0da2e994d3e521daf9056f918",
+      "bytes": 2105
+    },
+    {
+      "file": "processed/candy/animation/gummy-bear-1.png",
+      "source": "art_spike/candy/animation/gummy-bear-1.png",
+      "category": "processed",
+      "sha256": "5489d2541be61a927919feb0ee375d4757dd926a3aa513852983f9c926aabb24",
+      "bytes": 2135
+    },
+    {
+      "file": "processed/candy/animation/gummy-bear-2.png",
+      "source": "art_spike/candy/animation/gummy-bear-2.png",
+      "category": "processed",
+      "sha256": "f0b3dd23067a7813b11cacb771f011e6a4e0f446623436d295c09c51ff57fc8f",
+      "bytes": 2132
+    },
+    {
+      "file": "processed/candy/animation/gummy-bear-3.png",
+      "source": "art_spike/candy/animation/gummy-bear-3.png",
+      "category": "processed",
+      "sha256": "e2218304ee6c7fbe90dcc7b173edd626d4e9328bb3e81042f79a60e281437e65",
+      "bytes": 2158
+    },
+    {
+      "file": "processed/candy/animation/gummy-bear-4.png",
+      "source": "art_spike/candy/animation/gummy-bear-4.png",
+      "category": "processed",
+      "sha256": "b1a5a8bf8acea4f20c2c9b6aef8d72e85b7a3d68ec047750e917a15c63afcb32",
+      "bytes": 2152
+    },
+    {
+      "file": "processed/candy/animation/gummy-bear-5.png",
+      "source": "art_spike/candy/animation/gummy-bear-5.png",
+      "category": "processed",
+      "sha256": "6228ba00b02caf84be213c210f70d940351cad1a9b1927d389bfa276f5bfb702",
+      "bytes": 2067
+    },
+    {
+      "file": "processed/candy/animation/gummy-bear-6.png",
+      "source": "art_spike/candy/animation/gummy-bear-6.png",
+      "category": "processed",
+      "sha256": "b2edcefd3ea66a2227eedc62bc2359ee8313f31d0f35c86b23a90a869210044a",
+      "bytes": 2008
+    },
+    {
+      "file": "processed/candy/animation/gummy-bear-7.png",
+      "source": "art_spike/candy/animation/gummy-bear-7.png",
+      "category": "processed",
+      "sha256": "366191649b6b8c910f16cecb3dc89b650f81aaeae5cdbf7520e3cc44d29517fe",
+      "bytes": 2062
+    },
+    {
+      "file": "processed/candy/animation/lollipop-0.png",
+      "source": "art_spike/candy/animation/lollipop-0.png",
+      "category": "processed",
+      "sha256": "3d5be0c6d799fe06d2986f0198e8a2c866a18264f37d2f83f21bb95b948da13a",
+      "bytes": 1410
+    },
+    {
+      "file": "processed/candy/animation/lollipop-1.png",
+      "source": "art_spike/candy/animation/lollipop-1.png",
+      "category": "processed",
+      "sha256": "b820f8e45f497ee481c4a4c312b04c474520660e8245e8705036f0164fa50251",
+      "bytes": 1417
+    },
+    {
+      "file": "processed/candy/animation/lollipop-2.png",
+      "source": "art_spike/candy/animation/lollipop-2.png",
+      "category": "processed",
+      "sha256": "da3a02ae5792cf5f274579ac32fcbb8bb7f2b11961cc60413733bb4e766cb19e",
+      "bytes": 1432
+    },
+    {
+      "file": "processed/candy/animation/lollipop-3.png",
+      "source": "art_spike/candy/animation/lollipop-3.png",
+      "category": "processed",
+      "sha256": "a43bfe0a966d9a5443c243737f29369e7e5453543140a20ad22d87aba4d6055f",
+      "bytes": 1421
+    },
+    {
+      "file": "processed/candy/animation/lollipop-4.png",
+      "source": "art_spike/candy/animation/lollipop-4.png",
+      "category": "processed",
+      "sha256": "efa66b2ef38eb6421f6235902047680a065a1c701a821caf05550e016e89425c",
+      "bytes": 1405
+    },
+    {
+      "file": "processed/candy/animation/lollipop-5.png",
+      "source": "art_spike/candy/animation/lollipop-5.png",
+      "category": "processed",
+      "sha256": "756a9ffc002904a6dbb74f2de0662c2b2a6db30a8113df1df594d5e2f91013e5",
+      "bytes": 1392
+    },
+    {
+      "file": "processed/candy/animation/lollipop-6.png",
+      "source": "art_spike/candy/animation/lollipop-6.png",
+      "category": "processed",
+      "sha256": "d1f026f8652a589a7f1af83f8c0e59c17c11b3ec9c53f2296f766b8994e9ca6a",
+      "bytes": 1354
+    },
+    {
+      "file": "processed/candy/animation/lollipop-7.png",
+      "source": "art_spike/candy/animation/lollipop-7.png",
+      "category": "processed",
+      "sha256": "62a433fc2dd7c7f2977d7ea0ca27ecbc1f52a3803bc303a6a503203d0626a098",
+      "bytes": 1400
+    },
+    {
+      "file": "processed/candy/animation/motion-preview.gif",
+      "source": "art_spike/candy/animation/motion-preview.gif",
+      "category": "processed",
+      "sha256": "a0e979405e3b496edd30911ea901389eca0cec5dfeeaedb92acb6518f8c3eb97",
+      "bytes": 114342
+    },
+    {
+      "file": "processed/candy/animation/motion.json",
+      "source": "art_spike/candy/animation/motion.json",
+      "category": "processed",
+      "sha256": "13ad40b7c1c9bc4e8103e7b6d61bd04e866febd669f4098a04d200e8a60d1cae",
+      "bytes": 2726
+    },
+    {
+      "file": "processed/candy/animation/qa.json",
+      "source": "art_spike/candy/animation/qa.json",
+      "category": "processed",
+      "sha256": "6027db9811633075915b4de8c56d206dc7f7f269c16957f3b859e9d1f9f2a1b6",
+      "bytes": 776
+    },
+    {
+      "file": "processed/candy/animation/review.png",
+      "source": "art_spike/candy/animation/review.png",
+      "category": "processed",
+      "sha256": "6cfd66b8f4f27c9565c0d92d7fc339a81bae6eee538b7b2ca7c44542a57b8a04",
+      "bytes": 58464
+    },
+    {
+      "file": "processed/candy/animation/runtime-motion-v2.json",
+      "source": "art_spike/candy/animation/runtime-motion-v2.json",
+      "category": "processed",
+      "sha256": "7c1cdf1a63056e5bba50b3f6a85c239b84cff80a668cb2b91263c430eb5854ad",
+      "bytes": 684
+    },
+    {
+      "file": "processed/candy/runtime-props/biscuitBridge.png",
+      "source": "art_spike/candy/runtime-props/biscuitBridge.png",
+      "category": "processed",
+      "sha256": "6fd3127f40c9c29f2c953213022ce5f2f6529ba9a7172b0b9062203b2cd773e9",
+      "bytes": 8745
+    },
+    {
+      "file": "processed/candy/runtime-props/candyCane.png",
+      "source": "art_spike/candy/runtime-props/candyCane.png",
+      "category": "processed",
+      "sha256": "117da77776f212bb51da5ef902e4d3c3a134088f7f4c55dfaf3219b663c55d2e",
+      "bytes": 1768
+    },
+    {
+      "file": "processed/candy/runtime-props/candyHouse.png",
+      "source": "art_spike/candy/runtime-props/candyHouse.png",
+      "category": "processed",
+      "sha256": "a625e72ca0a295f82cbc2a2d5de07fe70a7f1964350d9c8dbe845dd03abca6ad",
+      "bytes": 27820
+    },
+    {
+      "file": "processed/candy/runtime-props/chocolateFountain.png",
+      "source": "art_spike/candy/runtime-props/chocolateFountain.png",
+      "category": "processed",
+      "sha256": "eef1413b53f6326e3cec468ad2fa2c04940c843ffccc684145361ab61e0f0102",
+      "bytes": 8149
+    },
+    {
+      "file": "processed/candy/runtime-props/cupcakeTower.png",
+      "source": "art_spike/candy/runtime-props/cupcakeTower.png",
+      "category": "processed",
+      "sha256": "0822b350bb58581e86565ffe56b125e4dff4e875404ff53f79b4dc9f1a27a95c",
+      "bytes": 4864
+    },
+    {
+      "file": "processed/candy/runtime-props/lollipopTree.png",
+      "source": "art_spike/candy/runtime-props/lollipopTree.png",
+      "category": "processed",
+      "sha256": "90511c8cb26095017139d325fa29f56cf847accd325fc9fc8a9391dbc128ea93",
+      "bytes": 6887
+    },
+    {
+      "file": "processed/candy/runtime-props/rainbowArch.png",
+      "source": "art_spike/candy/runtime-props/rainbowArch.png",
+      "category": "processed",
+      "sha256": "5898486f1833b619ebee29dc6542941c28aa81e21d35b45e57c0479379a33758",
+      "bytes": 15816
+    },
+    {
+      "file": "processed/candy/runtime-props/rainbowCandy.png",
+      "source": "art_spike/candy/runtime-props/rainbowCandy.png",
+      "category": "processed",
+      "sha256": "f0ee0cc62addc4a6e74a299dfccf0a948125d0667b9a66f3d810629d6ae14ec0",
+      "bytes": 2718
+    },
+    {
+      "file": "processed/candy/terrain/biscuit-1.png",
+      "source": "art_spike/candy/terrain/biscuit-1.png",
+      "category": "processed",
+      "sha256": "e137b3433e71f79ceca5b40b7a252510ea5f4d8a5a6f115725ca1634dfc2d050",
+      "bytes": 35175
+    },
+    {
+      "file": "processed/candy/terrain/cloud-1.png",
+      "source": "art_spike/candy/terrain/cloud-1.png",
+      "category": "processed",
+      "sha256": "0b34024433be0f9d515511c2c69b112a6648c402578d9f41b43b795abe99a9f9",
+      "bytes": 25540
+    },
+    {
+      "file": "processed/candy/terrain/cloudborder-1.png",
+      "source": "art_spike/candy/terrain/cloudborder-1.png",
+      "category": "processed",
+      "sha256": "5beecdeedec6618431861b79dca3871b579c9f26e834e53a3db8bd7c28ffd4b2",
+      "bytes": 31726
+    },
+    {
+      "file": "processed/candy/terrain/frosting-1.png",
+      "source": "art_spike/candy/terrain/frosting-1.png",
+      "category": "processed",
+      "sha256": "b1270aeb17bb1f329729753318e905c9bd81d45c57cf8bc0702de50f88556862",
+      "bytes": 31117
+    },
+    {
+      "file": "processed/candy/terrain/terrain-bundle.json",
+      "source": "art_spike/candy/terrain/terrain-bundle.json",
+      "category": "processed",
+      "sha256": "4d9e919e7943036f187f1fc365d8b36a0df5b2c9e0c6c4a773895f7541dafa54",
+      "bytes": 11229
+    },
+    {
+      "file": "previews/candy/map-preview.png",
+      "source": "art_spike/candy/map-preview.png",
+      "category": "preview",
+      "sha256": "67b705c461bd0811b90e86235b65a6c0e529e8e91e6add81c5ba649c16f181b8",
+      "bytes": 3880918
+    },
+    {
+      "file": "previews/candy/stage-selection.jpg",
+      "source": "art_spike/candy/stage-selection.jpg",
+      "category": "preview",
+      "sha256": "4fe15f9f2859a01994cbfde751a88092e36a2eabecff8196a1db0b1efbad935a",
+      "bytes": 168538
+    },
+    {
+      "file": "previews/candy/mobile-selection.jpg",
+      "source": "art_spike/candy/mobile-selection.jpg",
+      "category": "preview",
+      "sha256": "a010a1a867fac175b3cd3dd90cecda8d77c706e6c5e692217ab8db008bd6eeb1",
+      "bytes": 72107
+    },
+    {
+      "file": "previews/candy/gameplay.jpg",
+      "source": "art_spike/candy/gameplay.jpg",
+      "category": "preview",
+      "sha256": "c620141af5f21bf7ef654afa5498e3ad3409dd0b1a54efcdf6a37d21c3729171",
+      "bytes": 81364
+    },
+    {
+      "file": "previews/candy/gameplay-v2.jpg",
+      "source": "art_spike/candy/gameplay-v2.jpg",
+      "category": "preview",
+      "sha256": "7fc4bdee5c8b6d36cfc3ea1100befea23abfc9d8df35b12adafc72c3f423204c",
+      "bytes": 80639
+    },
+    {
+      "file": "previews/candy/motion-runtime-v2.gif",
+      "source": "art_spike/candy/motion-runtime-v2.gif",
+      "category": "preview",
+      "sha256": "6cf332c0322756862afa5d6b52850f19e4c0f60e07b5cad3dfd5de2887dd7cb5",
+      "bytes": 1288767
+    },
+    {
+      "file": "processed/candy/provenance.json",
+      "source": "art_spike/candy/provenance.json",
+      "category": "processed",
+      "sha256": "f12d378af7e9f34c6e8dd49a46b69ca083b0dc8700dfa038494105226441489e",
+      "bytes": 1440
+    },
+    {
+      "file": "processed/candy/plan.json",
+      "source": "art_spike/candy/plan.json",
+      "category": "processed",
+      "sha256": "cec77011334b271e33ff81df0781f3085c8f5dc4975fec1881b38fb45fbf3a4d",
+      "bytes": 513
+    },
+    {
+      "file": "processed/candy/scene-snapshot.json",
+      "source": "art_spike/candy/scene-snapshot.json",
+      "category": "processed",
+      "sha256": "305fc0aaf09bcab6d4f9bae17b5302610a495c7a7046e6afcd4b92031e85d4d8",
+      "bytes": 2435
+    },
+    {
       "file": "runtime/covers/city-title.jpg",
       "source": "src/assets/title-bg.jpg",
       "category": "runtime",
       "sha256": "1f748a02fe1a940027a2d2d3fafa0d6dc51208439f090cb04eeffb722aef2fa1",
       "bytes": 484537,
       "prompt": "prompts/city/runs/keyart-1.txt"
+    },
+    {
+      "file": "runtime/covers/candy-cover-v1.jpg",
+      "source": "public/covers/candy-cover-v1.jpg",
+      "category": "runtime",
+      "sha256": "b660c88de42cba7ee66d6fd5198ab312727aaf9c6fb7c5ea0ca5411feacdbe43",
+      "bytes": 663218
     },
     {
       "file": "runtime/covers/japan-cover-v1.jpg",
@@ -1230,6 +1796,48 @@
       "category": "runtime",
       "sha256": "9f5e6e1a3e0c6fa3aadec0f853e125a8c70950a60fdb032c5c0b4e60698a79b8",
       "bytes": 698775
+    },
+    {
+      "file": "runtime/sprites/candy-ground-v2.jpg",
+      "source": "public/sprites/candy-ground-v2.jpg",
+      "category": "runtime",
+      "sha256": "23bafcf2b8a75d1fd8f3ad69dfea00302db674e32ef38c941493974530c311f5",
+      "bytes": 534110
+    },
+    {
+      "file": "runtime/sprites/candy_0.png",
+      "source": "public/sprites/candy_0.png",
+      "category": "runtime",
+      "sha256": "ec058e459f0f34b72a1092f14baa8b07bd5a6371b4e62f29d934a3edf6fe4674",
+      "bytes": 6185
+    },
+    {
+      "file": "runtime/sprites/candy_1.png",
+      "source": "public/sprites/candy_1.png",
+      "category": "runtime",
+      "sha256": "e4f76265b59e907c5679750b93e2ba7b0df1c4ff93237649e1cb4997c214be0c",
+      "bytes": 6588
+    },
+    {
+      "file": "runtime/sprites/candy_2.png",
+      "source": "public/sprites/candy_2.png",
+      "category": "runtime",
+      "sha256": "a5bfcf87124e33579f8a44c93ce6a589c89fef723feadcf8e876908cef67225e",
+      "bytes": 6730
+    },
+    {
+      "file": "runtime/sprites/candy_3.png",
+      "source": "public/sprites/candy_3.png",
+      "category": "runtime",
+      "sha256": "53f54174b331d6ca0bdbac0be00c9b1f8c0d267224a883485dc3d710c6d576f1",
+      "bytes": 8727
+    },
+    {
+      "file": "runtime/sprites/candy_4.png",
+      "source": "public/sprites/candy_4.png",
+      "category": "runtime",
+      "sha256": "74c06e51b63ca66c7526de349911ea89441cb24809fc24f7e0a4b693a9579150",
+      "bytes": 9461
     },
     {
       "file": "runtime/sprites/explosion.json",
@@ -1263,15 +1871,15 @@
       "file": "runtime/sprites/horde_stages.json",
       "source": "public/sprites/horde_stages.json",
       "category": "runtime",
-      "sha256": "94d1b73b90df23e5841c684c6bbd2586244405317c4d766d41065f549f803d38",
-      "bytes": 8654
+      "sha256": "50abcfe755b119832e94fc273562aabf758dce36643c0b86c9d9a3825cac5858",
+      "bytes": 12757
     },
     {
       "file": "runtime/sprites/horde_stages.png",
       "source": "public/sprites/horde_stages.png",
       "category": "runtime",
-      "sha256": "51e352a12d52d62636030a1761c3b52f3bbad3d81841a48df2b66473e73605a4",
-      "bytes": 297712
+      "sha256": "e3fe67e6d270c15fd5403487f5184ed7520a2335b803842c95a9d52a27dce810",
+      "bytes": 472478
     },
     {
       "file": "runtime/sprites/japan-preview.png",
@@ -1293,6 +1901,20 @@
       "category": "runtime",
       "sha256": "007251321109095d02ac9d844745c2c40191d966fe405486b13736c5f197a37b",
       "bytes": 176911
+    },
+    {
+      "file": "runtime/sprites/map_candy.json",
+      "source": "public/sprites/map_candy.json",
+      "category": "runtime",
+      "sha256": "8e915598d5edaeb6fd7068b6956f7b89e1570ad124849acb81a145222a65ebf3",
+      "bytes": 263
+    },
+    {
+      "file": "runtime/sprites/map_candy.png",
+      "source": "public/sprites/map_candy.png",
+      "category": "runtime",
+      "sha256": "a928986679c1a4a091ad0737f3663c8e523cb3ec1bbfbbadb28153f136b7eba4",
+      "bytes": 135155
     },
     {
       "file": "runtime/sprites/map_japan.json",

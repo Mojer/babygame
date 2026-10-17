@@ -1,4 +1,4 @@
-export const STAGE_IDS = ['city', 'japan'] as const;
+export const STAGE_IDS = ['city', 'japan', 'candy'] as const;
 export type StageId = (typeof STAGE_IDS)[number];
 
 export const STAGES = {
@@ -17,6 +17,14 @@ export const STAGES = {
     landmarks: ['朱紅鳥居', '月下神社', '櫻花祭典街'],
     enemies: ['河童', '天狗', '赤鬼', '唐傘妖', '荒魂巨獸'],
     boss: '荒魂巨獸', bossPlural: '荒魂巨獸', core: '唐傘妖', horde: '百鬼',
+  },
+  candy: {
+    id: 'candy', number: '03', name: '糖果夢境', latin: 'CANDY DREAMLAND', color: '#9be9ee',
+    subtitle: '雲端上的甜蜜危機',
+    description: '踏上蓬鬆雲朵，穿越彩虹與糖果屋。繽紛甜點化為怪物，巧克力熔岩正在甦醒。',
+    landmarks: ['彩虹雲海', '糖果屋村落', '彩虹糖花園'],
+    enemies: ['棒棒糖怪', '棉花糖怪', '軟糖熊', '大眼餅乾怪', '巧克力熔岩怪'],
+    boss: '巧克力熔岩怪', bossPlural: '巧克力熔岩怪', core: '大眼餅乾怪', horde: '糖果怪潮',
   },
 } satisfies Record<StageId, {
   id: StageId; number: string; name: string; latin: string; color: string;

@@ -1,0 +1,19 @@
+<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><title>糖果怪物動作檢查</title>
+<style>body{margin:0;background:#171b26;color:#fff;font:16px system-ui}main{width:760px;max-width:95vw;margin:60px auto}h1{font-size:26px}p{color:#bbc4d5}canvas{width:760px;max-width:100%;border-radius:12px;display:block}.labels{display:grid;grid-template-columns:repeat(5,1fr);text-align:center;margin:16px 0}button{padding:10px 20px;cursor:pointer}#state{margin-left:16px}</style>
+<main><h1>糖果夢境 · 動作檢查</h1><p>正式遊戲圖集與同一套動作函式，包含八格肢體姿勢、彈跳、擺動與伸縮。</p><div id="view"></div><div class="labels"><span>棒棒糖怪</span><span>棉花糖怪</span><span>軟糖熊</span><span>大眼餅乾怪</span><span>巧克力熔岩怪</span></div><button id="pause">暫停動畫</button><span id="state">載入中</span></main>
+<script type="module">
+import {autoDetectRenderer,Container,Particle,ParticleContainer} from 'pixi.js';
+import {loadHordeSprites} from '/src/render/sprites.ts';
+import {candyPose} from '/src/render/candyMotion.ts';
+const sp=(await loadHordeSprites('/sprites/')).stageArt.candy;
+const renderer=await autoDetectRenderer({width:760,height:220,resolution:2,background:0xeee4f3,preference:'webgl'});
+document.querySelector('#view').append(renderer.canvas);
+const root=new Container();const pc=new ParticleContainer({texture:sp.zombie[0][0],dynamicProperties:{position:true,rotation:true,uvs:true,color:true,vertex:true}});root.addChild(pc);
+const particles=Array.from({length:5},(_,k)=>{const p=new Particle({texture:sp.zombie[k][0],anchorX:.5,anchorY:sp.anchorY[k]});p.x=76+k*152;pc.addParticle(p);return p;});
+let running=true,time=0,last=performance.now();const pose={};
+document.querySelector('#pause').onclick=()=>{running=!running;document.querySelector('#pause').textContent=running?'暫停動畫':'播放動畫';};
+function tick(now){const dt=Math.min((now-last)/1000,.05);last=now;if(running)time+=dt;
+ for(let k=0;k<5;k++){const m=candyPose(k,time,k,pose),p=particles[k];p.texture=sp.zombie[k][m.frame];p.y=200-m.lift*2;p.rotation=m.lean;p.scaleX=2*m.scaleX;p.scaleY=2*m.scaleY;}
+ renderer.render(root);document.querySelector('#state').textContent=(running?'播放中':'已暫停')+' · '+time.toFixed(2)+' 秒';requestAnimationFrame(tick);}
+requestAnimationFrame(tick);
+</script></html>

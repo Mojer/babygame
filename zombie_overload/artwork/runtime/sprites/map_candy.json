@@ -1,0 +1,1 @@
+{"image": "map_candy.png", "frames": {"tile_cloud": {"x": 0, "y": 0, "w": 128, "h": 128}, "tile_frosting": {"x": 128, "y": 0, "w": 128, "h": 128}, "tile_biscuit": {"x": 256, "y": 0, "w": 128, "h": 128}, "tile_cloudBorder": {"x": 384, "y": 0, "w": 128, "h": 128}}}

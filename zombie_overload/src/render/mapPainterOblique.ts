@@ -4,6 +4,8 @@ import { hash2 } from '../sim/rng';
 
 export interface MapSheet {
   image: ImageBitmap;
+  /** Optional full-world ground art; avoids repeating small terrain tiles. */
+  ground?: ImageBitmap;
   frames: Record<string, { x: number; y: number; w: number; h: number }>;
 }
 

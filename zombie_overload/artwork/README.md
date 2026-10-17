@@ -1,11 +1,15 @@
 # Zombie Overload 圖片素材與生成提示詞
 
-集中整理 124 張圖片、62 份提示詞，包含都市關卡、百鬼夜行、角色、敵人、場景、特效與封面版本。
+集中整理 198 張圖片、68 份提示詞，包含都市關卡、百鬼夜行、糖果夢境、角色、敵人、場景、特效與封面版本。
 
 | 目錄 | 內容 |
 |---|---|
 | [originals/city](originals/city/) | 都市／共用素材原圖，依封面、角色、敵人、場景、特效分類，保留生成版本與重排圖 |
 | [originals/japan](originals/japan/) | 百鬼夜行妖怪、場景，以及封面 v1／巨獸朝左的 v2 原圖 |
+| [originals/candy](originals/candy/) | 糖果怪物、場景物件與第三關封面原圖 |
+| [prompts/candy](prompts/candy/) | 糖果關卡原圖生成與排版修正提示詞 |
+| [processed/candy](processed/candy/) | 怪物動作、地磚、場景物件、來源與路線驗證 |
+| [previews/candy](previews/candy/) | 第三關地圖、選關與實機畫面 |
 | [prompts/city/runs](prompts/city/runs/) | 每次實際生成所用的完整 prompt，與原圖一一對應 |
 | [prompts/city/library](prompts/city/library/) | 原本的提示詞庫與造型變體 |
 | [prompts/japan](prompts/japan/) | 妖怪、場景、封面生成與巨獸反轉的 prompt |
@@ -70,3 +74,9 @@
 | [originals/japan/environment.png](originals/japan/environment.png) | [environment.txt](prompts/japan/environment.txt) |
 | [originals/japan/cover-v1.png](originals/japan/cover-v1.png) | [cover.txt](prompts/japan/cover.txt) |
 | [originals/japan/cover-v2.png](originals/japan/cover-v2.png) | [cover-flip.txt](prompts/japan/cover-flip.txt) |
+| [originals/candy/enemies-source.png](originals/candy/enemies-source.png) | [enemies-prompt.txt](prompts/candy/enemies-prompt.txt) |
+| [originals/candy/enemies-source-v2.png](originals/candy/enemies-source-v2.png) | [enemies-layout-prompt.txt](prompts/candy/enemies-layout-prompt.txt) |
+| [originals/candy/environment-source.png](originals/candy/environment-source.png) | [environment-prompt.txt](prompts/candy/environment-prompt.txt) |
+| [originals/candy/props-source.png](originals/candy/props-source.png) | [props-prompt.txt](prompts/candy/props-prompt.txt) |
+| [originals/candy/cover-source.png](originals/candy/cover-source.png) | [cover-prompt.txt](prompts/candy/cover-prompt.txt) |
+| [originals/candy/cloud-ground-source-v2.png](originals/candy/cloud-ground-source-v2.png) | [cloud-ground-prompt-v2.txt](prompts/candy/cloud-ground-prompt-v2.txt) |

@@ -75,3 +75,37 @@ test('百鬼夜行：最終巨獸波可完成並進入勝利結算', () => {
   assert.equal(w.over, 'win');
   assert.equal(w.stage.boss, '荒魂巨獸');
 });
+
+for (const seed of [1, 42, 77]) {
+  test(`糖果夢境：seed ${seed} 的出生區、全場可達、獨立場景與彩虹通道`, () => {
+    const w = new World({ stage: 'candy', seed, noSpawn: true, noSkills: true });
+    assert.equal(w.stage.number, '03');
+    assert.equal(stageId('candy'), 'candy');
+    assert.equal(w.map.stage, 'candy');
+    assert.deepEqual(buildMap(seed, 'candy'), buildMap(seed, 'candy'));
+    assert.notDeepEqual(w.map.blocked, buildMap(seed, 'japan').blocked);
+    for (let y = -48; y <= 48; y += CELL) for (let x = -48; x <= 48; x += CELL) assert.equal(w.map.blocked[cellOf(w.player.x+x,w.player.y+y)], 0);
+    for (let gy = 0; gy < GRID_H; gy++) for (let gx = 0; gx < GRID_W; gx++) {
+      const c = gy * GRID_W + gx;
+      if (gx*CELL < BORDER || gy*CELL < BORDER || gx*CELL >= MAP_W-BORDER || gy*CELL >= MAP_H-BORDER) assert.equal(w.map.blocked[c],1);
+      if (!w.map.blocked[c]) assert.ok(w.flow.dist[c] < FLOW_INF, `開放格子 (${gx},${gy}) 必須可達`);
+    }
+    for (const kind of ['candyHouse','rainbowArch','lollipopTree','rainbowCandy','cupcakeTower','candyCane','chocolateFountain','biscuitBridge']) assert.ok(w.map.props.some(p=>p.kind===kind));
+    const gate=w.map.props.find(p=>p.kind==='rainbowArch')!;
+    assert.equal(w.map.blocked[cellOf(gate.x+gate.w/2,gate.y+12)],0);
+    assert.equal(w.map.blocked[cellOf(gate.x+12,gate.y+12)],1);
+    for(let i=0;i<150;i++) w.step({...idle,my:-1});
+    assert.ok(w.player.y<1088-32,'可穿過主彩虹門');
+  });
+}
+
+test('糖果夢境：巧克力熔岩最終波可完成並勝利',()=>{
+  const w=new World({stage:'candy',seed:42,startTime:599.5,noSpawn:true,noSkills:true,god:true,autoLevel:true});
+  for(let i=0;i<60;i++) w.step(idle);
+  assert.equal(w.finale,'final');
+  assert.ok(w.finalLeft>=FINAL.mutants*.8);
+  for(let k=w.zombies.count-1;k>=0;k--){const s=w.zombies.active[k];if(w.zombies.kind[s]===MUTANT)w.damage(s,1e9,T_EXPLOSION,0,-1);}
+  for(let i=0;i<Math.ceil(FINAL.finishDelay*60)+10;i++)w.step(idle);
+  assert.equal(w.over,'win');
+  assert.equal(w.stage.boss,'巧克力熔岩怪');
+});

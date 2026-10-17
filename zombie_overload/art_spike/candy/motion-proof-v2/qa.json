@@ -1,0 +1,33 @@
+{
+  "status": "pass",
+  "source": "browser screenshots of production sprites and Pixi particle renderer",
+  "frames": 20,
+  "capture_ms": 1444,
+  "checks": [
+    {
+      "kind": 0,
+      "unique_screens": 20,
+      "max_changed_pixels": 1571
+    },
+    {
+      "kind": 1,
+      "unique_screens": 20,
+      "max_changed_pixels": 2177
+    },
+    {
+      "kind": 2,
+      "unique_screens": 20,
+      "max_changed_pixels": 2768
+    },
+    {
+      "kind": 3,
+      "unique_screens": 20,
+      "max_changed_pixels": 2541
+    },
+    {
+      "kind": 4,
+      "unique_screens": 20,
+      "max_changed_pixels": 7042
+    }
+  ]
+}

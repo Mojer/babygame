@@ -1,0 +1,40 @@
+{
+  "status": "pass",
+  "checks": [
+    {
+      "kind": "lollipop",
+      "frames": 8,
+      "unique_frames": 8,
+      "fixed_canvas": true,
+      "transparent_border": true
+    },
+    {
+      "kind": "cotton-candy",
+      "frames": 8,
+      "unique_frames": 8,
+      "fixed_canvas": true,
+      "transparent_border": true
+    },
+    {
+      "kind": "gummy-bear",
+      "frames": 8,
+      "unique_frames": 8,
+      "fixed_canvas": true,
+      "transparent_border": true
+    },
+    {
+      "kind": "cookie",
+      "frames": 8,
+      "unique_frames": 8,
+      "fixed_canvas": true,
+      "transparent_border": true
+    },
+    {
+      "kind": "chocolate-lava",
+      "frames": 8,
+      "unique_frames": 8,
+      "fixed_canvas": true,
+      "transparent_border": true
+    }
+  ]
+}

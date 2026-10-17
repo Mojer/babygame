@@ -1,0 +1,37 @@
+{
+  "art_source": "host_image",
+  "route": "image_gen",
+  "model": "built-in image generation",
+  "estimateUsd": null,
+  "motion_source": "code",
+  "animation": "8 unique cutout poses; no generated video",
+  "enemy_heights": [
+    28,
+    32,
+    36,
+    30,
+    66
+  ],
+  "prop_widths": {
+    "candyHouse": 144,
+    "rainbowArch": 160,
+    "lollipopTree": 60,
+    "rainbowCandy": 44,
+    "cupcakeTower": 56,
+    "candyCane": 28,
+    "chocolateFountain": 72,
+    "biscuitBridge": 92
+  },
+  "terrain_finish": "single full-world cloud painting with feathered union-mask frosting paths; no repeated ground tiles",
+  "ground_recipe": "bake_ground.py",
+  "runtime_motion": "src/render/candyMotion.ts; simulation-clock gait and per-kind hop, lean, squash",
+  "sources": {
+    "cover-source.png": "bb34b544513646cf91328a72fd53fabe8554d1ac8159b2671cfe4ac11be64699",
+    "enemies-source-v2.png": "a87553261f4c76d8496b65b3ecec7f5b39c42fcba525f4af9b77767c1aae07c4",
+    "environment-source.png": "84e9ce77eb234d79b96789643f8257c43ad3937635369a63d7379db739920a96",
+    "terrain-source.png": "962c7f0a5ebef72f4c80fd4ea1df6e61a609388ee8345cdac3f3299cff9b4965",
+    "props-source.png": "6691e269e2f62c2ad8d63c54d33ba1e6ead81c03588315156c266ceaf0f30b70",
+    "cloud-ground-source-v2.png": "5900857d8fc6a5cc48f894a3e85311491567067411ac23efc099a9477545be67",
+    "enemies-source.png": "da1d6b952292f10ce0fa92c5b787c30da15dd82cba7c2bc6132ce63e4f292884"
+  }
+}

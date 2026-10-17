@@ -1,0 +1,290 @@
+{
+  "schema": "generate2dmap.scene_preview_qa.v1",
+  "status": "pass",
+  "method": "build_scene_preview: bundle files resolved relative to the bundle and checked against their sha256 when given; collision read through forge_nav (the D2 blocking set; tile collision converted into world solids, material classes into BLOCK and one_way pixel planes); tiles layers pre-rendered from tileset manifests; art found in the D6 order and embedded as data URIs; map-runtime.mjs inlined verbatim; the page scanned for anything that loads from outside it; size gate; optional headless-Chromium run (--verify).",
+  "notProven": [
+    "Collision is forge_nav's D2 blocking set and the page walks it with map-runtime.mjs, which mirrors forge_nav rule for rule; their agreement is tested on synthetic fixtures (tests/test_map_runtime_js.py), not on this map. Rotated shapes can differ by one ulp of sin and cos between a browser and Python.",
+    "Without --verify, or when it prints SKIPPED, the page was assembled and scanned but never run in a browser.",
+    "The actor is a debug marker sized from collision.actorRadius, not character art; animation, lights, atmosphere, stage data, camera bounds and occluder masks are not drawn.",
+    "Draw order is whole-object Y-sort by (sortY, x, id); per-pixel occlusion, fades and cut-aways are not simulated.",
+    "Route checks walk the forge_nav grid with the runtime walker at --speed; an engine controller (acceleration, physics colliders, other speeds) may behave differently. one_way material blocks moving down onto it on every map (N11); a top-down map should not use it.",
+    "Footprint samples lie half a nav cell apart (N10): a solid thinner than that can fall between the samples of the footprint's rim; the actor's centre path is tested exactly (thin-gap rule).",
+    "Only headless Chromium is exercised (with --verify); other browsers, devices and touch input are not tested."
+  ],
+  "checks": [
+    {
+      "id": "html-size",
+      "status": "pass",
+      "value": 2771720,
+      "threshold": 16000000
+    },
+    {
+      "id": "external-references",
+      "status": "pass",
+      "value": [],
+      "threshold": []
+    },
+    {
+      "id": "ascii-only",
+      "status": "pass",
+      "value": true,
+      "threshold": true
+    },
+    {
+      "id": "single-inline-script",
+      "status": "pass",
+      "value": true,
+      "threshold": true
+    },
+    {
+      "id": "runtime-inlined",
+      "status": "pass",
+      "value": "map-runtime.mjs",
+      "threshold": null
+    },
+    {
+      "id": "object-art",
+      "status": "pass",
+      "value": [],
+      "threshold": []
+    },
+    {
+      "id": "build-warnings",
+      "status": "pass",
+      "value": 0,
+      "threshold": 0
+    }
+  ],
+  "inputs": [
+    {
+      "path": "../map-bundle.json",
+      "sha256": "8186ed5ea6929205dbc70b3a475d4c4df720b9f38926566f08374e917b78636e",
+      "bytes": 23120
+    },
+    {
+      "path": "../runtime-props/candyHouse.png",
+      "sha256": "a625e72ca0a295f82cbc2a2d5de07fe70a7f1964350d9c8dbe845dd03abca6ad",
+      "bytes": 27820
+    },
+    {
+      "path": "../runtime-props/rainbowArch.png",
+      "sha256": "5898486f1833b619ebee29dc6542941c28aa81e21d35b45e57c0479379a33758",
+      "bytes": 15816
+    },
+    {
+      "path": "../runtime-props/chocolateFountain.png",
+      "sha256": "eef1413b53f6326e3cec468ad2fa2c04940c843ffccc684145361ab61e0f0102",
+      "bytes": 8149
+    },
+    {
+      "path": "../runtime-props/cupcakeTower.png",
+      "sha256": "0822b350bb58581e86565ffe56b125e4dff4e875404ff53f79b4dc9f1a27a95c",
+      "bytes": 4864
+    },
+    {
+      "path": "../runtime-props/candyCane.png",
+      "sha256": "117da77776f212bb51da5ef902e4d3c3a134088f7f4c55dfaf3219b663c55d2e",
+      "bytes": 1768
+    },
+    {
+      "path": "../runtime-props/biscuitBridge.png",
+      "sha256": "6fd3127f40c9c29f2c953213022ce5f2f6529ba9a7172b0b9062203b2cd773e9",
+      "bytes": 8745
+    },
+    {
+      "path": "../runtime-props/rainbowCandy.png",
+      "sha256": "f0ee0cc62addc4a6e74a299dfccf0a948125d0667b9a66f3d810629d6ae14ec0",
+      "bytes": 2718
+    },
+    {
+      "path": "../runtime-props/lollipopTree.png",
+      "sha256": "90511c8cb26095017139d325fa29f56cf847accd325fc9fc8a9391dbc128ea93",
+      "bytes": 6887
+    },
+    {
+      "path": "../ground.png",
+      "sha256": "55fc79cf6de5cd47aa04dfb81b856e7e3b868e46deb7927dbe1d37fd2c9dd534",
+      "bytes": 1897116
+    }
+  ],
+  "outputs": [
+    {
+      "path": "preview.html",
+      "sha256": "4f7e593d4fe0eeb92d311d1c076b6603194e8764f800fd3e4bd372056af7cd58",
+      "bytes": 2771720
+    }
+  ],
+  "tool": {
+    "name": "build_scene_preview",
+    "version": "0.4.0"
+  },
+  "preview": {
+    "file": "preview.html",
+    "bytes": 2771720,
+    "sha256": "4f7e593d4fe0eeb92d311d1c076b6603194e8764f800fd3e4bd372056af7cd58",
+    "runtime": {
+      "file": "map-runtime.mjs",
+      "version": "1.1.2",
+      "sha256": "c1fc3d9bf15cfa53fdfeb050ce4252f7ace4c923066ca4e135dea576e7445273"
+    },
+    "world": [
+      2048,
+      2048
+    ],
+    "zoom": 1,
+    "speed": 60.0,
+    "actorHeight": 22.5,
+    "actorRadius": 5,
+    "ySquash": 1,
+    "start": "start",
+    "layers": [
+      {
+        "name": "ground",
+        "source": "image",
+        "size": [
+          2048,
+          2048
+        ]
+      },
+      {
+        "name": "props",
+        "source": "objects"
+      }
+    ],
+    "drawOrder": [
+      "prop-51",
+      "prop-53",
+      "prop-55",
+      "prop-57",
+      "prop-59",
+      "prop-61",
+      "prop-63",
+      "prop-65",
+      "prop-67",
+      "prop-69",
+      "prop-71",
+      "prop-73",
+      "prop-75",
+      "prop-77",
+      "prop-22",
+      "prop-23",
+      "prop-78",
+      "prop-24",
+      "prop-21",
+      "prop-25",
+      "prop-1",
+      "prop-0",
+      "prop-2",
+      "prop-79",
+      "prop-80",
+      "prop-26",
+      "prop-27",
+      "prop-28",
+      "prop-29",
+      "prop-30",
+      "prop-81",
+      "prop-82",
+      "prop-83",
+      "prop-8",
+      "prop-9",
+      "prop-84",
+      "prop-34",
+      "prop-31",
+      "prop-32",
+      "prop-10",
+      "prop-33",
+      "prop-85",
+      "prop-86",
+      "prop-11",
+      "prop-15",
+      "prop-87",
+      "prop-88",
+      "prop-7",
+      "prop-12",
+      "prop-16",
+      "prop-35",
+      "prop-36",
+      "prop-39",
+      "prop-37",
+      "prop-38",
+      "prop-89",
+      "prop-90",
+      "prop-19",
+      "prop-20",
+      "prop-3",
+      "prop-40",
+      "prop-4",
+      "prop-41",
+      "prop-13",
+      "prop-17",
+      "prop-42",
+      "prop-91",
+      "prop-92",
+      "prop-93",
+      "prop-94",
+      "prop-14",
+      "prop-18",
+      "prop-44",
+      "prop-45",
+      "prop-43",
+      "prop-95",
+      "prop-96",
+      "prop-5",
+      "prop-6",
+      "prop-46",
+      "prop-47",
+      "prop-48",
+      "prop-50",
+      "prop-97",
+      "prop-98",
+      "prop-49",
+      "prop-52",
+      "prop-54",
+      "prop-56",
+      "prop-58",
+      "prop-60",
+      "prop-62",
+      "prop-64",
+      "prop-66",
+      "prop-68",
+      "prop-70",
+      "prop-72",
+      "prop-74",
+      "prop-76"
+    ],
+    "objectArt": {
+      "object.image": 99,
+      "props": 0,
+      "prop-pack": 0,
+      "occluder.source": 0,
+      "missing": []
+    },
+    "counts": {
+      "objects": 99,
+      "portals": 0,
+      "spawns": 1,
+      "interactions": 0,
+      "anchors": 6
+    },
+    "images": {
+      "count": 9,
+      "bytes": 1973883
+    },
+    "materialMap": null,
+    "collision": {
+      "collisionSolids": 0,
+      "rects": 358,
+      "footprints": 0,
+      "tileSolids": 0,
+      "blockingMaterialClasses": []
+    },
+    "hashes": {
+      "checked": 0,
+      "unchecked": 100
+    }
+  },
+  "warnings": [],
+  "verify": {
+    "status": "not-requested"
+  }
+}

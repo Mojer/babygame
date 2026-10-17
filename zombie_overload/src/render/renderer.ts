@@ -35,6 +35,8 @@ import { bgr, FxSystem } from './fx';
 import { LensFilter } from './lens';
 import { paintMap } from './mapPainter';
 import { paintMapOblique } from './mapPainterOblique';
+import { candyPose, type CandyPose } from './candyMotion';
+import { paintMapCandy } from './mapPainterCandy';
 import { paintMapJapan } from './mapPainterJapan';
 import type { CharacterId } from '../sim/characters';
 import type { HordeSprites, PlayerDir } from './sprites';
@@ -119,6 +121,7 @@ export class GameRenderer {
   /** 3/4 斜俯視風格素材；沒有時用程式畫的 90° 俯視佔位圖 */
   sprites: HordeSprites | null = null;
   private allSprites: HordeSprites | null = null;
+  private readonly candyPose: CandyPose = { frame: 0, lift: 0, lean: 0, scaleX: 1, scaleY: 1 };
   private topdown = false;
   private shadowPC!: ParticleContainer;
   private readonly shadowParts: Particle[] = [];
@@ -275,7 +278,7 @@ export class GameRenderer {
 
   private paintStage(world: World) {
     const map = this.sprites
-      ? world.stage.id === 'japan' ? paintMapJapan(world.map, this.sprites.map) : paintMapOblique(world.map, this.sprites.map)
+      ? world.stage.id === 'candy' ? paintMapCandy(world.map, this.sprites.map) : world.stage.id === 'japan' ? paintMapJapan(world.map, this.sprites.map) : paintMapOblique(world.map, this.sprites.map)
       : paintMap(world.map);
     this.chunks.paintStatic(this.renderer, map);
   }
@@ -562,6 +565,14 @@ export class GameRenderer {
         case 'bamboo':
         case 'komainu':
         case 'bridge':
+        case 'candyHouse':
+        case 'rainbowArch':
+        case 'lollipopTree':
+        case 'rainbowCandy':
+        case 'cupcakeTower':
+        case 'candyCane':
+        case 'chocolateFountain':
+        case 'biscuitBridge':
           tex = P[p.kind];
           f = p.kind === 'cart' || p.kind === 'cones' ? flip : 1;
           break;
@@ -622,6 +633,11 @@ export class GameRenderer {
     if (w.stage.id === 'japan' && dt > 0 && Math.random() < dt * 18) {
       this.fxNormal.spawn(this.atlas.t.dot, camX + Math.random() * this.viewW, camY - 8,
         -6 - Math.random() * 8, 12 + Math.random() * 9, 5, bgr(0xffadc8), 0.65, 1.5, 0.7, 0, 0, 1);
+    }
+    if (w.stage.id === 'candy' && dt > 0 && Math.random() < dt * 10) {
+      const colors = [0xff82b8, 0x9be9ee, 0xffdb7e, 0xc8a3ef];
+      this.fxNormal.spawn(this.atlas.t.dot, camX + Math.random() * this.viewW, camY - 8,
+        3, 9, 5, bgr(colors[(Math.random() * colors.length) | 0]), 0.5, 1.2, 0.4, 0, 0, 1);
     }
     this.fxNormal.update(dt);
     this.fxAdd.update(dt);
@@ -783,30 +799,41 @@ export class GameRenderer {
       const st = z.status[s];
       pt.x = x;
       pt.y = y;
-      const japan = w.stage.id === 'japan';
-      // Distance-driven gait stays planted when blocked; flight/hopping have distinct silhouettes.
-      const gait = z.anim[s] * (japan ? 0.75 : 1);
+      const candy = w.stage.id === 'candy';
+      const themed = w.stage.id !== 'city';
+      // Distance-driven gait stays planted when blocked; flight and hopping have distinct silhouettes.
+      const gait = z.anim[s] * (themed ? 0.75 : 1);
       const phase = gait * Math.PI / 4;
-      const motion = japan && !(st & (FROZEN | PULLED));
-      if (motion) pt.y -= Math.abs(Math.sin(phase)) * (kd === 3 ? 5 : kd === 1 ? 3 : kd === MUTANT ? 0.7 : 1.4);
+      const motion = themed && !(st & (FROZEN | PULLED));
+      if (motion && !candy) pt.y -= Math.abs(Math.sin(phase)) * (kd === 3 ? 5 : kd === 1 ? 3 : kd === MUTANT ? 0.7 : 1.4);
       pt.rotation = 0;
       pt.anchorY = sp.anchorY[kd];
       // 巨大變異體被打時只染淡紅（全白閃爍在機槍連射下會一直白掉）
       const boss = kd === MUTANT;
       const hit = z.flash[s] > 0;
       const walkCount = zt[kd].length - 2;
-      pt.texture = hit && !boss ? zt[kd][walkCount] : st & FROZEN ? zt[kd][walkCount + 1] : zt[kd][(gait | 0) % walkCount];
-      pt.color = boss && hit ? BOSS_HIT : st & VOLATILE ? (pulse > 0.5 ? volatile : volatile2) : WHITE;
+      const pose = candy ? candyPose(kd, w.time, s, this.candyPose) : null;
+      // Keep the current candy pose during hit tint instead of repeatedly reverting to a still.
+      pt.texture = pose
+        ? st & FROZEN ? zt[kd][walkCount + 1] : zt[kd][pose.frame]
+        : hit && !boss ? zt[kd][walkCount] : st & FROZEN ? zt[kd][walkCount + 1] : zt[kd][(gait | 0) % walkCount];
+      pt.color = (boss || candy) && hit ? BOSS_HIT : st & VOLATILE ? (pulse > 0.5 ? volatile : volatile2) : WHITE;
       const scale = this.pullScale(holes, z.hole[s], st, x, y);
       pt.scaleX = Math.cos(z.facing[s]) < 0 ? -scale : scale;
       pt.scaleY = scale;
-      if (motion && kd === 3) {
-        // Umbrella compresses on landing and extends through its one-legged hop.
+      if (motion && !candy && kd === 3) {
+        // Umbrella / cookie compress on landing and extend through the hop.
         const stretch = Math.cos(phase * 2) * 0.07;
         pt.scaleY *= 1 - stretch;
         pt.scaleX *= 1 + stretch;
       }
-      if (motion && kd === MUTANT) pt.rotation = Math.sin(phase) * 0.025;
+      if (motion && !candy && kd === MUTANT) pt.rotation = Math.sin(phase) * 0.025;
+      if (motion && pose) {
+        pt.y -= pose.lift;
+        pt.rotation = pose.lean;
+        pt.scaleX *= pose.scaleX;
+        pt.scaleY *= pose.scaleY;
+      }
       if (st & PULLED) pt.rotation = Math.sin(this.time * 20 + s) * 0.5;
       ch[i] = pt;
       const sh = shadows[si++];

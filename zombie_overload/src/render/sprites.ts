@@ -12,7 +12,7 @@ const DIRS: PlayerDir[] = ['side', 'down', 'up'];
 
 export interface HordeSprites {
   stageArt: Record<StageId, { zombie: Texture[][]; anchorY: number[]; corpse: Texture[]; map: MapSheet }>;
-  /** [種類][走路影格…, 受擊白, 冰凍]；都市 4 格、百鬼夜行 8 格 */
+  /** [種類][走路影格…, 受擊白, 冰凍]；都市 4 格、百鬼夜行／糖果夢境 8 格 */
   zombie: Texture[][];
   /** 每種殭屍的腳底錨點（0-1，相對貼圖高度） */
   anchorY: number[];
@@ -70,7 +70,8 @@ export async function loadHordeSprites(base = './sprites/'): Promise<HordeSprite
     const image = await createImageBitmap(await (await fetch(`${base}${def.image}`)).blob());
     return { image, frames: def.frames };
   };
-  const [cityMap, japanMap] = await Promise.all([loadMap('map'), loadMap('map_japan')]);
+  const [cityMap, japanMap, candyMap] = await Promise.all([loadMap('map'), loadMap('map_japan'), loadMap('map_candy')]);
+  candyMap.ground = await createImageBitmap(await (await fetch(`${base}candy-ground-v2.jpg`)).blob());
   const props: Record<string, Texture> = {};
   for (const k of Object.keys(horde.def.frames)) if (k.startsWith('prop_')) props[k.slice(5)] = horde.get(k);
   const kinds = [0, 1, 2, 3, 4];
@@ -82,9 +83,10 @@ export async function loadHordeSprites(base = './sprites/'): Promise<HordeSprite
   });
   const city = stageArt('z', cityMap);
   const japan = stageArt('y', japanMap, 8);
+  const candy = stageArt('c', candyMap, 8);
   const boomFrames = Object.keys(boom.def.frames).filter(k => k.startsWith('ex_')).sort((a, b) => Number(a.slice(3)) - Number(b.slice(3)));
   return {
-    stageArt: { city, japan },
+    stageArt: { city, japan, candy },
     ...city,
     player: Object.fromEntries(
       CHARACTER_IDS.map(c => [c, Object.fromEntries(DIRS.map(d => {

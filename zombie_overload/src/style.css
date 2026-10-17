@@ -1460,7 +1460,7 @@ body.on-title #game {
 }
 .stage-body { gap: clamp(14px, 3vmin, 28px); }
 .stage-heading p { margin: 10px 0 0; color: #a8b1c5; font-size: clamp(11px, 1.8vmin, 15px); }
-.stage-cards { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(14px, 2.5vw, 28px); }
+.stage-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 2vw, 24px); }
 .stage-card {
   position: relative;
   display: flex;
@@ -1525,4 +1525,11 @@ body.on-title #game {
   .stage-enemies img { height: 22px; width: 22px; }
   .stage-name { font-size: 25px; }
   .stage-name em { margin-top: 4px; }
+}
+
+.stage-candy .stage-art img { object-position: center 48%; image-rendering: auto; }
+.stage-candy .stage-art::after { background: linear-gradient(0deg, #111a2d, #111a2d22 28%, transparent 55%); }
+@media (min-width: 601px) and (max-width: 1000px) {
+  .stage-cards { grid-template-columns: repeat(3, minmax(260px, 1fr)); overflow-x: auto; scroll-snap-type: x mandatory; padding: 5px 2px 12px; }
+  .stage-card { scroll-snap-align: center; }
 }

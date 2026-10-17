@@ -1,0 +1,40 @@
+{
+  "source": "src/render/candyMotion.ts",
+  "clock": "World.time",
+  "slotPhase": 2.47213595,
+  "gaits": [
+    {
+      "fps": 10,
+      "hop": 2,
+      "lean": 0.09,
+      "squash": 0.035
+    },
+    {
+      "fps": 8,
+      "hop": 6,
+      "lean": 0.06,
+      "squash": 0.08
+    },
+    {
+      "fps": 9,
+      "hop": 5,
+      "lean": 0.065,
+      "squash": 0.13
+    },
+    {
+      "fps": 11,
+      "hop": 3.5,
+      "lean": 0.095,
+      "squash": 0.065
+    },
+    {
+      "fps": 6,
+      "hop": 1.6,
+      "lean": 0.04,
+      "squash": 0.035
+    }
+  ],
+  "motion": "8 atlas frames plus per-kind lift, lean and squash",
+  "frozen": "static ice frame",
+  "paused": "World.time stops"
+}

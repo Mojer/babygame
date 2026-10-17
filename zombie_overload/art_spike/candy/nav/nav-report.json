@@ -1,0 +1,286 @@
+{
+  "schema": "generate2dmap.nav_report.v1",
+  "status": "pass",
+  "method": "plan Appendix C validity (centre + 8 footprint samples against walk regions, solids, object footprints scaled once, tile collision and material classes) on a grid of cell max(1, round(r/2)) px; 4-neighbour moves open when segmentClear holds between node centres (samples every cell/2, plus the exact thin-gap centre path and one_way direction); BFS from every spawn and portal arrival to every interaction, exit, anchor slot and approach point",
+  "notProven": [
+    "that the collision data matches the painted art",
+    "positions closer than one grid cell to a blocker (the grid samples cell centres)",
+    "runtime movement code: map-runtime.mjs parity is tested during integration",
+    "links to maps not passed with --link"
+  ],
+  "checks": [
+    {
+      "id": "starts_valid",
+      "status": "pass",
+      "value": {
+        "starts": 1,
+        "blocked": []
+      },
+      "threshold": {
+        "blocked": 0
+      }
+    },
+    {
+      "id": "targets_reachable",
+      "status": "pass",
+      "value": {
+        "reachable": 6,
+        "total": 6,
+        "unreachable": []
+      },
+      "threshold": {
+        "unreachable": 0
+      }
+    },
+    {
+      "id": "portals_inside_world",
+      "status": "pass",
+      "value": {
+        "outside": []
+      },
+      "threshold": {
+        "outside": 0
+      }
+    },
+    {
+      "id": "arrivals_outside_triggers",
+      "status": "pass",
+      "value": {
+        "problems": 0
+      },
+      "threshold": {
+        "problems": 0
+      }
+    },
+    {
+      "id": "reciprocal_links",
+      "status": "pass",
+      "value": {
+        "links": [],
+        "notChecked": []
+      },
+      "threshold": {
+        "errors": 0
+      }
+    },
+    {
+      "id": "thin_gaps",
+      "status": "pass",
+      "value": 0,
+      "threshold": "reported: moves the thin-gap rule closed although every footprint sample was valid"
+    },
+    {
+      "id": "unreachable_walkable_area",
+      "status": "pass",
+      "value": {
+        "pockets": 0,
+        "cells": 0
+      },
+      "threshold": "reported"
+    },
+    {
+      "id": "blocked_rects_union",
+      "status": "pass",
+      "value": {
+        "rects": 132,
+        "blockedCells": 130757
+      },
+      "threshold": "union == blocked cells"
+    },
+    {
+      "id": "footprints_scaled_once",
+      "status": "pass",
+      "value": {
+        "objectSolids": 0
+      },
+      "threshold": "object footprint x scale, never inflated by the actor radius"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "../map-bundle.json",
+      "sha256": "8186ed5ea6929205dbc70b3a475d4c4df720b9f38926566f08374e917b78636e",
+      "bytes": 23120
+    },
+    {
+      "path": "../ground.png",
+      "sha256": "55fc79cf6de5cd47aa04dfb81b856e7e3b868e46deb7927dbe1d37fd2c9dd534",
+      "bytes": 1897116
+    },
+    {
+      "path": "../runtime-props/candyHouse.png",
+      "sha256": "a625e72ca0a295f82cbc2a2d5de07fe70a7f1964350d9c8dbe845dd03abca6ad",
+      "bytes": 27820
+    },
+    {
+      "path": "../runtime-props/rainbowArch.png",
+      "sha256": "5898486f1833b619ebee29dc6542941c28aa81e21d35b45e57c0479379a33758",
+      "bytes": 15816
+    },
+    {
+      "path": "../runtime-props/chocolateFountain.png",
+      "sha256": "eef1413b53f6326e3cec468ad2fa2c04940c843ffccc684145361ab61e0f0102",
+      "bytes": 8149
+    },
+    {
+      "path": "../runtime-props/cupcakeTower.png",
+      "sha256": "0822b350bb58581e86565ffe56b125e4dff4e875404ff53f79b4dc9f1a27a95c",
+      "bytes": 4864
+    },
+    {
+      "path": "../runtime-props/candyCane.png",
+      "sha256": "117da77776f212bb51da5ef902e4d3c3a134088f7f4c55dfaf3219b663c55d2e",
+      "bytes": 1768
+    },
+    {
+      "path": "../runtime-props/biscuitBridge.png",
+      "sha256": "6fd3127f40c9c29f2c953213022ce5f2f6529ba9a7172b0b9062203b2cd773e9",
+      "bytes": 8745
+    },
+    {
+      "path": "../runtime-props/rainbowCandy.png",
+      "sha256": "f0ee0cc62addc4a6e74a299dfccf0a948125d0667b9a66f3d810629d6ae14ec0",
+      "bytes": 2718
+    },
+    {
+      "path": "../runtime-props/lollipopTree.png",
+      "sha256": "90511c8cb26095017139d325fa29f56cf847accd325fc9fc8a9391dbc128ea93",
+      "bytes": 6887
+    }
+  ],
+  "outputs": [
+    {
+      "path": "nav-grid.json",
+      "sha256": "9e9cf7e2c8bd8e76448628f85d62fc175ec2f4b80d5f4f86650933671e821fe3",
+      "bytes": 952280
+    },
+    {
+      "path": "nav-debug.png",
+      "sha256": "05b3257a38e7543e2b37881981b51a1985c1eb34f359dae31775e09f816ba866",
+      "bytes": 1784078
+    }
+  ],
+  "tool": {
+    "name": "map_nav.py",
+    "version": "0.4.0"
+  },
+  "map": "candy",
+  "cell": 3,
+  "starts": [
+    {
+      "kind": "spawn",
+      "id": "start",
+      "point": [
+        1024.0,
+        1184.0
+      ],
+      "reachable": true,
+      "steps": 0,
+      "node": [
+        1024.5,
+        1183.5
+      ],
+      "reason": null
+    }
+  ],
+  "targets": [
+    {
+      "kind": "approach",
+      "id": "rainbow-plaza/approach[0]",
+      "point": [
+        1024.0,
+        1120.0
+      ],
+      "reachable": true,
+      "steps": 17,
+      "node": [
+        1018.5,
+        1126.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "candy-village/approach[0]",
+      "point": [
+        496.0,
+        464.0
+      ],
+      "reachable": true,
+      "steps": 408,
+      "node": [
+        502.5,
+        469.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "east-rainbow/approach[0]",
+      "point": [
+        1552.0,
+        752.0
+      ],
+      "reachable": true,
+      "steps": 312,
+      "node": [
+        1546.5,
+        757.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "chocolate-fountain/approach[0]",
+      "point": [
+        1024.0,
+        864.0
+      ],
+      "reachable": true,
+      "steps": 102,
+      "node": [
+        1018.5,
+        871.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "west-garden/approach[0]",
+      "point": [
+        736.0,
+        1248.0
+      ],
+      "reachable": true,
+      "steps": 110,
+      "node": [
+        742.5,
+        1243.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "east-garden/approach[0]",
+      "point": [
+        1328.0,
+        1248.0
+      ],
+      "reachable": true,
+      "steps": 115,
+      "node": [
+        1321.5,
+        1243.5
+      ],
+      "reason": null
+    }
+  ],
+  "links": [],
+  "thinGaps": [],
+  "unreachablePockets": [],
+  "bundleNav": {
+    "cell": 3,
+    "grid": "nav-grid.json"
+  },
+  "problems": []
+}
