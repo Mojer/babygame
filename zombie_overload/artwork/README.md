@@ -1,6 +1,6 @@
 # Zombie Overload 圖片素材與生成提示詞
 
-集中整理 198 張圖片、68 份提示詞，包含都市關卡、百鬼夜行、糖果夢境、角色、敵人、場景、特效與封面版本。
+集中整理 203 張圖片、69 份提示詞，包含都市關卡、百鬼夜行、糖果夢境、角色、敵人、場景、特效與封面版本。
 
 | 目錄 | 內容 |
 |---|---|
@@ -80,3 +80,4 @@
 | [originals/candy/props-source.png](originals/candy/props-source.png) | [props-prompt.txt](prompts/candy/props-prompt.txt) |
 | [originals/candy/cover-source.png](originals/candy/cover-source.png) | [cover-prompt.txt](prompts/candy/cover-prompt.txt) |
 | [originals/candy/cloud-ground-source-v2.png](originals/candy/cloud-ground-source-v2.png) | [cloud-ground-prompt-v2.txt](prompts/candy/cloud-ground-prompt-v2.txt) |
+| [originals/candy/cloud-boundary-source-v3.png](originals/candy/cloud-boundary-source-v3.png) | [cloud-boundary-prompt-v3.txt](prompts/candy/cloud-boundary-prompt-v3.txt) |

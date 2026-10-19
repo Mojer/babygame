@@ -51,6 +51,24 @@ export function buildCandyMap(seed: number): MapLayout {
       add(rng.next() < .55 ? 'lollipopTree' : 'rainbowCandy', x, y, 24, 16);
     }
   }
+  // Garden islands give each approach a landmark, with roomy lanes between them.
+  // Small candies are decoration; tree/tray footprints remain explicit collision.
+  const gardens = [[320,832],[736,432],[1312,432],[1728,832],
+    [688,1104],[1360,1104],[688,1392],[1360,1392],
+    [384,1680],[1024,1760],[1664,1680]];
+  for (const [cx,cy] of gardens) {
+    for (const [dx,dy,kind] of [[-38,-18,'lollipopTree'],[30,10,'rainbowCandy'],[-8,42,'cupcakeTower']] as const) {
+      const x=cx+dx,y=cy+dy;
+      if (Math.hypot(x-spawn.x,y-spawn.y)<128) continue;
+      if (props.some(p=>Math.abs(x-(p.x+p.w/2))<p.w/2+24 && Math.abs(y-(p.y+p.h/2))<p.h/2+24)) continue;
+      add(kind,x,y,kind==='lollipopTree'?24:28,16,kind==='lollipopTree');
+    }
+  }
+  // Frame the central arena with pocket gardens without filling its escape routes.
+  for (const [x,y] of [[848,1216],[1200,1216],[848,1408],[1200,1408]]) {
+    add('rainbowCandy',x,y,28,16,false);
+    add('candyCane',x+(x<spawn.x?-40:40),y+36,16,16,false);
+  }
   for (let x = 176; x < MAP_W - BORDER; x += 144) {
     add('cupcakeTower', x, 112, 32, 24, false);
     add('rainbowCandy', x, MAP_H - 96, 40, 20, false);

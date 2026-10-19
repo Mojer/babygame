@@ -37,3 +37,36 @@ v2 建置與 30 項測試通過。正式建置進入戰鬥及五怪動作頁經�
 初稿診斷（已由正式物件來源取代）：`props/prop-pack.json` 的 `edge_touch` 提示原文 `props touch a cell edge (possible clipping): ['candyhouse', 'rainbowarch', 'lollipoptree', 'cupcaketower']`。正式物件已重生並重新留白，`props-final` 無此問題。
 
 環境診斷 `doctor.json`：`deps.scipy` WARN：`not installed; needed for faster labelling and keying (forge_core falls back to numpy)`；使用 numpy fallback 完成。無影片生成設定，因此沿用既有程式動畫；不影響遊玩。
+
+## Detail presentation pass
+
+Run `python3 art_spike/candy/polish_atlas.py` after `pack_candy.py` to build
+`public/sprites/horde_detail.{png,json}`. This uses existing generated originals,
+not a new image generation. It preserves the complete shared atlas's world-space
+frame rectangles and anchors, and provides 2 physical texels per world pixel.
+Candy receives full-colour, premultiplied-alpha Lanczos downsampling and bilinear
+joint-deformation sampling. City/Japan enemies and props retain exact nearest-neighbour copies
+of their original pixels. The protagonists are reconstructed separately below. `polish-qa.json` checks 8 distinct poses and clear borders.
+The candy renderer uses linear filtering and up to 2x render-target resolution,
+with unchanged view bounds and collision. Other stages keep nearest sampling.
+The shared atlas now occupies 32 MiB of uncompressed GPU memory; each candy
+render target has up to 4x its previous pixel count. No physical-phone performance
+claim is made. New sources or terrain generation prompts are not needed.
+
+## Protagonists, gardens and island perimeter
+
+The detail atlas now reconstructs Akane and Yu's 24 walking frames and six hit
+variants from the original `art_spike/proc/` source frames. Crop bounds are
+computed using the legacy low-resolution masks and then sampled directly from
+the original at 2x with soft alpha, preserving frame dimensions and foot anchors.
+Their original generated sources and prompts remain in artwork/originals/city.
+
+`cloud-boundary-source-v3.png` was edited from cloud-ground-source-v2.png with
+the built-in image_gen tool; the exact prompt is cloud-boundary-prompt-v3.txt.
+It adds a closed marshmallow/frosting/candy-cane perimeter matching the map's
+128px blocked outer band. The output is 1254x1254 and baked to the 2048px world;
+it is not a native 2048px generation. `candy-ground-v3.jpg` is the runtime floor.
+MapCandy adds eleven garden clusters and four arena pocket gardens. Navigation
+checks are in nav-v3; all six route checks are refreshed in scene-snapshot.json.
+The camera clamps to the candy island bounds so the perimeter cannot reveal
+black space beyond the map. Other stage camera behavior is unchanged.

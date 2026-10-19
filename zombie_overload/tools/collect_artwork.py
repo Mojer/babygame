@@ -86,7 +86,8 @@ def main():
 
     candy_sources = [('enemies-source.png', 'enemies-prompt.txt'), ('enemies-source-v2.png', 'enemies-layout-prompt.txt'),
                      ('environment-source.png', 'environment-prompt.txt'), ('props-source.png', 'props-prompt.txt'), ('cover-source.png', 'cover-prompt.txt'),
-                     ('cloud-ground-source-v2.png', 'cloud-ground-prompt-v2.txt')]
+                     ('cloud-ground-source-v2.png', 'cloud-ground-prompt-v2.txt'),
+                     ('cloud-boundary-source-v3.png', 'cloud-boundary-prompt-v3.txt')]
     for image, prompt_name in candy_sources:
         prompt = 'prompts/candy/' + prompt_name
         collect('art_spike/candy/' + prompt_name, prompt, 'prompt')
@@ -95,9 +96,9 @@ def main():
         for asset in sorted((ROOT / 'art_spike/candy' / folder).glob('*')):
             if asset.is_file() and asset.suffix.lower() in IMAGE_EXTENSIONS | {'.json'}:
                 collect(asset.relative_to(ROOT).as_posix(), f'processed/candy/{folder}/{asset.name}', 'processed')
-    for name in ['map-preview.png', 'stage-selection.jpg', 'mobile-selection.jpg', 'gameplay.jpg', 'gameplay-v2.jpg', 'motion-runtime-v2.gif']:
+    for name in ['map-preview.png', 'stage-selection.jpg', 'mobile-selection.jpg', 'gameplay.jpg', 'gameplay-v2.jpg', 'motion-runtime-v2.gif', 'gameplay-polished.png', 'boundary-gameplay-v3.png']:
         collect('art_spike/candy/' + name, 'previews/candy/' + name, 'preview')
-    for name in ['provenance.json', 'plan.json', 'scene-snapshot.json']:
+    for name in ['provenance.json', 'plan.json', 'scene-snapshot.json', 'polish-qa.json']:
         collect('art_spike/candy/' + name, 'processed/candy/' + name, 'processed')
 
     collect('src/assets/title-bg.jpg', 'runtime/covers/city-title.jpg', 'runtime', 'prompts/city/runs/keyart-1.txt')

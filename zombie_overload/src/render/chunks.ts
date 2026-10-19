@@ -51,6 +51,10 @@ export class ChunkLayer {
     return b;
   }
 
+  setSampling(mode: 'linear' | 'nearest') {
+    for (const rt of this.rts) rt.source.scaleMode = mode;
+  }
+
   /** 載入時把整張地圖畫進各 chunk */
   paintStatic(renderer: Renderer, mapCanvas: HTMLCanvasElement) {
     const tex = Texture.from(mapCanvas);

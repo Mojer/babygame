@@ -42,6 +42,7 @@ interface FrameDef {
 }
 
 interface SheetDef {
+  resolution?: number;
   image: string;
   frames: Record<string, FrameDef>;
 }
@@ -52,7 +53,7 @@ async function loadSheet(base: string, name: string) {
   // WebGL 對 ImageBitmap 不套用上傳時預乘，所以解碼時就預乘並明確告訴 Pixi。
   const blob = await (await fetch(`${base}${def.image}`)).blob();
   const bitmap = await createImageBitmap(blob, { premultiplyAlpha: 'premultiply' });
-  const tex = new Texture({ source: new ImageSource({ resource: bitmap, alphaMode: 'premultiplied-alpha', scaleMode: 'nearest' }) });
+  const tex = new Texture({ source: new ImageSource({ resource: bitmap, alphaMode: 'premultiplied-alpha', resolution: def.resolution ?? 1, scaleMode: 'nearest' }) });
   const get = (k: string) => {
     const f = def.frames[k];
     if (!f) throw new Error(`sprite frame missing: ${name}/${k}`);
@@ -63,7 +64,7 @@ async function loadSheet(base: string, name: string) {
 
 export async function loadHordeSprites(base = './sprites/'): Promise<HordeSprites> {
   // 全關卡、角色、場景物件共用一張來源，維持 ParticleContainer 的單圖集批次。
-  const horde = await loadSheet(base, 'horde_stages');
+  const horde = await loadSheet(base, 'horde_detail');
   const boom = await loadSheet(base, 'explosion');
   const loadMap = async (name: string): Promise<MapSheet> => {
     const def = (await (await fetch(`${base}${name}.json`)).json()) as SheetDef;
@@ -71,7 +72,7 @@ export async function loadHordeSprites(base = './sprites/'): Promise<HordeSprite
     return { image, frames: def.frames };
   };
   const [cityMap, japanMap, candyMap] = await Promise.all([loadMap('map'), loadMap('map_japan'), loadMap('map_candy')]);
-  candyMap.ground = await createImageBitmap(await (await fetch(`${base}candy-ground-v2.jpg`)).blob());
+  candyMap.ground = await createImageBitmap(await (await fetch(`${base}candy-ground-v3.jpg`)).blob());
   const props: Record<string, Texture> = {};
   for (const k of Object.keys(horde.def.frames)) if (k.startsWith('prop_')) props[k.slice(5)] = horde.get(k);
   const kinds = [0, 1, 2, 3, 4];

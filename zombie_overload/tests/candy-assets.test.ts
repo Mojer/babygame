@@ -23,6 +23,20 @@ test('糖果素材：所有地圖物件與五怪動作都可在共用圖集找�
   const map = JSON.parse(readFileSync(new URL('map_candy.json',base),'utf8'));
   assert.ok(existsSync(new URL(map.image,base)));
   for (const tile of ['cloud','frosting','biscuit','cloudBorder']) assert.ok(map.frames['tile_'+tile]);
-  assert.ok(existsSync(new URL('candy-ground-v2.jpg',base)));
+  assert.ok(existsSync(new URL('candy-ground-v3.jpg',base)));
   assert.ok(existsSync(new URL('../covers/candy-cover-v1.jpg',base)));
+});
+
+test('糖果高解析圖集保留世界尺寸、錨點與所有舊關卡影格', () => {
+  const base = new URL('../public/sprites/', import.meta.url);
+  const original = JSON.parse(readFileSync(new URL('horde_stages.json', base), 'utf8'));
+  const detail = JSON.parse(readFileSync(new URL('horde_detail.json', base), 'utf8'));
+  assert.equal(detail.resolution, 2);
+  assert.deepEqual(detail.frames, original.frames, '提高畫質不得改變人物、物件大小與腳底錨點');
+  const png = readFileSync(new URL(detail.image, base));
+  const width = png.readUInt32BE(16), height = png.readUInt32BE(20);
+  for (const f of Object.values(detail.frames) as {x:number;y:number;w:number;h:number}[]) {
+    assert.ok((f.x+f.w)*detail.resolution <= width);
+    assert.ok((f.y+f.h)*detail.resolution <= height);
+  }
 });

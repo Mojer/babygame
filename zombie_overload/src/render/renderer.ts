@@ -19,6 +19,8 @@ import {
   CORE,
   FROZEN,
   MUTANT,
+  MAP_W,
+  MAP_H,
   PULLED,
   SKILLS,
   TIERS,
@@ -151,6 +153,7 @@ export class GameRenderer {
   private readonly postHolder = new Container();
   private readonly postSprite = new Sprite();
   private lens!: LensFilter;
+  private softPresentation = false;
   private shake = 0;
   private flashColor = 0xffffff;
   private flashA = 0;
@@ -159,6 +162,7 @@ export class GameRenderer {
 
   async init(parent: HTMLElement, world: World, loadSprites?: () => Promise<HordeSprites>, topdown = false) {
     this.topdown = topdown;
+    this.softPresentation = world.stage.id === 'candy';
     TextureStyle.defaultOptions.scaleMode = 'nearest';
     this.renderer = await autoDetectRenderer({
       preference: 'webgl',
@@ -256,6 +260,7 @@ export class GameRenderer {
     this.flash.blendMode = 'add';
     this.flash.alpha = 0;
     this.stage.addChild(this.display, this.flash);
+    this.configurePresentation();
     this.resize();
   }
 
@@ -265,6 +270,7 @@ export class GameRenderer {
 
   /** 開局前換關卡：重烘靜態地面，所有關卡共用同一張粒子圖集。 */
   setStage(world: World) {
+    this.softPresentation = world.stage.id === 'candy';
     this.sprites = this.allSprites && !(this.topdown && world.stage.id === 'city')
       ? { ...this.allSprites, ...this.allSprites.stageArt[world.stage.id] } : null;
     this.paintStage(world);
@@ -274,6 +280,15 @@ export class GameRenderer {
     this.boltsPC.texture = this.sprites?.zombie[0][0] ?? this.atlasTexture;
     this.shipSprite.texture = this.sprites?.props.ship ?? this.atlas.glow[64];
     this.deviceSprite.texture = this.sprites?.props.device ?? this.atlas.glow[64];
+    this.configurePresentation();
+    this.resize();
+  }
+
+  private configurePresentation() {
+    const mode = this.softPresentation ? 'linear' : 'nearest';
+    if (this.sprites) this.sprites.zombie[0][0].source.scaleMode = mode;
+    this.chunks.setSampling(mode);
+    this.renderer.canvas.style.imageRendering = this.softPresentation ? 'auto' : 'pixelated';
   }
 
   private paintStage(world: World) {
@@ -313,8 +328,11 @@ export class GameRenderer {
     canvas.style.height = `${cssH}px`;
     this.worldRT?.destroy(true);
     this.postRT?.destroy(true);
-    this.worldRT = RenderTexture.create({ width: this.viewW, height: this.viewH, scaleMode: 'nearest' });
-    this.postRT = RenderTexture.create({ width: this.viewW, height: this.viewH, scaleMode: 'nearest' });
+    // Preserve the same field of view while rendering candy at up to 2x detail.
+    const resolution = this.softPresentation ? Math.min(2, this.zoom) : 1;
+    const scaleMode = this.softPresentation ? 'linear' : 'nearest';
+    this.worldRT = RenderTexture.create({ width: this.viewW, height: this.viewH, resolution, scaleMode });
+    this.postRT = RenderTexture.create({ width: this.viewW, height: this.viewH, resolution, scaleMode });
     this.display.texture = this.worldRT;
     this.display.scale.set(this.zoom);
     this.flash.width = cw;
@@ -613,8 +631,11 @@ export class GameRenderer {
     const py = p.py + (p.y - p.py) * alpha;
     this.shake = Math.max(0, this.shake - dt * 2.2);
     const sh = this.shake * this.shake * 7;
-    const camX = Math.round(px - this.viewW / 2 + (Math.random() - 0.5) * sh * 2);
-    const camY = Math.round(py - this.viewH / 2 + (Math.random() - 0.5) * sh * 2);
+    const desiredX = px - this.viewW / 2 + (Math.random() - 0.5) * sh * 2;
+    const desiredY = py - this.viewH / 2 + (Math.random() - 0.5) * sh * 2;
+    // Hold the candy island's perimeter in view instead of exposing empty space outside it.
+    const camX = Math.round(this.softPresentation ? Math.max(0, Math.min(MAP_W - this.viewW, desiredX)) : desiredX);
+    const camY = Math.round(this.softPresentation ? Math.max(0, Math.min(MAP_H - this.viewH, desiredY)) : desiredY);
     this.camX = camX;
     this.camY = camY;
     this.camera.position.set(-camX, -camY);
@@ -645,7 +666,7 @@ export class GameRenderer {
     this.fxHit?.update(dt);
     this.chunks.flush(this.renderer);
 
-    this.renderer.render({ container: this.worldRoot, target: this.worldRT, clear: true, clearColor: 0x0b0c0e });
+    this.renderer.render({ container: this.worldRoot, target: this.worldRT, clear: true, clearColor: this.softPresentation ? 0xe7d8ef : 0x0b0c0e });
 
     // 黑洞透鏡：只在有黑洞時多做一次低解析度後處理
     let lensOn = false;
@@ -839,7 +860,12 @@ export class GameRenderer {
       const sh = shadows[si++];
       sh.x = x;
       sh.y = y;
-      sh.scaleX = sh.scaleY = (kd === MUTANT ? 2.8 : kd === BRUTE ? 1.5 : 1) * scale;
+      const shadowSize = (kd === MUTANT ? 2.8 : kd === BRUTE ? 1.5 : 1) * scale;
+      sh.texture = candy ? this.atlas.glow[64] : this.atlas.t.shadow;
+      const lift = motion && pose ? pose.lift : 0;
+      sh.scaleX = candy ? shadowSize * (0.24 - lift * 0.006) : shadowSize;
+      sh.scaleY = candy ? shadowSize * (0.085 - lift * 0.002) : shadowSize;
+      sh.color = candy ? abgr(0x695381, 0.32 - lift * 0.018) : WHITE;
       sch[si - 1] = sh;
     }
     ch.length = total;
@@ -847,7 +873,10 @@ export class GameRenderer {
     const ps = shadows[n];
     ps.x = px;
     ps.y = py;
-    ps.scaleX = ps.scaleY = 1.1;
+    ps.texture = this.softPresentation ? this.atlas.glow[64] : this.atlas.t.shadow;
+    ps.scaleX = this.softPresentation ? 0.26 : 1.1;
+    ps.scaleY = this.softPresentation ? 0.09 : 1.1;
+    ps.color = this.softPresentation ? abgr(0x695381, 0.32) : WHITE;
     sch[n] = ps;
     sch.length = n + 1;
   }

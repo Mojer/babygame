@@ -1,8 +1,8 @@
 {
   "schema": "zombie-overload.artwork.v1",
   "root": "zombie_overload/artwork",
-  "images": 198,
-  "prompts": 68,
+  "images": 203,
+  "prompts": 69,
   "files": [
     {
       "file": "prompts/city/runs/akane_cannon-1.txt",
@@ -1300,6 +1300,21 @@
       "prompt": "prompts/candy/cloud-ground-prompt-v2.txt"
     },
     {
+      "file": "prompts/candy/cloud-boundary-prompt-v3.txt",
+      "source": "art_spike/candy/cloud-boundary-prompt-v3.txt",
+      "category": "prompt",
+      "sha256": "3805664ad7266dfa8eee4f09c169ae42ac70dd752edc4dfe210aa56d33b2f2b6",
+      "bytes": 1386
+    },
+    {
+      "file": "originals/candy/cloud-boundary-source-v3.png",
+      "source": "art_spike/candy/cloud-boundary-source-v3.png",
+      "category": "original",
+      "sha256": "ec491e3d596fb5c0f750fd699e5c869a186e8d7cad3b9c7b0ea1a5b440baf5b4",
+      "bytes": 1912157,
+      "prompt": "prompts/candy/cloud-boundary-prompt-v3.txt"
+    },
+    {
       "file": "processed/candy/animation/chocolate-lava-0.png",
       "source": "art_spike/candy/animation/chocolate-lava-0.png",
       "category": "processed",
@@ -1709,8 +1724,8 @@
       "file": "previews/candy/map-preview.png",
       "source": "art_spike/candy/map-preview.png",
       "category": "preview",
-      "sha256": "67b705c461bd0811b90e86235b65a6c0e529e8e91e6add81c5ba649c16f181b8",
-      "bytes": 3880918
+      "sha256": "f367b5cb1b6a5d11618593bf7c5c778942245efa9377ad4f0f73603862fa887d",
+      "bytes": 4652397
     },
     {
       "file": "previews/candy/stage-selection.jpg",
@@ -1748,11 +1763,25 @@
       "bytes": 1288767
     },
     {
+      "file": "previews/candy/gameplay-polished.png",
+      "source": "art_spike/candy/gameplay-polished.png",
+      "category": "preview",
+      "sha256": "10359a43149c76b6da6944537d2deb4d13e23c8f2f2aec6bcfeb6846a1c2c96e",
+      "bytes": 74059
+    },
+    {
+      "file": "previews/candy/boundary-gameplay-v3.png",
+      "source": "art_spike/candy/boundary-gameplay-v3.png",
+      "category": "preview",
+      "sha256": "e8ec1ee712b81d7bf21e2c035e50caf4f6ce2a999d32f8d868619b7344a36f61",
+      "bytes": 111199
+    },
+    {
       "file": "processed/candy/provenance.json",
       "source": "art_spike/candy/provenance.json",
       "category": "processed",
-      "sha256": "f12d378af7e9f34c6e8dd49a46b69ca083b0dc8700dfa038494105226441489e",
-      "bytes": 1440
+      "sha256": "8efda32aede1c802fc80604fc5e3112240b2d258a28753d5bf7cef79900be547",
+      "bytes": 1656
     },
     {
       "file": "processed/candy/plan.json",
@@ -1765,8 +1794,15 @@
       "file": "processed/candy/scene-snapshot.json",
       "source": "art_spike/candy/scene-snapshot.json",
       "category": "processed",
-      "sha256": "305fc0aaf09bcab6d4f9bae17b5302610a495c7a7046e6afcd4b92031e85d4d8",
-      "bytes": 2435
+      "sha256": "92899cbaf878db8b891439bb7e64e1d5a4e2cbcf075a50921b0fce139cbd442f",
+      "bytes": 2434
+    },
+    {
+      "file": "processed/candy/polish-qa.json",
+      "source": "art_spike/candy/polish-qa.json",
+      "category": "processed",
+      "sha256": "22b5d8102f1fc21008f650fdfc1f1325364c84e99a0f32e3a973e2cca6026fa8",
+      "bytes": 1018
     },
     {
       "file": "runtime/covers/city-title.jpg",
@@ -1803,6 +1839,13 @@
       "category": "runtime",
       "sha256": "23bafcf2b8a75d1fd8f3ad69dfea00302db674e32ef38c941493974530c311f5",
       "bytes": 534110
+    },
+    {
+      "file": "runtime/sprites/candy-ground-v3.jpg",
+      "source": "public/sprites/candy-ground-v3.jpg",
+      "category": "runtime",
+      "sha256": "4486273bda72e34b488f443c1545710901fbd4ba42a461be8696d562c0d025bf",
+      "bytes": 714186
     },
     {
       "file": "runtime/sprites/candy_0.png",
@@ -1866,6 +1909,20 @@
       "category": "runtime",
       "sha256": "46ae8eb4d35027ce3f3857d38479433283b00f4f9d51279d3a63be6315500008",
       "bytes": 156014
+    },
+    {
+      "file": "runtime/sprites/horde_detail.json",
+      "source": "public/sprites/horde_detail.json",
+      "category": "runtime",
+      "sha256": "911b8cb7e80bf74d81e744e617784b62d3e591846a0fb7904714f65f669d4f53",
+      "bytes": 12772
+    },
+    {
+      "file": "runtime/sprites/horde_detail.png",
+      "source": "public/sprites/horde_detail.png",
+      "category": "runtime",
+      "sha256": "685199933eea06bf5fde1eed6b11e2e4533ea547f9f6ccf9404292d1243847e8",
+      "bytes": 1711773
     },
     {
       "file": "runtime/sprites/horde_stages.json",

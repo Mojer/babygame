@@ -88,10 +88,10 @@ def main():
         sheet.paste(tile,(i*128,0));tf['tile_'+name]={'x':i*128,'y':0,'w':128,'h':128}
     sheet.save(OUT/'map_candy.png');(OUT/'map_candy.json').write_text(json.dumps({'image':'map_candy.png','frames':tf}))
     layout=json.loads((HERE/'map-layout.json').read_text())
-    ground=bake_ground(HERE/'cloud-ground-source-v2.png',layout)
-    ground.save(HERE/'ground-v2.png')
+    ground=bake_ground(HERE/'cloud-boundary-source-v3.png',layout)
+    ground.save(HERE/'ground-v3.png')
     ground.save(HERE/'ground.png')
-    ground.convert('RGB').save(OUT/'candy-ground-v2.jpg',quality=94)
+    ground.convert('RGB').save(OUT/'candy-ground-v3.jpg',quality=94)
     runtime=HERE/'runtime-props';runtime.mkdir(exist_ok=True)
     for name,im in props.items():im.save(runtime/(name+'.png'))
     rects=[]
@@ -121,8 +121,10 @@ def main():
     (HERE/'provenance.json').write_text(json.dumps({'art_source':'host_image','route':'image_gen','model':'built-in image generation',
       'estimateUsd':None,'motion_source':'code','animation':'8 unique cutout poses; no generated video',
       'enemy_heights':HEIGHTS,'prop_widths':PROP_WIDTHS,'terrain_finish':'single full-world cloud painting with feathered union-mask frosting paths; no repeated ground tiles',
-      'ground_recipe':'bake_ground.py', 'runtime_motion':'src/render/candyMotion.ts; simulation-clock gait and per-kind hop, lean, squash',
+      'ground_recipe':'bake_ground.py', 'boundary':'image_gen edited cloud-boundary-source-v3.png; 128px blocked outer band', 'layout_props':len(layout['props']), 'runtime_motion':'src/render/candyMotion.ts; simulation-clock gait and per-kind hop, lean, squash',
       'sources':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in HERE.glob('*source*.png')}},indent=2)+'\n')
+    from polish_atlas import main as polish_atlas
+    polish_atlas()
     print(json.dumps({'atlas_height':final_h,'frames':len(frames),'enemies':5,'animation_frames':40}))
 
 if __name__=='__main__':main()

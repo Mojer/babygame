@@ -1,0 +1,58 @@
+{
+  "art_source": "existing",
+  "resolution": 2,
+  "logical_sizes_unchanged": true,
+  "checks": [
+    {
+      "kind": 0,
+      "unique_frames": 8,
+      "transparent_border": true
+    },
+    {
+      "kind": 1,
+      "unique_frames": 8,
+      "transparent_border": true
+    },
+    {
+      "kind": 2,
+      "unique_frames": 8,
+      "transparent_border": true
+    },
+    {
+      "kind": 3,
+      "unique_frames": 8,
+      "transparent_border": true
+    },
+    {
+      "kind": 4,
+      "unique_frames": 8,
+      "transparent_border": true
+    }
+  ],
+  "players_from_originals": [
+    "p_akane_0",
+    "p_akane_1",
+    "p_akane_2",
+    "p_akane_3",
+    "p_akane_down_0",
+    "p_akane_down_1",
+    "p_akane_down_2",
+    "p_akane_down_3",
+    "p_akane_up_0",
+    "p_akane_up_1",
+    "p_akane_up_2",
+    "p_akane_up_3",
+    "p_yu_0",
+    "p_yu_1",
+    "p_yu_2",
+    "p_yu_3",
+    "p_yu_down_0",
+    "p_yu_down_1",
+    "p_yu_down_2",
+    "p_yu_down_3",
+    "p_yu_up_0",
+    "p_yu_up_1",
+    "p_yu_up_2",
+    "p_yu_up_3"
+  ]
+}

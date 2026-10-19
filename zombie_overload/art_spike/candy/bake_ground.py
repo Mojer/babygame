@@ -33,6 +33,6 @@ def bake_ground(source, layout):
     result=np.array(Image.composite(icing,base,mask),dtype=float)
     yy,xx=np.indices(size)
     edge=np.minimum.reduce([xx,yy,2047-xx,2047-yy])
-    fade=np.clip(1-edge/180,0,1)[...,None]*.34
+    fade=np.clip(1-edge/180,0,1)[...,None]*(0 if 'boundary' in str(source) else .34)
     result=result*(1-fade)+np.array([145,123,191])*fade
     return Image.fromarray(np.rint(result).astype('uint8')).convert('RGBA')
