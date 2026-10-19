@@ -211,11 +211,11 @@ async function boot() {
   stageCards.innerHTML = STAGE_IDS.map(id => {
     const st = STAGES[id];
     return `<button class="stage-card stage-${id}" role="radio" data-stage="${id}" style="--c:${st.color}">
-      <span class="stage-art">${id === 'candy' ? '<img src="./covers/candy-cover-v1.jpg" alt="彩虹雲海、糖果屋與巧克力熔岩巨獸" />' : id === 'japan' ? '<img src="./covers/japan-cover-v2.jpg" alt="月下鳥居與神社，茜與宇迎戰百鬼和荒魂巨獸" />' : ''}<span class="stage-number">${st.number}</span><span class="stage-mark">${id === 'city' ? 'DEAD CITY' : st.name}</span></span>
+      <span class="stage-art">${id === 'desert' ? '<img src="./covers/desert-cover-v1.jpg" alt="金字塔、木乃伊與沙海巨獸" />' : id === 'candy' ? '<img src="./covers/candy-cover-v1.jpg" alt="彩虹雲海、糖果屋與巧克力熔岩巨獸" />' : id === 'japan' ? '<img src="./covers/japan-cover-v2.jpg" alt="月下鳥居與神社，茜與宇迎戰百鬼和荒魂巨獸" />' : ''}<span class="stage-number">${st.number}</span><span class="stage-mark">${id === 'city' ? 'DEAD CITY' : st.name}</span></span>
       <span class="check" aria-hidden="true"></span>
       <span class="stage-info"><span class="stage-kicker">STAGE ${st.number} · 10 MIN SURVIVAL</span><span class="stage-name">${st.name}<em>${st.latin}</em></span><span class="stage-subtitle">${st.subtitle}</span><span class="stage-description">${st.description}</span>
       <span class="stage-tags">${st.landmarks.map(x => `<span>${x}</span>`).join('')}</span>
-      <span class="stage-enemies"><small>敵人</small>${st.enemies.map((name, k) => `<span>${id !== 'city' ? `<img src="./sprites/${id === 'japan' ? 'yokai' : 'candy'}_${k}.png" alt="" />` : ''}${name}</span>`).join('')}</span></span></button>`;
+      <span class="stage-enemies"><small>敵人</small>${st.enemies.map((name, k) => `<span>${id !== 'city' ? `<img src="./sprites/${id === 'japan' ? 'yokai' : id === 'desert' ? 'desert' : 'candy'}_${k}.png" alt="" />` : ''}${name}</span>`).join('')}</span></span></button>`;
   }).join('');
   const chooseStage = (id: StageId) => {
     chosenStage = id;
@@ -272,7 +272,7 @@ async function boot() {
     state = 'playing';
     input.consumeEdges();
     $('#hudStage').textContent = world.stage.name;
-    $('#finishSub').textContent = world.stage.id === 'candy' ? 'ALL CHOCOLATE TITANS DOWN' : world.stage.id === 'japan' ? 'ALL KAIJU DOWN' : 'ALL MUTANTS DOWN';
+    $('#finishSub').textContent = world.stage.id === 'desert' ? 'ALL DESERT TITANS DOWN' : world.stage.id === 'candy' ? 'ALL CHOCOLATE TITANS DOWN' : world.stage.id === 'japan' ? 'ALL KAIJU DOWN' : 'ALL MUTANTS DOWN';
     hud.toast(`STAGE ${world.stage.number} · ${world.stage.name}`, 3);
     playBgm();
   };
@@ -310,7 +310,7 @@ async function boot() {
     } else if (state === 'stages') {
       if (e.code === 'ArrowLeft' || e.code === 'KeyA') chooseStage(STAGE_IDS[(STAGE_IDS.indexOf(chosenStage) + STAGE_IDS.length - 1) % STAGE_IDS.length]);
       else if (e.code === 'ArrowRight' || e.code === 'KeyD') chooseStage(STAGE_IDS[(STAGE_IDS.indexOf(chosenStage) + 1) % STAGE_IDS.length]);
-      else if (/^Digit[1-3]$/.test(e.code)) chooseStage(STAGE_IDS[Number(e.code.slice(-1)) - 1]);
+      else if (/^Digit[1-4]$/.test(e.code)) chooseStage(STAGE_IDS[Number(e.code.slice(-1)) - 1]);
       else if (e.code === 'Enter' || e.code === 'Space') {
         e.preventDefault();
         if (document.activeElement === $('#stageBackBtn')) backToCover();
@@ -404,7 +404,7 @@ async function boot() {
     const rows: [string, string, number, (n: number) => string][] = [
       ['存活時間', 'TIME', Math.floor(survived), fmtTime],
       ['擊殺數', 'KILLS', st.kills, n => n.toLocaleString()],
-      [world.stage.boss, world.stage.id === 'candy' ? 'CHOCOLATE' : world.stage.id === 'japan' ? 'KAIJU' : 'MUTANTS', st.mutantKills, n => `×${n}`],
+      [world.stage.boss, world.stage.id === 'desert' ? 'TITANS' : world.stage.id === 'candy' ? 'CHOCOLATE' : world.stage.id === 'japan' ? 'KAIJU' : 'MUTANTS', st.mutantKills, n => `×${n}`],
       ['最大連鎖', 'MAX CHAIN', st.maxChain, n => `×${n.toLocaleString()}`],
       ['等級', 'LEVEL', world.player.level, n => `Lv ${n}`],
       ['終極武器', 'ULTIMATE', st.ults, n => `×${n}`],

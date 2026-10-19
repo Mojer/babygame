@@ -1,11 +1,14 @@
 # Zombie Overload 圖片素材與生成提示詞
 
-集中整理 203 張圖片、69 份提示詞，包含都市關卡、百鬼夜行、糖果夢境、角色、敵人、場景、特效與封面版本。
+集中整理 274 張圖片、78 份提示詞，包含都市關卡、百鬼夜行、糖果夢境、沙漠冥域、角色、敵人、場景、特效與封面版本。
 
 | 目錄 | 內容 |
 |---|---|
 | [originals/city](originals/city/) | 都市／共用素材原圖，依封面、角色、敵人、場景、特效分類，保留生成版本與重排圖 |
 | [originals/japan](originals/japan/) | 百鬼夜行妖怪、場景，以及封面 v1／巨獸朝左的 v2 原圖 |
+| [originals/desert](originals/desert/) | 第四關沙漠地面、五怪母圖、場景物件與封面；物件初稿保留供追溯，遊戲採透明 v2 |
+| [prompts/desert](prompts/desert/) | 第四關實際生成與修正 prompt |
+| [previews/desert](previews/desert/) | 沙漠地圖、四關選單、遊戲與實際動作預覽 |
 | [originals/candy](originals/candy/) | 糖果怪物、場景物件與第三關封面原圖 |
 | [prompts/candy](prompts/candy/) | 糖果關卡原圖生成與排版修正提示詞 |
 | [processed/candy](processed/candy/) | 怪物動作、地磚、場景物件、來源與路線驗證 |
@@ -81,3 +84,12 @@
 | [originals/candy/cover-source.png](originals/candy/cover-source.png) | [cover-prompt.txt](prompts/candy/cover-prompt.txt) |
 | [originals/candy/cloud-ground-source-v2.png](originals/candy/cloud-ground-source-v2.png) | [cloud-ground-prompt-v2.txt](prompts/candy/cloud-ground-prompt-v2.txt) |
 | [originals/candy/cloud-boundary-source-v3.png](originals/candy/cloud-boundary-source-v3.png) | [cloud-boundary-prompt-v3.txt](prompts/candy/cloud-boundary-prompt-v3.txt) |
+| [originals/desert/cover-source.png](originals/desert/cover-source.png) | [cover-prompt.txt](prompts/desert/cover-prompt.txt) |
+| [originals/desert/ground-source.png](originals/desert/ground-source.png) | [ground-prompt.txt](prompts/desert/ground-prompt.txt) |
+| [originals/desert/jackal-source.png](originals/desert/jackal-source.png) | [jackal-prompt.txt](prompts/desert/jackal-prompt.txt) |
+| [originals/desert/mummy-source.png](originals/desert/mummy-source.png) | [mummy-prompt.txt](prompts/desert/mummy-prompt.txt) |
+| [originals/desert/props-source.png](originals/desert/props-source.png) | [props-prompt.txt](prompts/desert/props-prompt.txt) |
+| [originals/desert/props-v2-source.png](originals/desert/props-v2-source.png) | [props-v2-prompt.txt](prompts/desert/props-v2-prompt.txt) |
+| [originals/desert/reaper-source.png](originals/desert/reaper-source.png) | [reaper-prompt.txt](prompts/desert/reaper-prompt.txt) |
+| [originals/desert/scarab-source.png](originals/desert/scarab-source.png) | [scarab-prompt.txt](prompts/desert/scarab-prompt.txt) |
+| [originals/desert/titan-source.png](originals/desert/titan-source.png) | [titan-prompt.txt](prompts/desert/titan-prompt.txt) |

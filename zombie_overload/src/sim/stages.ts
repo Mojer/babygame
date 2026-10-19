@@ -1,4 +1,4 @@
-export const STAGE_IDS = ['city', 'japan', 'candy'] as const;
+export const STAGE_IDS = ['city', 'japan', 'candy', 'desert'] as const;
 export type StageId = (typeof STAGE_IDS)[number];
 
 export const STAGES = {
@@ -25,6 +25,14 @@ export const STAGES = {
     landmarks: ['彩虹雲海', '糖果屋村落', '彩虹糖花園'],
     enemies: ['棒棒糖怪', '棉花糖怪', '軟糖熊', '大眼餅乾怪', '巧克力熔岩怪'],
     boss: '巧克力熔岩怪', bossPlural: '巧克力熔岩怪', core: '大眼餅乾怪', horde: '糖果怪潮',
+  },
+  desert: {
+    id: 'desert', number: '04', name: '沙漠冥域', latin: 'SANDS OF THE AFTERLIFE', color: '#e8bd68',
+    subtitle: '沉睡金字塔的詛咒',
+    description: '越過金色沙丘與方尖碑參道，深入冥火照亮的金字塔。木乃伊復甦，死神與沙海巨獸正在甦醒。',
+    landmarks: ['金字塔遺跡', '冥火參道', '棕櫚綠洲'],
+    enemies: ['木乃伊', '疾行胡狼', '聖甲蟲守衛', '死神', '沙海巨獸'],
+    boss: '沙海巨獸', bossPlural: '沙海巨獸', core: '死神', horde: '冥界軍團',
   },
 } satisfies Record<StageId, {
   id: StageId; number: string; name: string; latin: string; color: string;

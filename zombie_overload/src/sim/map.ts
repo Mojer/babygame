@@ -3,8 +3,9 @@ import { Rng } from './rng';
 import type { StageId } from './stages';
 import { buildJapanMap } from './mapJapan';
 import { buildCandyMap } from './mapCandy';
+import { buildDesertMap } from './mapDesert';
 
-export type PropKind = 'building' | 'car' | 'wreck' | 'planter' | 'fountain' | 'bench' | 'bin' | 'barrier' | 'lamp' | 'hydrant' | 'cones' | 'crates' | 'cart'
+export type PropKind = 'pyramid' | 'desertGate' | 'obelisk' | 'palm' | 'sphinx' | 'ruinColumn' | 'sarcophagus' | 'soulBrazier' | 'building' | 'car' | 'wreck' | 'planter' | 'fountain' | 'bench' | 'bin' | 'barrier' | 'lamp' | 'hydrant' | 'cones' | 'crates' | 'cart'
   | 'candyHouse' | 'rainbowArch' | 'lollipopTree' | 'rainbowCandy' | 'cupcakeTower' | 'candyCane' | 'chocolateFountain' | 'biscuitBridge'
   | 'shrine' | 'torii' | 'sakura' | 'stoneLantern' | 'yatai' | 'bamboo' | 'komainu' | 'bridge';
 
@@ -34,6 +35,7 @@ export interface MapLayout {
 
 /** 都市廣場：外圍建築、十字道路與停放車輛、中央噴水池、花台 */
 export function buildMap(seed: number, stage: StageId = 'city'): MapLayout {
+  if (stage === 'desert') return buildDesertMap(seed);
   if (stage === 'candy') return buildCandyMap(seed);
   if (stage === 'japan') return buildJapanMap(seed);
   const rng = new Rng(seed ^ 0x5eed);

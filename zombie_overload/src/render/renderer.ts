@@ -37,6 +37,8 @@ import { bgr, FxSystem } from './fx';
 import { LensFilter } from './lens';
 import { paintMap } from './mapPainter';
 import { paintMapOblique } from './mapPainterOblique';
+import { desertPose } from './desertMotion';
+import { paintMapDesert } from './mapPainterDesert';
 import { candyPose, type CandyPose } from './candyMotion';
 import { paintMapCandy } from './mapPainterCandy';
 import { paintMapJapan } from './mapPainterJapan';
@@ -162,7 +164,7 @@ export class GameRenderer {
 
   async init(parent: HTMLElement, world: World, loadSprites?: () => Promise<HordeSprites>, topdown = false) {
     this.topdown = topdown;
-    this.softPresentation = world.stage.id === 'candy';
+    this.softPresentation = world.stage.id === 'candy' || world.stage.id === 'desert';
     TextureStyle.defaultOptions.scaleMode = 'nearest';
     this.renderer = await autoDetectRenderer({
       preference: 'webgl',
@@ -270,7 +272,7 @@ export class GameRenderer {
 
   /** 開局前換關卡：重烘靜態地面，所有關卡共用同一張粒子圖集。 */
   setStage(world: World) {
-    this.softPresentation = world.stage.id === 'candy';
+    this.softPresentation = world.stage.id === 'candy' || world.stage.id === 'desert';
     this.sprites = this.allSprites && !(this.topdown && world.stage.id === 'city')
       ? { ...this.allSprites, ...this.allSprites.stageArt[world.stage.id] } : null;
     this.paintStage(world);
@@ -293,7 +295,7 @@ export class GameRenderer {
 
   private paintStage(world: World) {
     const map = this.sprites
-      ? world.stage.id === 'candy' ? paintMapCandy(world.map, this.sprites.map) : world.stage.id === 'japan' ? paintMapJapan(world.map, this.sprites.map) : paintMapOblique(world.map, this.sprites.map)
+      ? world.stage.id === 'desert' ? paintMapDesert(world.map, this.sprites.map) : world.stage.id === 'candy' ? paintMapCandy(world.map, this.sprites.map) : world.stage.id === 'japan' ? paintMapJapan(world.map, this.sprites.map) : paintMapOblique(world.map, this.sprites.map)
       : paintMap(world.map);
     this.chunks.paintStatic(this.renderer, map);
   }
@@ -583,6 +585,14 @@ export class GameRenderer {
         case 'bamboo':
         case 'komainu':
         case 'bridge':
+        case 'pyramid':
+        case 'desertGate':
+        case 'obelisk':
+        case 'palm':
+        case 'sphinx':
+        case 'ruinColumn':
+        case 'sarcophagus':
+        case 'soulBrazier':
         case 'candyHouse':
         case 'rainbowArch':
         case 'lollipopTree':
@@ -660,13 +670,17 @@ export class GameRenderer {
       this.fxNormal.spawn(this.atlas.t.dot, camX + Math.random() * this.viewW, camY - 8,
         3, 9, 5, bgr(colors[(Math.random() * colors.length) | 0]), 0.5, 1.2, 0.4, 0, 0, 1);
     }
+    if (w.stage.id === 'desert' && dt > 0 && Math.random() < dt * 14) {
+      this.fxNormal.spawn(this.atlas.t.dot, camX - 8, camY + Math.random() * this.viewH,
+        25, 6, 6, bgr(0xf6d69a), 0.28, 1.1, 0.3, 0, 0, 1);
+    }
     this.fxNormal.update(dt);
     this.fxAdd.update(dt);
     this.fxBoom?.update(dt);
     this.fxHit?.update(dt);
     this.chunks.flush(this.renderer);
 
-    this.renderer.render({ container: this.worldRoot, target: this.worldRT, clear: true, clearColor: this.softPresentation ? 0xe7d8ef : 0x0b0c0e });
+    this.renderer.render({ container: this.worldRoot, target: this.worldRT, clear: true, clearColor: w.stage.id === 'desert' ? 0xe2bc82 : this.softPresentation ? 0xe7d8ef : 0x0b0c0e });
 
     // 黑洞透鏡：只在有黑洞時多做一次低解析度後處理
     let lensOn = false;
@@ -820,7 +834,7 @@ export class GameRenderer {
       const st = z.status[s];
       pt.x = x;
       pt.y = y;
-      const candy = w.stage.id === 'candy';
+      const candy = this.softPresentation;
       const themed = w.stage.id !== 'city';
       // Distance-driven gait stays planted when blocked; flight and hopping have distinct silhouettes.
       const gait = z.anim[s] * (themed ? 0.75 : 1);
@@ -833,7 +847,7 @@ export class GameRenderer {
       const boss = kd === MUTANT;
       const hit = z.flash[s] > 0;
       const walkCount = zt[kd].length - 2;
-      const pose = candy ? candyPose(kd, w.time, s, this.candyPose) : null;
+      const pose = w.stage.id === 'desert' ? desertPose(kd, w.time, s, this.candyPose) : candy ? candyPose(kd, w.time, s, this.candyPose) : null;
       // Keep the current candy pose during hit tint instead of repeatedly reverting to a still.
       pt.texture = pose
         ? st & FROZEN ? zt[kd][walkCount + 1] : zt[kd][pose.frame]
@@ -865,7 +879,7 @@ export class GameRenderer {
       const lift = motion && pose ? pose.lift : 0;
       sh.scaleX = candy ? shadowSize * (0.24 - lift * 0.006) : shadowSize;
       sh.scaleY = candy ? shadowSize * (0.085 - lift * 0.002) : shadowSize;
-      sh.color = candy ? abgr(0x695381, 0.32 - lift * 0.018) : WHITE;
+      sh.color = candy ? abgr(w.stage.id === 'desert' ? 0x715338 : 0x695381, 0.32 - lift * 0.018) : WHITE;
       sch[si - 1] = sh;
     }
     ch.length = total;

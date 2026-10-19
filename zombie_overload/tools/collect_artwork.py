@@ -101,6 +101,22 @@ def main():
     for name in ['provenance.json', 'plan.json', 'scene-snapshot.json', 'polish-qa.json']:
         collect('art_spike/candy/' + name, 'processed/candy/' + name, 'processed')
 
+    # Fourth stage: preserve generated masters, actual prompts and accepted runtime finish.
+    desert = ROOT / 'art_spike/desert'
+    for image in sorted(desert.glob('*-source.png')):
+        prompt_name = image.name.replace('-source.png', '-prompt.txt')
+        prompt = 'prompts/desert/' + prompt_name
+        collect('art_spike/desert/' + prompt_name, prompt, 'prompt')
+        collect('art_spike/desert/' + image.name, 'originals/desert/' + image.name, 'original', prompt)
+    for folder in ['animation', 'runtime-props']:
+        for asset in sorted((desert / folder).glob('*')):
+            if asset.is_file() and asset.suffix.lower() in IMAGE_EXTENSIONS | {'.json'}:
+                collect(asset.relative_to(ROOT).as_posix(), f'processed/desert/{folder}/{asset.name}', 'processed')
+    for name in ['map-preview.png', 'enemies-review.png', 'stage-selection.png', 'mobile-selection.png', 'gameplay.png', 'motion-runtime.gif']:
+        collect('art_spike/desert/' + name, 'previews/desert/' + name, 'preview')
+    for name in ['provenance.json', 'plan.json', 'scene-snapshot.json', 'animation-qa.json', 'prop-source-boxes.json']:
+        collect('art_spike/desert/' + name, 'processed/desert/' + name, 'processed')
+
     collect('src/assets/title-bg.jpg', 'runtime/covers/city-title.jpg', 'runtime', 'prompts/city/runs/keyart-1.txt')
     for folder in ['covers', 'sprites']:
         for asset in sorted((ROOT / 'public' / folder).iterdir()):
@@ -118,10 +134,13 @@ def main():
 
     lines = [
         '# Zombie Overload 圖片素材與生成提示詞', '',
-        f'集中整理 {images} 張圖片、{counts["prompt"]} 份提示詞，包含都市關卡、百鬼夜行、糖果夢境、角色、敵人、場景、特效與封面版本。', '',
+        f'集中整理 {images} 張圖片、{counts["prompt"]} 份提示詞，包含都市關卡、百鬼夜行、糖果夢境、沙漠冥域、角色、敵人、場景、特效與封面版本。', '',
         '| 目錄 | 內容 |', '|---|---|',
         '| [originals/city](originals/city/) | 都市／共用素材原圖，依封面、角色、敵人、場景、特效分類，保留生成版本與重排圖 |',
         '| [originals/japan](originals/japan/) | 百鬼夜行妖怪、場景，以及封面 v1／巨獸朝左的 v2 原圖 |',
+        '| [originals/desert](originals/desert/) | 第四關沙漠地面、五怪母圖、場景物件與封面；物件初稿保留供追溯，遊戲採透明 v2 |',
+        '| [prompts/desert](prompts/desert/) | 第四關實際生成與修正 prompt |',
+        '| [previews/desert](previews/desert/) | 沙漠地圖、四關選單、遊戲與實際動作預覽 |',
         '| [originals/candy](originals/candy/) | 糖果怪物、場景物件與第三關封面原圖 |',
         '| [prompts/candy](prompts/candy/) | 糖果關卡原圖生成與排版修正提示詞 |',
         '| [processed/candy](processed/candy/) | 怪物動作、地磚、場景物件、來源與路線驗證 |',

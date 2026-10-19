@@ -1,0 +1,37 @@
+{
+  "status": "pass",
+  "art_source": "host_image",
+  "motion_source": "code",
+  "checks": [
+    {
+      "name": "mummy",
+      "unique_frames": 8,
+      "clear_border": true,
+      "body_height_world": 32
+    },
+    {
+      "name": "jackal",
+      "unique_frames": 8,
+      "clear_border": true,
+      "body_height_world": 34
+    },
+    {
+      "name": "scarab",
+      "unique_frames": 8,
+      "clear_border": true,
+      "body_height_world": 40
+    },
+    {
+      "name": "reaper",
+      "unique_frames": 8,
+      "clear_border": true,
+      "body_height_world": 42
+    },
+    {
+      "name": "titan",
+      "unique_frames": 8,
+      "clear_border": true,
+      "body_height_world": 82
+    }
+  ]
+}

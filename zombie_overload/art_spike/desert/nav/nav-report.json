@@ -1,0 +1,286 @@
+{
+  "schema": "generate2dmap.nav_report.v1",
+  "status": "pass",
+  "method": "plan Appendix C validity (centre + 8 footprint samples against walk regions, solids, object footprints scaled once, tile collision and material classes) on a grid of cell max(1, round(r/2)) px; 4-neighbour moves open when segmentClear holds between node centres (samples every cell/2, plus the exact thin-gap centre path and one_way direction); BFS from every spawn and portal arrival to every interaction, exit, anchor slot and approach point",
+  "notProven": [
+    "that the collision data matches the painted art",
+    "positions closer than one grid cell to a blocker (the grid samples cell centres)",
+    "runtime movement code: map-runtime.mjs parity is tested during integration",
+    "links to maps not passed with --link"
+  ],
+  "checks": [
+    {
+      "id": "starts_valid",
+      "status": "pass",
+      "value": {
+        "starts": 1,
+        "blocked": []
+      },
+      "threshold": {
+        "blocked": 0
+      }
+    },
+    {
+      "id": "targets_reachable",
+      "status": "pass",
+      "value": {
+        "reachable": 6,
+        "total": 6,
+        "unreachable": []
+      },
+      "threshold": {
+        "unreachable": 0
+      }
+    },
+    {
+      "id": "portals_inside_world",
+      "status": "pass",
+      "value": {
+        "outside": []
+      },
+      "threshold": {
+        "outside": 0
+      }
+    },
+    {
+      "id": "arrivals_outside_triggers",
+      "status": "pass",
+      "value": {
+        "problems": 0
+      },
+      "threshold": {
+        "problems": 0
+      }
+    },
+    {
+      "id": "reciprocal_links",
+      "status": "pass",
+      "value": {
+        "links": [],
+        "notChecked": []
+      },
+      "threshold": {
+        "errors": 0
+      }
+    },
+    {
+      "id": "thin_gaps",
+      "status": "pass",
+      "value": 0,
+      "threshold": "reported: moves the thin-gap rule closed although every footprint sample was valid"
+    },
+    {
+      "id": "unreachable_walkable_area",
+      "status": "pass",
+      "value": {
+        "pockets": 0,
+        "cells": 0
+      },
+      "threshold": "reported"
+    },
+    {
+      "id": "blocked_rects_union",
+      "status": "pass",
+      "value": {
+        "rects": 214,
+        "blockedCells": 142901
+      },
+      "threshold": "union == blocked cells"
+    },
+    {
+      "id": "footprints_scaled_once",
+      "status": "pass",
+      "value": {
+        "objectSolids": 0
+      },
+      "threshold": "object footprint x scale, never inflated by the actor radius"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "../map-bundle.json",
+      "sha256": "9586edaae2be67d310c6beee1496fbb82b963042195ec199fb90a78ba462900f",
+      "bytes": 28841
+    },
+    {
+      "path": "../ground.png",
+      "sha256": "295f6c9952d939d3b51d73c3fa81537d65eda2eeb83d1d77477db4175696421c",
+      "bytes": 6348715
+    },
+    {
+      "path": "../runtime-props/pyramid.png",
+      "sha256": "a25519a73d787ea988e5f32055e47bc1fe8ac2695be5b6d1dc07702aca91fdfa",
+      "bytes": 98119
+    },
+    {
+      "path": "../runtime-props/desertGate.png",
+      "sha256": "1a2d2e01d5972a7eb2176143b84450247bb56e2517081ab7592eb8f552d861f3",
+      "bytes": 58226
+    },
+    {
+      "path": "../runtime-props/obelisk.png",
+      "sha256": "8ee404d3a0b9325477e738bc94fcc1d5b89a6d1a97ebeba1827d06269799500e",
+      "bytes": 8355
+    },
+    {
+      "path": "../runtime-props/sphinx.png",
+      "sha256": "2800ab86dd8d11dde001f5a2d696c0ba31fcd3bcf964fb09dc6f3bc6868b872f",
+      "bytes": 20018
+    },
+    {
+      "path": "../runtime-props/palm.png",
+      "sha256": "b197313efd6464294e6916a0fb4a9524c3ecceba3a7625e359fcbce85cf5b493",
+      "bytes": 20699
+    },
+    {
+      "path": "../runtime-props/sarcophagus.png",
+      "sha256": "df596c1aadd3e0682c472f0e3ff14db803b0adce57eb0f7bb9b377523bd9ddc5",
+      "bytes": 6504
+    },
+    {
+      "path": "../runtime-props/soulBrazier.png",
+      "sha256": "0dbf57b523c2e5b08f7e5a252b83b147631dc525e0f36dc88f4c734ac512d6ad",
+      "bytes": 5033
+    },
+    {
+      "path": "../runtime-props/ruinColumn.png",
+      "sha256": "497d7ce865c09398379dd3499655a6c51967a0c6de5ed8cb6e27d74d165bacd6",
+      "bytes": 6755
+    }
+  ],
+  "outputs": [
+    {
+      "path": "nav-grid.json",
+      "sha256": "12e895355c63a89af9ee06a4d73ac90dd51e56b7ca7439c420d8bb94f8908955",
+      "bytes": 956750
+    },
+    {
+      "path": "nav-debug.png",
+      "sha256": "79a7ee271c4132424a5c2214798d9097a65ff15b304b443d08363b354c320083",
+      "bytes": 4638871
+    }
+  ],
+  "tool": {
+    "name": "map_nav.py",
+    "version": "0.4.0"
+  },
+  "map": "desert",
+  "cell": 3,
+  "starts": [
+    {
+      "kind": "spawn",
+      "id": "start",
+      "point": [
+        1024.0,
+        1216.0
+      ],
+      "reachable": true,
+      "steps": 0,
+      "node": [
+        1024.5,
+        1216.5
+      ],
+      "reason": null
+    }
+  ],
+  "targets": [
+    {
+      "kind": "approach",
+      "id": "pyramid-court/approach[0]",
+      "point": [
+        1024.0,
+        944.0
+      ],
+      "reachable": true,
+      "steps": 87,
+      "node": [
+        1018.5,
+        949.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "west-gate/approach[0]",
+      "point": [
+        496.0,
+        832.0
+      ],
+      "reachable": true,
+      "steps": 296,
+      "node": [
+        502.5,
+        838.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "east-gate/approach[0]",
+      "point": [
+        1552.0,
+        832.0
+      ],
+      "reachable": true,
+      "steps": 296,
+      "node": [
+        1546.5,
+        838.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "west-oasis/approach[0]",
+      "point": [
+        656.0,
+        1328.0
+      ],
+      "reachable": true,
+      "steps": 152,
+      "node": [
+        661.5,
+        1321.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "east-oasis/approach[0]",
+      "point": [
+        1392.0,
+        1328.0
+      ],
+      "reachable": true,
+      "steps": 152,
+      "node": [
+        1387.5,
+        1321.5
+      ],
+      "reason": null
+    },
+    {
+      "kind": "approach",
+      "id": "southern-tombs/approach[0]",
+      "point": [
+        1024.0,
+        1664.0
+      ],
+      "reachable": true,
+      "steps": 145,
+      "node": [
+        1018.5,
+        1657.5
+      ],
+      "reason": null
+    }
+  ],
+  "links": [],
+  "thinGaps": [],
+  "unreachablePockets": [],
+  "bundleNav": {
+    "cell": 3,
+    "grid": "nav-grid.json"
+  },
+  "problems": []
+}

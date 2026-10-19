@@ -1,0 +1,322 @@
+{
+  "schema": "generate2dmap.scene_preview_qa.v1",
+  "status": "pass",
+  "method": "build_scene_preview: bundle files resolved relative to the bundle and checked against their sha256 when given; collision read through forge_nav (the D2 blocking set; tile collision converted into world solids, material classes into BLOCK and one_way pixel planes); tiles layers pre-rendered from tileset manifests; art found in the D6 order and embedded as data URIs; map-runtime.mjs inlined verbatim; the page scanned for anything that loads from outside it; size gate; optional headless-Chromium run (--verify).",
+  "notProven": [
+    "Collision is forge_nav's D2 blocking set and the page walks it with map-runtime.mjs, which mirrors forge_nav rule for rule; their agreement is tested on synthetic fixtures (tests/test_map_runtime_js.py), not on this map. Rotated shapes can differ by one ulp of sin and cos between a browser and Python.",
+    "Without --verify, or when it prints SKIPPED, the page was assembled and scanned but never run in a browser.",
+    "The actor is a debug marker sized from collision.actorRadius, not character art; animation, lights, atmosphere, stage data, camera bounds and occluder masks are not drawn.",
+    "Draw order is whole-object Y-sort by (sortY, x, id); per-pixel occlusion, fades and cut-aways are not simulated.",
+    "Route checks walk the forge_nav grid with the runtime walker at --speed; an engine controller (acceleration, physics colliders, other speeds) may behave differently. one_way material blocks moving down onto it on every map (N11); a top-down map should not use it.",
+    "Footprint samples lie half a nav cell apart (N10): a solid thinner than that can fall between the samples of the footprint's rim; the actor's centre path is tested exactly (thin-gap rule).",
+    "Only headless Chromium is exercised (with --verify); other browsers, devices and touch input are not tested."
+  ],
+  "checks": [
+    {
+      "id": "html-size",
+      "status": "pass",
+      "value": 8911484,
+      "threshold": 16000000
+    },
+    {
+      "id": "external-references",
+      "status": "pass",
+      "value": [],
+      "threshold": []
+    },
+    {
+      "id": "ascii-only",
+      "status": "pass",
+      "value": true,
+      "threshold": true
+    },
+    {
+      "id": "single-inline-script",
+      "status": "pass",
+      "value": true,
+      "threshold": true
+    },
+    {
+      "id": "runtime-inlined",
+      "status": "pass",
+      "value": "map-runtime.mjs",
+      "threshold": null
+    },
+    {
+      "id": "object-art",
+      "status": "pass",
+      "value": [],
+      "threshold": []
+    },
+    {
+      "id": "build-warnings",
+      "status": "pass",
+      "value": 0,
+      "threshold": 0
+    }
+  ],
+  "inputs": [
+    {
+      "path": "../map-bundle.json",
+      "sha256": "9586edaae2be67d310c6beee1496fbb82b963042195ec199fb90a78ba462900f",
+      "bytes": 28841
+    },
+    {
+      "path": "../runtime-props/pyramid.png",
+      "sha256": "a25519a73d787ea988e5f32055e47bc1fe8ac2695be5b6d1dc07702aca91fdfa",
+      "bytes": 98119
+    },
+    {
+      "path": "../runtime-props/desertGate.png",
+      "sha256": "1a2d2e01d5972a7eb2176143b84450247bb56e2517081ab7592eb8f552d861f3",
+      "bytes": 58226
+    },
+    {
+      "path": "../runtime-props/obelisk.png",
+      "sha256": "8ee404d3a0b9325477e738bc94fcc1d5b89a6d1a97ebeba1827d06269799500e",
+      "bytes": 8355
+    },
+    {
+      "path": "../runtime-props/sphinx.png",
+      "sha256": "2800ab86dd8d11dde001f5a2d696c0ba31fcd3bcf964fb09dc6f3bc6868b872f",
+      "bytes": 20018
+    },
+    {
+      "path": "../runtime-props/palm.png",
+      "sha256": "b197313efd6464294e6916a0fb4a9524c3ecceba3a7625e359fcbce85cf5b493",
+      "bytes": 20699
+    },
+    {
+      "path": "../runtime-props/sarcophagus.png",
+      "sha256": "df596c1aadd3e0682c472f0e3ff14db803b0adce57eb0f7bb9b377523bd9ddc5",
+      "bytes": 6504
+    },
+    {
+      "path": "../runtime-props/soulBrazier.png",
+      "sha256": "0dbf57b523c2e5b08f7e5a252b83b147631dc525e0f36dc88f4c734ac512d6ad",
+      "bytes": 5033
+    },
+    {
+      "path": "../runtime-props/ruinColumn.png",
+      "sha256": "497d7ce865c09398379dd3499655a6c51967a0c6de5ed8cb6e27d74d165bacd6",
+      "bytes": 6755
+    },
+    {
+      "path": "../ground.png",
+      "sha256": "295f6c9952d939d3b51d73c3fa81537d65eda2eeb83d1d77477db4175696421c",
+      "bytes": 6348715
+    }
+  ],
+  "outputs": [
+    {
+      "path": "preview.html",
+      "sha256": "9064fc0337c613dbb0fb347a57c9b861307375c3dacdfb6ab66d99283b404a2f",
+      "bytes": 8911484
+    }
+  ],
+  "tool": {
+    "name": "build_scene_preview",
+    "version": "0.4.0"
+  },
+  "preview": {
+    "file": "preview.html",
+    "bytes": 8911484,
+    "sha256": "9064fc0337c613dbb0fb347a57c9b861307375c3dacdfb6ab66d99283b404a2f",
+    "runtime": {
+      "file": "map-runtime.mjs",
+      "version": "1.1.2",
+      "sha256": "c1fc3d9bf15cfa53fdfeb050ce4252f7ace4c923066ca4e135dea576e7445273"
+    },
+    "world": [
+      2048,
+      2048
+    ],
+    "zoom": 1,
+    "speed": 60.0,
+    "actorHeight": 22.5,
+    "actorRadius": 5,
+    "ySquash": 1,
+    "start": "start",
+    "layers": [
+      {
+        "name": "ground",
+        "source": "image",
+        "size": [
+          2048,
+          2048
+        ]
+      },
+      {
+        "name": "props",
+        "source": "objects"
+      }
+    ],
+    "drawOrder": [
+      "prop-93",
+      "prop-95",
+      "prop-97",
+      "prop-99",
+      "prop-101",
+      "prop-103",
+      "prop-105",
+      "prop-107",
+      "prop-109",
+      "prop-111",
+      "prop-53",
+      "prop-55",
+      "prop-56",
+      "prop-57",
+      "prop-58",
+      "prop-52",
+      "prop-54",
+      "prop-113",
+      "prop-114",
+      "prop-1",
+      "prop-2",
+      "prop-62",
+      "prop-59",
+      "prop-60",
+      "prop-23",
+      "prop-27",
+      "prop-20",
+      "prop-24",
+      "prop-61",
+      "prop-21",
+      "prop-25",
+      "prop-22",
+      "prop-26",
+      "prop-115",
+      "prop-116",
+      "prop-117",
+      "prop-118",
+      "prop-63",
+      "prop-66",
+      "prop-67",
+      "prop-64",
+      "prop-0",
+      "prop-65",
+      "prop-4",
+      "prop-5",
+      "prop-119",
+      "prop-12",
+      "prop-68",
+      "prop-13",
+      "prop-120",
+      "prop-19",
+      "prop-31",
+      "prop-16",
+      "prop-28",
+      "prop-17",
+      "prop-29",
+      "prop-18",
+      "prop-30",
+      "prop-6",
+      "prop-9",
+      "prop-121",
+      "prop-122",
+      "prop-3",
+      "prop-87",
+      "prop-90",
+      "prop-70",
+      "prop-35",
+      "prop-39",
+      "prop-32",
+      "prop-36",
+      "prop-69",
+      "prop-71",
+      "prop-33",
+      "prop-37",
+      "prop-123",
+      "prop-34",
+      "prop-38",
+      "prop-124",
+      "prop-7",
+      "prop-10",
+      "prop-73",
+      "prop-74",
+      "prop-75",
+      "prop-72",
+      "prop-14",
+      "prop-15",
+      "prop-88",
+      "prop-91",
+      "prop-125",
+      "prop-126",
+      "prop-89",
+      "prop-92",
+      "prop-127",
+      "prop-128",
+      "prop-8",
+      "prop-11",
+      "prop-79",
+      "prop-77",
+      "prop-78",
+      "prop-43",
+      "prop-51",
+      "prop-40",
+      "prop-48",
+      "prop-76",
+      "prop-47",
+      "prop-44",
+      "prop-41",
+      "prop-49",
+      "prop-42",
+      "prop-50",
+      "prop-45",
+      "prop-46",
+      "prop-129",
+      "prop-81",
+      "prop-86",
+      "prop-130",
+      "prop-82",
+      "prop-84",
+      "prop-85",
+      "prop-80",
+      "prop-83",
+      "prop-94",
+      "prop-96",
+      "prop-98",
+      "prop-100",
+      "prop-102",
+      "prop-104",
+      "prop-106",
+      "prop-108",
+      "prop-110",
+      "prop-112"
+    ],
+    "objectArt": {
+      "object.image": 131,
+      "props": 0,
+      "prop-pack": 0,
+      "occluder.source": 0,
+      "missing": []
+    },
+    "counts": {
+      "objects": 131,
+      "portals": 0,
+      "spawns": 1,
+      "interactions": 0,
+      "anchors": 6
+    },
+    "images": {
+      "count": 9,
+      "bytes": 6572424
+    },
+    "materialMap": null,
+    "collision": {
+      "collisionSolids": 0,
+      "rects": 419,
+      "footprints": 0,
+      "tileSolids": 0,
+      "blockingMaterialClasses": []
+    },
+    "hashes": {
+      "checked": 0,
+      "unchecked": 132
+    }
+  },
+  "warnings": [],
+  "verify": {
+    "status": "not-requested"
+  }
+}

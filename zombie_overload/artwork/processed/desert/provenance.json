@@ -1,0 +1,22 @@
+{
+  "art_source": "host_image",
+  "route": "image_gen",
+  "model": "built-in image generation",
+  "estimateUsd": null,
+  "motion_source": "code",
+  "motion": "8 bilinear joint-deformed poses per generated master; no generated video",
+  "atlas_resolution": 2,
+  "prop_count": 131,
+  "boundary": "closed sandstone outer 128px band",
+  "sources": {
+    "mummy-source.png": "7d39466cbea8676a95166cfdb51b8f9101dc155125ceab3f0a3bc620af82af12",
+    "cover-source.png": "f02f1a3b7f7fbc559302d09ce3b0383b2c891d6d36f9e91ea1af948a3ba18da4",
+    "reaper-source.png": "09d65ae7a43fd3363ba06e19f10d1b385f05b442f5c7ca96a2572e1c19c4e209",
+    "jackal-source.png": "f34908f41195fbaf0517efa97055a42115f282af8d878c2210d2b5eb1d681af6",
+    "titan-source.png": "9c5e024b7cfd51fac498ada4e23e0ff2f606b065df783c49a461bc1d3427c7b0",
+    "props-source.png": "049fb16d74c8d91dda4fe778dcd94fda7cb6db804722ae41bc8e2ec3c79def5d",
+    "ground-source.png": "70c8a0ec08406f2d2d6ed1d1a0b680be5ff1c21d0be41502f90a771450a2f8ed",
+    "scarab-source.png": "0ea61c424bf9696c8826f7fb8e3651b36b2928524f5bfcd1e011db45a3431fad",
+    "props-v2-source.png": "4ff8b47ad30e168d3130594f9bca7f4d450430f5fb8e9f3f300f24e42595f0e3"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "ok": true,
+  "speed": 82,
+  "budget": 1.367,
+  "tickHz": 60,
+  "cell": 3,
+  "spawns": [
+    {
+      "id": "start",
+      "valid": true,
+      "reachableCells": 323588
+    }
+  ],
+  "results": [
+    {
+      "target": "pyramid-court.approach[0]",
+      "kind": "approach",
+      "from": "start",
+      "ok": true,
+      "reachable": true,
+      "reason": null,
+      "ticks": 200,
+      "distance": 272.279,
+      "maxStep": 1.367,
+      "zeroMotionTicks": 0,
+      "blocked": false,
+      "firedEnRoute": [],
+      "end": [
+        1024,
+        944
+      ]
+    },
+    {
+      "target": "west-gate.approach[0]",
+      "kind": "approach",
+      "from": "start",
+      "ok": true,
+      "reachable": true,
+      "reason": null,
+      "ticks": 618,
+      "distance": 844.354,
+      "maxStep": 1.367,
+      "zeroMotionTicks": 0,
+      "blocked": false,
+      "firedEnRoute": [],
+      "end": [
+        496,
+        832
+      ]
+    },
+    {
+      "target": "east-gate.approach[0]",
+      "kind": "approach",
+      "from": "start",
+      "ok": true,
+      "reachable": true,
+      "reason": null,
+      "ticks": 627,
+      "distance": 855.88,
+      "maxStep": 1.367,
+      "zeroMotionTicks": 0,
+      "blocked": false,
+      "firedEnRoute": [],
+      "end": [
+        1552,
+        832
+      ]
+    },
+    {
+      "target": "west-oasis.approach[0]",
+      "kind": "approach",
+      "from": "start",
+      "ok": true,
+      "reachable": true,
+      "reason": null,
+      "ticks": 296,
+      "distance": 403.302,
+      "maxStep": 1.367,
+      "zeroMotionTicks": 0,
+      "blocked": false,
+      "firedEnRoute": [],
+      "end": [
+        656,
+        1328
+      ]
+    },
+    {
+      "target": "east-oasis.approach[0]",
+      "kind": "approach",
+      "from": "start",
+      "ok": true,
+      "reachable": true,
+      "reason": null,
+      "ticks": 304,
+      "distance": 414.99,
+      "maxStep": 1.367,
+      "zeroMotionTicks": 0,
+      "blocked": false,
+      "firedEnRoute": [],
+      "end": [
+        1392,
+        1328
+      ]
+    },
+    {
+      "target": "southern-tombs.approach[0]",
+      "kind": "approach",
+      "from": "start",
+      "ok": true,
+      "reachable": true,
+      "reason": null,
+      "ticks": 329,
+      "distance": 448.353,
+      "maxStep": 1.367,
+      "zeroMotionTicks": 0,
+      "blocked": false,
+      "firedEnRoute": [],
+      "end": [
+        1024,
+        1664
+      ]
+    }
+  ],
+  "portals": []
+}

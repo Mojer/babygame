@@ -1,8 +1,8 @@
 {
   "schema": "zombie-overload.artwork.v1",
   "root": "zombie_overload/artwork",
-  "images": 203,
-  "prompts": 69,
+  "images": 274,
+  "prompts": 78,
   "files": [
     {
       "file": "prompts/city/runs/akane_cannon-1.txt",
@@ -1805,6 +1805,554 @@
       "bytes": 1018
     },
     {
+      "file": "prompts/desert/cover-prompt.txt",
+      "source": "art_spike/desert/cover-prompt.txt",
+      "category": "prompt",
+      "sha256": "9e28301d71d1fbcef3f35f02a231479aba1a4632694b5560762737113f9f9534",
+      "bytes": 1014
+    },
+    {
+      "file": "originals/desert/cover-source.png",
+      "source": "art_spike/desert/cover-source.png",
+      "category": "original",
+      "sha256": "f02f1a3b7f7fbc559302d09ce3b0383b2c891d6d36f9e91ea1af948a3ba18da4",
+      "bytes": 3184484,
+      "prompt": "prompts/desert/cover-prompt.txt"
+    },
+    {
+      "file": "prompts/desert/ground-prompt.txt",
+      "source": "art_spike/desert/ground-prompt.txt",
+      "category": "prompt",
+      "sha256": "b0bfb39eb4c249c79526113abc5020b5bf2a2986f88d411bdbd4609e80a332ef",
+      "bytes": 1149
+    },
+    {
+      "file": "originals/desert/ground-source.png",
+      "source": "art_spike/desert/ground-source.png",
+      "category": "original",
+      "sha256": "70c8a0ec08406f2d2d6ed1d1a0b680be5ff1c21d0be41502f90a771450a2f8ed",
+      "bytes": 2652833,
+      "prompt": "prompts/desert/ground-prompt.txt"
+    },
+    {
+      "file": "prompts/desert/jackal-prompt.txt",
+      "source": "art_spike/desert/jackal-prompt.txt",
+      "category": "prompt",
+      "sha256": "4d1daa83ddd3f1d90f3c7b241821674d97c2e99adfb62b5077e528f18816766d",
+      "bytes": 1015
+    },
+    {
+      "file": "originals/desert/jackal-source.png",
+      "source": "art_spike/desert/jackal-source.png",
+      "category": "original",
+      "sha256": "f34908f41195fbaf0517efa97055a42115f282af8d878c2210d2b5eb1d681af6",
+      "bytes": 1044019,
+      "prompt": "prompts/desert/jackal-prompt.txt"
+    },
+    {
+      "file": "prompts/desert/mummy-prompt.txt",
+      "source": "art_spike/desert/mummy-prompt.txt",
+      "category": "prompt",
+      "sha256": "2732a287ffe869f1f12628b6e71da1653feb33c4f60214ff4f08a19f068968ba",
+      "bytes": 992
+    },
+    {
+      "file": "originals/desert/mummy-source.png",
+      "source": "art_spike/desert/mummy-source.png",
+      "category": "original",
+      "sha256": "7d39466cbea8676a95166cfdb51b8f9101dc155125ceab3f0a3bc620af82af12",
+      "bytes": 1827622,
+      "prompt": "prompts/desert/mummy-prompt.txt"
+    },
+    {
+      "file": "prompts/desert/props-prompt.txt",
+      "source": "art_spike/desert/props-prompt.txt",
+      "category": "prompt",
+      "sha256": "4d76ec936d5435688381fe47892fd0a9995542388ee27f7929306e4b726acfac",
+      "bytes": 1296
+    },
+    {
+      "file": "originals/desert/props-source.png",
+      "source": "art_spike/desert/props-source.png",
+      "category": "original",
+      "sha256": "049fb16d74c8d91dda4fe778dcd94fda7cb6db804722ae41bc8e2ec3c79def5d",
+      "bytes": 2696489,
+      "prompt": "prompts/desert/props-prompt.txt"
+    },
+    {
+      "file": "prompts/desert/props-v2-prompt.txt",
+      "source": "art_spike/desert/props-v2-prompt.txt",
+      "category": "prompt",
+      "sha256": "7d2e39a5ca2ee7b6872f5e929ac0c40cfa5a8e2246eb3ad0a0f85a462da75ce0",
+      "bytes": 1023
+    },
+    {
+      "file": "originals/desert/props-v2-source.png",
+      "source": "art_spike/desert/props-v2-source.png",
+      "category": "original",
+      "sha256": "4ff8b47ad30e168d3130594f9bca7f4d450430f5fb8e9f3f300f24e42595f0e3",
+      "bytes": 1888006,
+      "prompt": "prompts/desert/props-v2-prompt.txt"
+    },
+    {
+      "file": "prompts/desert/reaper-prompt.txt",
+      "source": "art_spike/desert/reaper-prompt.txt",
+      "category": "prompt",
+      "sha256": "b8307246cd877efed8bca1b99615ff2cb99867ec322f40c4107f113a9971a75d",
+      "bytes": 1068
+    },
+    {
+      "file": "originals/desert/reaper-source.png",
+      "source": "art_spike/desert/reaper-source.png",
+      "category": "original",
+      "sha256": "09d65ae7a43fd3363ba06e19f10d1b385f05b442f5c7ca96a2572e1c19c4e209",
+      "bytes": 1494116,
+      "prompt": "prompts/desert/reaper-prompt.txt"
+    },
+    {
+      "file": "prompts/desert/scarab-prompt.txt",
+      "source": "art_spike/desert/scarab-prompt.txt",
+      "category": "prompt",
+      "sha256": "2ccfdb8aa7ef26e18b30de72a04512795ad4b589fae7e615f52b0009394569a5",
+      "bytes": 1012
+    },
+    {
+      "file": "originals/desert/scarab-source.png",
+      "source": "art_spike/desert/scarab-source.png",
+      "category": "original",
+      "sha256": "0ea61c424bf9696c8826f7fb8e3651b36b2928524f5bfcd1e011db45a3431fad",
+      "bytes": 1745472,
+      "prompt": "prompts/desert/scarab-prompt.txt"
+    },
+    {
+      "file": "prompts/desert/titan-prompt.txt",
+      "source": "art_spike/desert/titan-prompt.txt",
+      "category": "prompt",
+      "sha256": "99a86442d210107d98425cb6af010138e8761980a791be0c414f30204a3c1fc5",
+      "bytes": 1099
+    },
+    {
+      "file": "originals/desert/titan-source.png",
+      "source": "art_spike/desert/titan-source.png",
+      "category": "original",
+      "sha256": "9c5e024b7cfd51fac498ada4e23e0ff2f606b065df783c49a461bc1d3427c7b0",
+      "bytes": 1954556,
+      "prompt": "prompts/desert/titan-prompt.txt"
+    },
+    {
+      "file": "processed/desert/animation/jackal-0.png",
+      "source": "art_spike/desert/animation/jackal-0.png",
+      "category": "processed",
+      "sha256": "a35e2e670e80aaa78e802ddb3662916eb1689ecafcebf0b2ea1387ee2dd87f61",
+      "bytes": 7146
+    },
+    {
+      "file": "processed/desert/animation/jackal-1.png",
+      "source": "art_spike/desert/animation/jackal-1.png",
+      "category": "processed",
+      "sha256": "06d8a3842efc7eff6d91fc54b0103a58a5346713853501e93bfd97006370ea03",
+      "bytes": 6750
+    },
+    {
+      "file": "processed/desert/animation/jackal-2.png",
+      "source": "art_spike/desert/animation/jackal-2.png",
+      "category": "processed",
+      "sha256": "56b6aa9c4ca3d753cf60c84e6ddf2fec297e46833db03bba269cd9e999969315",
+      "bytes": 6488
+    },
+    {
+      "file": "processed/desert/animation/jackal-3.png",
+      "source": "art_spike/desert/animation/jackal-3.png",
+      "category": "processed",
+      "sha256": "34c3cfff4d126e4a13a605103bb134350dab3d4db5291661930c56cbaaad6335",
+      "bytes": 6653
+    },
+    {
+      "file": "processed/desert/animation/jackal-4.png",
+      "source": "art_spike/desert/animation/jackal-4.png",
+      "category": "processed",
+      "sha256": "2f7105b6d413212d425eaf4e6e765815b05aff27495e14b5bdbe9365798e46f8",
+      "bytes": 6999
+    },
+    {
+      "file": "processed/desert/animation/jackal-5.png",
+      "source": "art_spike/desert/animation/jackal-5.png",
+      "category": "processed",
+      "sha256": "669113ebaa04ca555ec38fd3a251e8b2e72dd88a37f86b49d9906879b828107c",
+      "bytes": 7230
+    },
+    {
+      "file": "processed/desert/animation/jackal-6.png",
+      "source": "art_spike/desert/animation/jackal-6.png",
+      "category": "processed",
+      "sha256": "fb15b18f3f458a5fe310588816281ee21abc35a7189a91bbee9c9b6ef6f7d72f",
+      "bytes": 7371
+    },
+    {
+      "file": "processed/desert/animation/jackal-7.png",
+      "source": "art_spike/desert/animation/jackal-7.png",
+      "category": "processed",
+      "sha256": "3ed95f28012ea72440e9b6ed02686e5615be575fa903d643e00478687ad7b5c5",
+      "bytes": 7339
+    },
+    {
+      "file": "processed/desert/animation/mummy-0.png",
+      "source": "art_spike/desert/animation/mummy-0.png",
+      "category": "processed",
+      "sha256": "a92ab305d2e0dc73d5939f9d9d47f83cf69f03f452dff48ca61190c44485e5ec",
+      "bytes": 9493
+    },
+    {
+      "file": "processed/desert/animation/mummy-1.png",
+      "source": "art_spike/desert/animation/mummy-1.png",
+      "category": "processed",
+      "sha256": "d1877df5c1bdbbbd64848c3483a1ed58f0935aeae1f7a6202ad5d274a69e7e2c",
+      "bytes": 9055
+    },
+    {
+      "file": "processed/desert/animation/mummy-2.png",
+      "source": "art_spike/desert/animation/mummy-2.png",
+      "category": "processed",
+      "sha256": "f4793d17e41a1dd24e9e654d8cba9f5338f7a43a7a02ecd8358604bc7a2624b5",
+      "bytes": 8893
+    },
+    {
+      "file": "processed/desert/animation/mummy-3.png",
+      "source": "art_spike/desert/animation/mummy-3.png",
+      "category": "processed",
+      "sha256": "a1f798331c583e5180d9b0574e6536c3fe7a3593023ab1875c324f4ff346ef8d",
+      "bytes": 9238
+    },
+    {
+      "file": "processed/desert/animation/mummy-4.png",
+      "source": "art_spike/desert/animation/mummy-4.png",
+      "category": "processed",
+      "sha256": "40ad16a3a03d071e937b7b052a2cf3f9c13b937b9d59eb77c5473569d40d29e9",
+      "bytes": 9845
+    },
+    {
+      "file": "processed/desert/animation/mummy-5.png",
+      "source": "art_spike/desert/animation/mummy-5.png",
+      "category": "processed",
+      "sha256": "939ff7e6d39441d00a52068e8cbadb6b228773d4f6e9a934bb574feb5f7b95f0",
+      "bytes": 10235
+    },
+    {
+      "file": "processed/desert/animation/mummy-6.png",
+      "source": "art_spike/desert/animation/mummy-6.png",
+      "category": "processed",
+      "sha256": "8e608f47c07f6e89e47f057a66e8c59c6f46e0f50b72ed17394aca3cfca17c93",
+      "bytes": 10323
+    },
+    {
+      "file": "processed/desert/animation/mummy-7.png",
+      "source": "art_spike/desert/animation/mummy-7.png",
+      "category": "processed",
+      "sha256": "a13cd3018f7bfc1250218649e8d246c4851239211266cf0c5c103dcdcb5cce9a",
+      "bytes": 10066
+    },
+    {
+      "file": "processed/desert/animation/reaper-0.png",
+      "source": "art_spike/desert/animation/reaper-0.png",
+      "category": "processed",
+      "sha256": "5f4386d2663dc59bf191fb34ae13321a26ce7769416107da70589675d268b04e",
+      "bytes": 15040
+    },
+    {
+      "file": "processed/desert/animation/reaper-1.png",
+      "source": "art_spike/desert/animation/reaper-1.png",
+      "category": "processed",
+      "sha256": "d012be33a8602f957ab168a2391b9b6cf73ee6f551bf9292fe9400d44a169653",
+      "bytes": 14483
+    },
+    {
+      "file": "processed/desert/animation/reaper-2.png",
+      "source": "art_spike/desert/animation/reaper-2.png",
+      "category": "processed",
+      "sha256": "f16660745dbdad229b53e591c3a1a3ef02f253bc13358eed5ef6f6b4f4eab6c9",
+      "bytes": 14431
+    },
+    {
+      "file": "processed/desert/animation/reaper-3.png",
+      "source": "art_spike/desert/animation/reaper-3.png",
+      "category": "processed",
+      "sha256": "a7c5566ee06970628c24d9de8c80cac0a75db285bb7366d3dde41a285c81f681",
+      "bytes": 14051
+    },
+    {
+      "file": "processed/desert/animation/reaper-4.png",
+      "source": "art_spike/desert/animation/reaper-4.png",
+      "category": "processed",
+      "sha256": "90087273dd4b1da66d7c01007213c8e92f01dbeec5887b7ad233a6d2be32f8eb",
+      "bytes": 14502
+    },
+    {
+      "file": "processed/desert/animation/reaper-5.png",
+      "source": "art_spike/desert/animation/reaper-5.png",
+      "category": "processed",
+      "sha256": "a5ab83cb6291527e4992781d4cddd7b8c867fca908fb73a30774b30e90621719",
+      "bytes": 14682
+    },
+    {
+      "file": "processed/desert/animation/reaper-6.png",
+      "source": "art_spike/desert/animation/reaper-6.png",
+      "category": "processed",
+      "sha256": "a0efac360e753b00053edf8068a054fc89b75894c09f0b107a0610b238991e33",
+      "bytes": 15319
+    },
+    {
+      "file": "processed/desert/animation/reaper-7.png",
+      "source": "art_spike/desert/animation/reaper-7.png",
+      "category": "processed",
+      "sha256": "e7c29e33ebe3a7d7a6b3d10a96377939e43694873c47d4fe1734e9f1e4530770",
+      "bytes": 15128
+    },
+    {
+      "file": "processed/desert/animation/scarab-0.png",
+      "source": "art_spike/desert/animation/scarab-0.png",
+      "category": "processed",
+      "sha256": "8b506a72a4bc2742ad5af5babcd52a09fe2a59e96e8301f07783e452997fd5a1",
+      "bytes": 12188
+    },
+    {
+      "file": "processed/desert/animation/scarab-1.png",
+      "source": "art_spike/desert/animation/scarab-1.png",
+      "category": "processed",
+      "sha256": "965433698fd549a5b3198d6aadb83ed8c642a7abac18c8a8f76dfbddef62ab50",
+      "bytes": 11697
+    },
+    {
+      "file": "processed/desert/animation/scarab-2.png",
+      "source": "art_spike/desert/animation/scarab-2.png",
+      "category": "processed",
+      "sha256": "af5cc0c4e101d241a6ddef6fd2b5b48de549a736a600f3d4812a515473d85757",
+      "bytes": 11592
+    },
+    {
+      "file": "processed/desert/animation/scarab-3.png",
+      "source": "art_spike/desert/animation/scarab-3.png",
+      "category": "processed",
+      "sha256": "97da2dae8e81f057e2a9d4907b782fed8d3a0fb9574f88ab3cda7734f2824d69",
+      "bytes": 11523
+    },
+    {
+      "file": "processed/desert/animation/scarab-4.png",
+      "source": "art_spike/desert/animation/scarab-4.png",
+      "category": "processed",
+      "sha256": "478be7404e62a7975d7a0f23542ab5bb584dee33b9637b66b07d91a49afb695e",
+      "bytes": 11887
+    },
+    {
+      "file": "processed/desert/animation/scarab-5.png",
+      "source": "art_spike/desert/animation/scarab-5.png",
+      "category": "processed",
+      "sha256": "c22676bdb400a9042d2a7f1d5d8972757a08729d46632ba16f761151bb52a01a",
+      "bytes": 12190
+    },
+    {
+      "file": "processed/desert/animation/scarab-6.png",
+      "source": "art_spike/desert/animation/scarab-6.png",
+      "category": "processed",
+      "sha256": "054015f01ff8a76cf232ad7019535becd7ed6648c9933aee611d9fae78986f1c",
+      "bytes": 12608
+    },
+    {
+      "file": "processed/desert/animation/scarab-7.png",
+      "source": "art_spike/desert/animation/scarab-7.png",
+      "category": "processed",
+      "sha256": "9567d43e1083a8d213aa528ae508c7b301e7e6a9fd30b19f9be288baeef25b03",
+      "bytes": 12451
+    },
+    {
+      "file": "processed/desert/animation/titan-0.png",
+      "source": "art_spike/desert/animation/titan-0.png",
+      "category": "processed",
+      "sha256": "7e22fd0e088c4167ea7da993c8f3eca911fee31aa2686c153a90fe03eb8ba1c8",
+      "bytes": 55932
+    },
+    {
+      "file": "processed/desert/animation/titan-1.png",
+      "source": "art_spike/desert/animation/titan-1.png",
+      "category": "processed",
+      "sha256": "333d4a04e4b67a59a4e114f3b6eed1e3807f0486ae1a392ee266682d07f932e7",
+      "bytes": 54146
+    },
+    {
+      "file": "processed/desert/animation/titan-2.png",
+      "source": "art_spike/desert/animation/titan-2.png",
+      "category": "processed",
+      "sha256": "1b18ee4865baae1a5e725552c2c16f98fe85a6145fd0805146912bbf07c154b4",
+      "bytes": 54500
+    },
+    {
+      "file": "processed/desert/animation/titan-3.png",
+      "source": "art_spike/desert/animation/titan-3.png",
+      "category": "processed",
+      "sha256": "6b5595400b4d9aa24e562c21c36982069b4d834cf1e86b85ac74337d44df3011",
+      "bytes": 53784
+    },
+    {
+      "file": "processed/desert/animation/titan-4.png",
+      "source": "art_spike/desert/animation/titan-4.png",
+      "category": "processed",
+      "sha256": "5880714277c52ab0a5538ed968247deb10987a4227aa6f321def401bfc815c50",
+      "bytes": 55341
+    },
+    {
+      "file": "processed/desert/animation/titan-5.png",
+      "source": "art_spike/desert/animation/titan-5.png",
+      "category": "processed",
+      "sha256": "fa18c6ed044c24e216d0e8c37e88c7c715f6504bf0234a9ff134f315706dfb00",
+      "bytes": 55300
+    },
+    {
+      "file": "processed/desert/animation/titan-6.png",
+      "source": "art_spike/desert/animation/titan-6.png",
+      "category": "processed",
+      "sha256": "da52325a94733294781ab8bac2c1a5bf622b670970fbe46801af4bef30f99d4e",
+      "bytes": 56688
+    },
+    {
+      "file": "processed/desert/animation/titan-7.png",
+      "source": "art_spike/desert/animation/titan-7.png",
+      "category": "processed",
+      "sha256": "ad9db2b3f37e856168da5c697749f76ab8b8e5254dbf9e3670a53fb99bfbf7e0",
+      "bytes": 55686
+    },
+    {
+      "file": "processed/desert/runtime-props/desertGate.png",
+      "source": "art_spike/desert/runtime-props/desertGate.png",
+      "category": "processed",
+      "sha256": "1a2d2e01d5972a7eb2176143b84450247bb56e2517081ab7592eb8f552d861f3",
+      "bytes": 58226
+    },
+    {
+      "file": "processed/desert/runtime-props/obelisk.png",
+      "source": "art_spike/desert/runtime-props/obelisk.png",
+      "category": "processed",
+      "sha256": "8ee404d3a0b9325477e738bc94fcc1d5b89a6d1a97ebeba1827d06269799500e",
+      "bytes": 8355
+    },
+    {
+      "file": "processed/desert/runtime-props/palm.png",
+      "source": "art_spike/desert/runtime-props/palm.png",
+      "category": "processed",
+      "sha256": "b197313efd6464294e6916a0fb4a9524c3ecceba3a7625e359fcbce85cf5b493",
+      "bytes": 20699
+    },
+    {
+      "file": "processed/desert/runtime-props/pyramid.png",
+      "source": "art_spike/desert/runtime-props/pyramid.png",
+      "category": "processed",
+      "sha256": "a25519a73d787ea988e5f32055e47bc1fe8ac2695be5b6d1dc07702aca91fdfa",
+      "bytes": 98119
+    },
+    {
+      "file": "processed/desert/runtime-props/ruinColumn.png",
+      "source": "art_spike/desert/runtime-props/ruinColumn.png",
+      "category": "processed",
+      "sha256": "497d7ce865c09398379dd3499655a6c51967a0c6de5ed8cb6e27d74d165bacd6",
+      "bytes": 6755
+    },
+    {
+      "file": "processed/desert/runtime-props/sarcophagus.png",
+      "source": "art_spike/desert/runtime-props/sarcophagus.png",
+      "category": "processed",
+      "sha256": "df596c1aadd3e0682c472f0e3ff14db803b0adce57eb0f7bb9b377523bd9ddc5",
+      "bytes": 6504
+    },
+    {
+      "file": "processed/desert/runtime-props/soulBrazier.png",
+      "source": "art_spike/desert/runtime-props/soulBrazier.png",
+      "category": "processed",
+      "sha256": "0dbf57b523c2e5b08f7e5a252b83b147631dc525e0f36dc88f4c734ac512d6ad",
+      "bytes": 5033
+    },
+    {
+      "file": "processed/desert/runtime-props/sphinx.png",
+      "source": "art_spike/desert/runtime-props/sphinx.png",
+      "category": "processed",
+      "sha256": "2800ab86dd8d11dde001f5a2d696c0ba31fcd3bcf964fb09dc6f3bc6868b872f",
+      "bytes": 20018
+    },
+    {
+      "file": "previews/desert/map-preview.png",
+      "source": "art_spike/desert/map-preview.png",
+      "category": "preview",
+      "sha256": "6a601dfb6d03065d0609437ea7a12010779376885cc69f7ddb2af5c38065a35c",
+      "bytes": 6899624
+    },
+    {
+      "file": "previews/desert/enemies-review.png",
+      "source": "art_spike/desert/enemies-review.png",
+      "category": "preview",
+      "sha256": "bcc23548ef44887af5007b943c11fbdf7b3c30c4fcae8cbea42cd3e88c78abc9",
+      "bytes": 81255
+    },
+    {
+      "file": "previews/desert/stage-selection.png",
+      "source": "art_spike/desert/stage-selection.png",
+      "category": "preview",
+      "sha256": "00392d7f785b4284558a379bd0dbd8ca6a4cf35ea763f518d76cebd693515b28",
+      "bytes": 171407
+    },
+    {
+      "file": "previews/desert/mobile-selection.png",
+      "source": "art_spike/desert/mobile-selection.png",
+      "category": "preview",
+      "sha256": "8c982f5759dd3ce4114b7bdbe0432a20d54c148f637ef872af4e2a5c28c3bb5d",
+      "bytes": 81872
+    },
+    {
+      "file": "previews/desert/gameplay.png",
+      "source": "art_spike/desert/gameplay.png",
+      "category": "preview",
+      "sha256": "d896477043391178af35f3064e829ace4efcb372c2b0563de665fca871ceeebc",
+      "bytes": 149002
+    },
+    {
+      "file": "previews/desert/motion-runtime.gif",
+      "source": "art_spike/desert/motion-runtime.gif",
+      "category": "preview",
+      "sha256": "85f066ca756ed42c7f69caed7c58062f25f69829b2e5d43e6440930c5c31a9c7",
+      "bytes": 1873716
+    },
+    {
+      "file": "processed/desert/provenance.json",
+      "source": "art_spike/desert/provenance.json",
+      "category": "processed",
+      "sha256": "9154c7b07086375187daca1bff886ad58fcc1ff99747b17f0a635cf1101a5ceb",
+      "bytes": 1186
+    },
+    {
+      "file": "processed/desert/plan.json",
+      "source": "art_spike/desert/plan.json",
+      "category": "processed",
+      "sha256": "639f1e223fe7fd44da4482c93ebb2844bc2cf333dbb1d9e7f8d0806ac1af4b88",
+      "bytes": 1140
+    },
+    {
+      "file": "processed/desert/scene-snapshot.json",
+      "source": "art_spike/desert/scene-snapshot.json",
+      "category": "processed",
+      "sha256": "1decacee44c6e2e9d69ed8061345ece66ca0a69e23c40a9f6d9df28a9c9ee0cd",
+      "bytes": 2425
+    },
+    {
+      "file": "processed/desert/animation-qa.json",
+      "source": "art_spike/desert/animation-qa.json",
+      "category": "processed",
+      "sha256": "37883502efe857b82f2b3c522473686d7a7038d448c08b9e6fe24250dd6c3080",
+      "bytes": 701
+    },
+    {
+      "file": "processed/desert/prop-source-boxes.json",
+      "source": "art_spike/desert/prop-source-boxes.json",
+      "category": "processed",
+      "sha256": "8ec2fce515050f72a9da182f2441ec46ec897383a8bb02b14d55a16df6d0beaa",
+      "bytes": 177
+    },
+    {
       "file": "runtime/covers/city-title.jpg",
       "source": "src/assets/title-bg.jpg",
       "category": "runtime",
@@ -1818,6 +2366,13 @@
       "category": "runtime",
       "sha256": "b660c88de42cba7ee66d6fd5198ab312727aaf9c6fb7c5ea0ca5411feacdbe43",
       "bytes": 663218
+    },
+    {
+      "file": "runtime/covers/desert-cover-v1.jpg",
+      "source": "public/covers/desert-cover-v1.jpg",
+      "category": "runtime",
+      "sha256": "53e4c45e5d417a62942cd73b626aef10c0c72111982590e7b7f239a9fbdf9023",
+      "bytes": 718504
     },
     {
       "file": "runtime/covers/japan-cover-v1.jpg",
@@ -1883,6 +2438,48 @@
       "bytes": 9461
     },
     {
+      "file": "runtime/sprites/desert-ground-v1.jpg",
+      "source": "public/sprites/desert-ground-v1.jpg",
+      "category": "runtime",
+      "sha256": "0fc3628d8b675f5bd8271e2bbab4aa29b3c942dfbb7d69b87df4d6626fe9007d",
+      "bytes": 1134616
+    },
+    {
+      "file": "runtime/sprites/desert_0.png",
+      "source": "public/sprites/desert_0.png",
+      "category": "runtime",
+      "sha256": "cc7df4237b5497374d9122e415c72397c9b9c407b5a994791af175f027dc8ad9",
+      "bytes": 11974
+    },
+    {
+      "file": "runtime/sprites/desert_1.png",
+      "source": "public/sprites/desert_1.png",
+      "category": "runtime",
+      "sha256": "d815f3b84ffa7354f7f7570441abf67ac4ddf48b9489e5f93ba619b3f6b03685",
+      "bytes": 7847
+    },
+    {
+      "file": "runtime/sprites/desert_2.png",
+      "source": "public/sprites/desert_2.png",
+      "category": "runtime",
+      "sha256": "bd6f4c53116c6cac59794b0d4220c15d85ad61f110235b3a581fe3a3478ddc76",
+      "bytes": 10122
+    },
+    {
+      "file": "runtime/sprites/desert_3.png",
+      "source": "public/sprites/desert_3.png",
+      "category": "runtime",
+      "sha256": "f868f0ed17e1a11bd033e68f3e9326fa6a8810a70e04e0eabfdea0159c17723b",
+      "bytes": 11648
+    },
+    {
+      "file": "runtime/sprites/desert_4.png",
+      "source": "public/sprites/desert_4.png",
+      "category": "runtime",
+      "sha256": "a6fdb8d63cb4d69b7d410aa46d525830d21bc10912fc514a94d06aab966584d8",
+      "bytes": 13021
+    },
+    {
       "file": "runtime/sprites/explosion.json",
       "source": "public/sprites/explosion.json",
       "category": "runtime",
@@ -1937,6 +2534,20 @@
       "category": "runtime",
       "sha256": "e3fe67e6d270c15fd5403487f5184ed7520a2335b803842c95a9d52a27dce810",
       "bytes": 472478
+    },
+    {
+      "file": "runtime/sprites/horde_world.json",
+      "source": "public/sprites/horde_world.json",
+      "category": "runtime",
+      "sha256": "b583321904aac0670ca05a4ab297f862b4a64d640456bd83f1b72bc72e26ca82",
+      "bytes": 16576
+    },
+    {
+      "file": "runtime/sprites/horde_world.png",
+      "source": "public/sprites/horde_world.png",
+      "category": "runtime",
+      "sha256": "b1fbaf729222bcb940605d85eb269725529002af924914de6464ff04f8133e55",
+      "bytes": 3483393
     },
     {
       "file": "runtime/sprites/japan-preview.png",

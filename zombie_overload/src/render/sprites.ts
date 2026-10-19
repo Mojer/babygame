@@ -64,7 +64,7 @@ async function loadSheet(base: string, name: string) {
 
 export async function loadHordeSprites(base = './sprites/'): Promise<HordeSprites> {
   // 全關卡、角色、場景物件共用一張來源，維持 ParticleContainer 的單圖集批次。
-  const horde = await loadSheet(base, 'horde_detail');
+  const horde = await loadSheet(base, 'horde_world');
   const boom = await loadSheet(base, 'explosion');
   const loadMap = async (name: string): Promise<MapSheet> => {
     const def = (await (await fetch(`${base}${name}.json`)).json()) as SheetDef;
@@ -73,6 +73,8 @@ export async function loadHordeSprites(base = './sprites/'): Promise<HordeSprite
   };
   const [cityMap, japanMap, candyMap] = await Promise.all([loadMap('map'), loadMap('map_japan'), loadMap('map_candy')]);
   candyMap.ground = await createImageBitmap(await (await fetch(`${base}candy-ground-v3.jpg`)).blob());
+  const desertGround = await createImageBitmap(await (await fetch(`${base}desert-ground-v1.jpg`)).blob());
+  const desertMap: MapSheet = { image: desertGround, ground: desertGround, frames: {} };
   const props: Record<string, Texture> = {};
   for (const k of Object.keys(horde.def.frames)) if (k.startsWith('prop_')) props[k.slice(5)] = horde.get(k);
   const kinds = [0, 1, 2, 3, 4];
@@ -85,9 +87,10 @@ export async function loadHordeSprites(base = './sprites/'): Promise<HordeSprite
   const city = stageArt('z', cityMap);
   const japan = stageArt('y', japanMap, 8);
   const candy = stageArt('c', candyMap, 8);
+  const desert = stageArt('e', desertMap, 8);
   const boomFrames = Object.keys(boom.def.frames).filter(k => k.startsWith('ex_')).sort((a, b) => Number(a.slice(3)) - Number(b.slice(3)));
   return {
-    stageArt: { city, japan, candy },
+    stageArt: { city, japan, candy, desert },
     ...city,
     player: Object.fromEntries(
       CHARACTER_IDS.map(c => [c, Object.fromEntries(DIRS.map(d => {

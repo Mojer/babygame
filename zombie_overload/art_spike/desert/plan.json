@@ -1,0 +1,54 @@
+{
+  "stage": "desert",
+  "art_source": "host_image",
+  "route": "image_gen",
+  "scene_mode": "authored arena",
+  "logical_short_view": 400,
+  "world": [
+    2048,
+    2048
+  ],
+  "camera": "3/4 elevated props on top-down ground; camera clamped at perimeter",
+  "origin": "top-left",
+  "atlas_texels_per_world_pixel": 2,
+  "body_heights": [
+    32,
+    34,
+    40,
+    42,
+    82
+  ],
+  "foot_anchor": "fixed across all 8 poses per master",
+  "player_radius": 5,
+  "blocked_perimeter": 128,
+  "layout": "src/sim/mapDesert.ts",
+  "source_native_ground": [
+    1254,
+    1254
+  ],
+  "ground_runtime": [
+    2048,
+    2048
+  ],
+  "render_order": [
+    "ground with contact shadows",
+    "gems and actor shadows",
+    "y-sorted landmarks/player/enemies",
+    "effects",
+    "HUD"
+  ],
+  "spawn": [
+    1024,
+    1216
+  ],
+  "routes": [
+    "pyramid-court",
+    "west-gate",
+    "east-gate",
+    "west-oasis",
+    "east-oasis",
+    "southern-tombs"
+  ],
+  "motion_source": "code-deformed generated stills; no AI video",
+  "initial_props_source": "opaque first draft rejected; props-v2 native-alpha kit accepted with measured ownership gutters"
+}
