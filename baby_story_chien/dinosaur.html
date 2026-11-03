@@ -1,0 +1,2826 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F8F6F0">
+<meta name="description" content="《你看起來好像很好吃》說故事比賽五幕互動練習。直式注音、逐句表演提示、計時與分段記錄。">
+<title>恐龍故事劇場｜分段互動練習</title>
+<style>
+:root{--bg:#f8f6f0;--surface:#fffefa;--ink:#1c2933;--muted:#657078;--outline:#e6e2d9;--accent:#bd5d3c;--soft:#f6e9df;--navy:#2c4456;--sage:#e4eee7;--shadow:0 15px 42px rgba(37,42,33,.075);--han-size:30px;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ink);background:var(--bg);font-synthesis:none}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh}button,select,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #ddaa76;outline-offset:3px}button:disabled{cursor:not-allowed;opacity:.45}.shell{max-width:1270px;margin:0 auto;padding:26px clamp(16px,3.4vw,42px) 82px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 0 24px;border-bottom:1px solid var(--outline)}.brand{font-family:serif;font-size:20px;letter-spacing:.05em;font-weight:800}.brand-mark{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:12px;background:#e8e9e0;font-size:21px;margin-right:9px;vertical-align:middle}.top-pill{font-size:12px;font-weight:700;letter-spacing:.07em;color:#69726b;background:#eaece3;border-radius:40px;padding:9px 14px}
+.hero{display:grid;grid-template-columns:1.3fr .7fr;gap:16px;align-items:end;padding:37px 0 32px}.eyebrow{font-size:12px;letter-spacing:.17em;color:var(--accent);font-weight:850}.hero h1{font-size:clamp(30px,4.1vw,53px);font-weight:900;letter-spacing:-.055em;line-height:1.25;margin:12px 0}.hero p{max-width:700px;color:var(--muted);line-height:1.8;margin:0;font-size:15px}.hero-stamp{justify-self:end;display:flex;align-items:center;gap:13px;border:1px solid #e7ddcf;border-radius:16px;padding:13px 18px;background:#fffaf1}.hero-stamp strong{font-size:28px;font-family:Georgia,serif;color:var(--accent)}.hero-stamp small{display:block;color:var(--muted);line-height:1.5;font-size:12px}
+.workspace{display:grid;grid-template-columns:270px minmax(0,1fr);gap:22px;align-items:start}.side,.main{min-width:0}.panel{border:1px solid var(--outline);border-radius:22px;background:var(--surface);box-shadow:var(--shadow)}.side-panel{padding:21px 14px;position:sticky;top:20px}.subheading{font-size:12px;letter-spacing:.13em;color:#8a7c6e;font-weight:850;margin:2px 9px 13px}.stage-btn{width:100%;display:flex;text-align:left;align-items:center;gap:12px;background:none;color:var(--ink);border:1px solid transparent;border-radius:13px;padding:13px 10px;margin:3px 0;transition:background .15s,border-color .15s}.stage-btn:hover{background:#f8f4ee}.stage-btn.active{background:#f5e9de;border-color:#e7cdb8}.stage-no{width:37px;height:37px;border-radius:12px;display:grid;place-items:center;background:#eeeae4;color:#695c52;font-size:12px;font-weight:900;flex:none}.stage-btn.active .stage-no{background:var(--accent);color:white}.stage-name{font-size:13px;font-weight:850;line-height:1.45}.stage-duration{font-size:11px;color:var(--muted);margin-top:4px}.stage-done{margin-left:auto;color:#31815b;font-size:16px}.side-info{margin:18px 8px 0;border-top:1px solid var(--outline);padding-top:18px}.side-info p{font-size:12px;line-height:1.8;color:var(--muted);margin:4px 0 0}.side-info b{color:var(--ink)}
+.main{display:flex;flex-direction:column;gap:16px}.mode-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:13px;padding:15px 19px}.switch{display:inline-flex;padding:4px;gap:3px;border-radius:12px;background:#f1efe8}.switch button{border:none;background:none;color:#697273;font-size:13px;font-weight:800;border-radius:9px;padding:9px 14px}.switch button.active{background:white;box-shadow:0 2px 9px #16253614;color:var(--ink)}.mode-note{font-size:12px;color:var(--muted)}
+.timer{padding:24px 26px 22px;position:relative;overflow:hidden}.timer:before{content:"";position:absolute;right:-55px;top:-85px;width:190px;height:190px;border:30px solid #e6ede1;border-radius:50%;opacity:.48}.timer-grid{display:flex;justify-content:space-between;align-items:center;gap:14px;position:relative}.timer-kicker{font-size:11px;font-weight:850;letter-spacing:.13em;color:var(--accent);margin:0 0 8px}.time{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:-.075em;font-size:clamp(58px,8.3vw,100px);font-weight:760;line-height:1.1;font-variant-numeric:tabular-nums}.time.over{color:#b44939}.time-small{font-size:13px;color:var(--muted);line-height:1.7}.target-card{text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px}.ring{width:100px;height:100px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--accent) 0%,#ede6de 0);position:relative}.ring:before{content:"";position:absolute;inset:11px;border-radius:50%;background:var(--surface)}.ring span{position:relative;z-index:2;font-size:12px;font-weight:900}.target-card small{font-size:11px;color:var(--muted);white-space:nowrap}.timer-progress{height:6px;background:#eae7df;border-radius:10px;overflow:hidden;margin:22px 0 0}.timer-progress div{height:100%;width:0%;background:var(--accent);border-radius:10px;transition:width .15s}.timer-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:18px}.btn{border:1px solid var(--outline);border-radius:12px;padding:12px 16px;background:white;color:var(--ink);font-weight:800;font-size:14px;min-height:44px}.btn.primary{background:var(--ink);color:white;border-color:var(--ink);min-width:122px}.btn.finish{background:#eaf2e9;color:#2d6546;border-color:#d6e6d5}.btn.secondary{background:#f4f0e7}.btn:active{transform:translateY(1px)}.tiny-actions{margin-left:auto;display:flex;align-items:center;gap:8px}.tiny{background:none;border:0;color:#6e7375;font-size:12px;text-decoration:underline;text-underline-offset:3px;padding:9px 2px}.meta-line{font-size:12px;color:var(--muted);line-height:1.6;min-height:19px;margin-top:12px}
+.script{padding:0;overflow:hidden}.script-head{padding:26px 28px 19px;border-bottom:1px solid #eeeae2}.script-index{font-size:12px;color:var(--accent);font-weight:850;letter-spacing:.1em}.script-head h2{font-size:clamp(23px,3vw,32px);letter-spacing:-.045em;margin:9px 0}.script-head p{font-size:13px;color:var(--muted);line-height:1.7;margin:3px 0}.script-controls{display:flex;flex-wrap:wrap;gap:8px;padding:16px 26px;border-bottom:1px solid #eeeae2;align-items:center}.toggle{border:1px solid var(--outline);border-radius:20px;background:#fff;padding:8px 12px;color:#54616a;font-size:12px;font-weight:800}.toggle.active{color:#2b5f52;background:#edf6f1;border-color:#d4e8da}.script-controls .spacer{flex:1}.font-button{font-weight:900;font-size:16px;border:1px solid var(--outline);background:white;border-radius:10px;padding:7px 11px;line-height:1}.script-lines{padding:9px 20px 20px;display:flex;flex-direction:column;gap:4px}.line-card{border-radius:14px;margin-top:12px;padding:20px 18px 17px;border:1px solid #eeeae3;background:#fff;position:relative}.role-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:12px}.role-tag{font-size:12px;font-weight:900;padding:6px 10px;border-radius:7px;letter-spacing:.02em}.role-narrator .role-tag{background:#e4edf5;color:#3b6483}.role-rex .role-tag{background:#fae6d6;color:#9b573c}.role-baby .role-tag{background:#deeee6;color:#2d7861}.role-self .role-tag{background:#ebe4f2;color:#76568b}.line-num{font-size:11px;color:#9b9b94;font-weight:700}.line-speech{font-size:var(--han-size);font-weight:750;line-height:2.05;letter-spacing:.015em;word-break:break-word;min-height:46px}.speech-plain{font-size:var(--han-size);font-weight:760;line-height:1.85;letter-spacing:.03em}.ruby-flow{display:flex;flex-wrap:wrap;align-items:center;gap:0 1px;line-height:1.1}.zchar{display:inline-flex;align-items:center;vertical-align:middle;height:calc(var(--han-size) * 1.9);white-space:nowrap;max-width:100%}.zhan{font-size:var(--han-size);line-height:1.1;min-width:calc(var(--han-size) * .9);text-align:center}.bopobox{display:inline-flex;align-items:center;position:relative;width:calc(var(--han-size) * .64);height:calc(var(--han-size) * 1.8);justify-content:flex-start;padding-left:2px}.bopostack{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:calc(var(--han-size) * .40);line-height:1.05;font-weight:600;min-width:12px}.bopotone{position:absolute;right:1px;top:50%;transform:translateY(-50%);font-weight:800;font-size:calc(var(--han-size) * .43)}.bopotone.neutral{top:20%;font-size:calc(var(--han-size) * .36)}.zpunct{font-size:var(--han-size);display:inline-flex;align-items:center;justify-content:center;min-height:calc(var(--han-size) * 1.9);line-height:1.1;padding-right:2px}.director{border-top:1px dashed #deddd6;margin-top:11px;padding-top:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 15px}.dir-row{font-size:12px;line-height:1.65;color:#536169}.dir-row b{color:#6c665d;margin-right:7px}.dir-row.purpose{grid-column:1/-1;color:#a06143;background:#fcf5ed;padding:9px 10px;border-radius:7px}.focus-pager{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 25px 21px}.focus-pager span{font-size:12px;color:var(--muted)}
+.lower{display:grid;grid-template-columns:1fr 1fr;gap:16px}.simple-card{padding:25px}.simple-card h3{margin:0 0 9px;font-size:18px;letter-spacing:-.025em}.simple-card p,.simple-card li{color:var(--muted);font-size:13px;line-height:1.85}.simple-card ul{padding-left:20px;margin-bottom:0}.record-list{list-style:none!important;padding:0!important;margin-top:8px}.record-list li{display:flex;justify-content:space-between;border-bottom:1px solid var(--outline);padding:9px 0;gap:6px;line-height:1.5}.record-list li span:last-child{color:var(--ink);font-weight:800;font-variant-numeric:tabular-nums}.record-empty{font-size:13px;color:var(--muted);margin-top:16px;line-height:1.8}.callout{margin-top:15px;background:#f7f2e8;border-radius:10px;padding:12px 13px;color:#775e4c!important;font-size:12px;line-height:1.7}.note-bottom{color:#828780;font-size:12px;line-height:1.8;margin-top:21px}.checkline{display:flex;gap:8px;align-items:flex-start;margin:8px 0;color:#657078;font-size:13px}.checkline input{accent-color:var(--accent);margin-top:4px}.floating-timer{position:fixed;z-index:19;bottom:max(14px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;padding:9px 11px 9px 17px;background:#1c2933;color:#fff;border:1px solid #33434e;border-radius:17px;box-shadow:0 14px 34px #17202a6b;width:min(94vw,500px)}.floating-timer[hidden]{display:none!important}.floating-timer .dock-time{font-size:23px;font-weight:900;font-variant-numeric:tabular-nums;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:-.04em}.floating-timer .dock-name{font-size:11px;color:#c9d8d6;flex:1;min-width:0}.floating-timer button{border:1px solid #7e8a8c;color:white;border-radius:10px;padding:8px 11px;font-size:12px;font-weight:800;background:#394e5a}.floating-timer .dock-play{background:#f1e5d4;color:#273a48;border-color:#f1e5d4}.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(90px);padding:12px 18px;border-radius:12px;background:#1c2933;color:white;box-shadow:0 14px 35px #1828384d;max-width:min(90vw,560px);font-weight:700;font-size:13px;opacity:0;transition:transform .25s,opacity .25s;z-index:20;pointer-events:none;text-align:center}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:980px){.workspace{grid-template-columns:220px minmax(0,1fr)}.script-lines{padding:8px 14px 17px}.hero-stamp{display:none}}@media(max-width:760px){.shell{padding:18px 13px 55px}.topbar{padding-bottom:13px}.brand{font-size:15px}.top-pill{font-size:10px}.hero{display:block;padding:27px 4px 24px}.hero h1{font-size:32px}.hero p{font-size:13px}.workspace{display:flex;flex-direction:column;gap:13px}.side{width:100%;position:relative}.side-panel{position:static;padding:10px 8px;border-radius:17px}.side-panel .subheading{margin:6px 8px 5px}.stage-list{display:flex;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:4px;scrollbar-width:thin;gap:4px}.stage-btn{flex:none;width:166px;scroll-snap-align:start;padding:9px;gap:8px}.stage-name{font-size:12px}.stage-no{width:29px;height:29px}.side-info{display:none}.main{width:100%;gap:12px}.panel{border-radius:18px}.mode-bar{padding:13px}.timer{padding:20px 17px}.time{font-size:64px}.target-card .ring{width:78px;height:78px}.timer-actions{gap:7px}.btn{padding:11px 12px;font-size:12px}.tiny-actions{width:100%;justify-content:flex-end}.script-head{padding:22px 17px 16px}.script-controls{padding:13px 13px}.script-lines{padding:0px 8px 12px}.line-card{padding:17px 12px 15px}.director{grid-template-columns:1fr;gap:8px}.dir-row.purpose{grid-column:auto}.lower{grid-template-columns:1fr}.simple-card{padding:19px}.focus-pager{margin:12px}.mode-note{display:none}}
+@media(max-width:390px){:root{--han-size:27px}.time{font-size:57px}.target-card .ring{width:70px;height:70px}.ring:before{inset:8px}.timer{padding:16px 13px}.script-controls{gap:6px}.toggle{font-size:11px;padding:8px 9px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+@media print{body{background:white}.side,.mode-bar,.timer,.script-controls,.focus-pager,.lower,.top-pill{display:none!important}.workspace{display:block}.script{border:0;box-shadow:none}.script-lines{display:block}.line-card{break-inside:avoid}.shell{max-width:900px}.hero{padding:8px 0}.zchar{height:54px}}
+</style>
+</head>
+<body>
+<div class="shell">
+ <header class="topbar"><div class="brand"><span class="brand-mark" aria-hidden="true">🦖</span> 小小故事劇場 <span style="font-weight:400;color:#8d9a94;font-size:12px;margin-left:5px">STORY PRACTICE</span></div><div class="top-pill">一年級・說故事比賽</div></header>
+ <section class="hero"><div><div class="eyebrow">互動練習手冊 · 五幕故事</div><h1>你看起來<br>好像很好吃</h1><p>一幕一幕練聲音、表情和停頓。可以先練單幕，再挑戰 3 分 30 秒完整演出；慢慢練，霸王龍也會變成表演高手。</p></div><div class="hero-stamp"><strong>03:30</strong><small>全篇目標時間<br>正式規定 3～4 分鐘</small></div></section>
+ <div class="workspace">
+  <aside class="side"><section class="panel side-panel"><div class="subheading">選擇練習幕次</div><nav id="stage-list" class="stage-list" aria-label="選擇故事幕次"></nav><div class="side-info"><b style="font-size:13px">🎭 角色小秘訣</b><p><b>旁白：</b>站穩、清楚說話<br><b>霸王龍：</b>挺胸，稍微壓低聲音<br><b>小甲龍：</b>抬頭、歪頭，聲音明亮</p><p>練習時可以先把「導演提示」打開，熟悉後再關閉。</p></div></section></aside>
+  <main class="main">
+    <section class="panel mode-bar" aria-label="練習模式"><div class="switch" role="group" aria-label="選擇練習模式"><button id="mode-stage" class="active" type="button" aria-pressed="true">分段練習</button><button id="mode-full" type="button" aria-pressed="false">全篇模擬</button></div><div class="mode-note" id="mode-note">一次練習一幕，完成後記錄秒數</div></section>
+    <section class="panel timer" aria-label="練習計時器"><div class="timer-grid"><div><p class="timer-kicker" id="clock-mode-label">本幕練習計時</p><div id="time-text" class="time" role="timer" aria-live="off">00:00</div><div class="time-small" id="timer-under">本幕目標 00:35 · 按「開始練習」就會計時</div></div><div class="target-card"><div class="ring" id="timer-ring"><span id="ring-label">0%</span></div><small id="time-goal">目標 00:35</small></div></div><div class="timer-progress"><div id="progress-fill"></div></div><div class="timer-actions"><button class="btn primary" id="start-btn" type="button">▶ 開始練習</button><button class="btn finish" id="finish-btn" type="button" disabled>✓ 完成並記錄</button><button class="btn secondary" id="next-btn" type="button">下一幕 →</button><div class="tiny-actions"><button class="tiny" id="count-btn" type="button" aria-pressed="false">切換倒數</button><button class="tiny" id="reset-btn" type="button">重新計時</button></div></div><div class="meta-line" id="meta-line">尚未開始。時間記錄只儲存在目前的瀏覽器。</div></section>
+    <section class="panel script" aria-label="故事練習台詞"><div class="script-head"><div class="script-index" id="scene-kicker">ACT 01 / 05</div><h2 id="scene-title">第一幕｜肚子餓的霸王龍</h2><p id="scene-sub"></p><p id="scene-guide" style="color:#956a4b;font-weight:650"></p></div><div class="script-controls"><button class="toggle active" id="zhuyin-btn" type="button" aria-pressed="true">注音 ✓</button><button class="toggle active" id="hint-btn" type="button" aria-pressed="true">導演提示 ✓</button><button class="toggle" id="focus-btn" type="button" aria-pressed="false">逐句聚焦</button><div class="spacer"></div><button class="font-button" id="font-down" type="button" aria-label="縮小字體">A−</button><button class="font-button" id="font-up" type="button" aria-label="放大字體">A＋</button></div><div id="script-lines" class="script-lines"></div><div id="focus-pager" class="focus-pager" hidden><button class="btn" id="prev-line" type="button">← 上一句</button><span id="line-count">第 1 / 4 句</span><button class="btn" id="next-line" type="button">下一句 →</button></div></section>
+    <section class="lower"><div class="panel simple-card"><h3>📒 我的練習紀錄</h3><p>只記時間，不會錄音，也不會上傳台詞。</p><ul class="record-list" id="record-list"></ul><div class="record-empty" id="record-empty">還沒有紀錄。完成一幕後，就能在這裡看到自己的進步。</div><button class="tiny" id="clear-records" type="button" style="margin-top:10px">清除全部紀錄</button></div><div class="panel simple-card"><h3>⭐ 今天的小目標</h3><div class="checkline"><input type="checkbox" id="check-1"><label for="check-1">霸王龍和小甲龍的聲音有差別</label></div><div class="checkline"><input type="checkbox" id="check-2"><label for="check-2">重要的地方有停一下</label></div><div class="checkline"><input type="checkbox" id="check-3"><label for="check-3">眼睛有看向觀眾，動作不太多</label></div><div class="checkline"><input type="checkbox" id="check-4"><label for="check-4">完整演出維持 3～4 分鐘</label></div><p class="callout">家長回饋可以只挑一件事：今天哪一句演得最精彩？下次想進步哪一點？</p></div></section>
+    <details class="panel simple-card"><summary style="cursor:pointer;font-weight:850;font-size:16px">查看分週練習計畫與比賽規則</summary><div style="padding-top:8px"><p><b>第 1–2 週：</b>看著繪本，用自己的話說出五幕。<br><b>第 3–4 週：</b>每天挑兩句，練習切換聲音。<br><b>第 5–6 週：</b>加入表情、手勢與停頓。<br><b>第 7 週：</b>站著全篇計時，調整語速。<br><b>最後 1–2 週：</b>在家人面前模擬正式比賽。</p><p>評分：故事內容 50%、語音表達 40%、台風 10%。練習以清楚、自然為主，不要刻意尖叫或誇大動作。</p></div></details>
+    <p class="note-bottom">教材說明：這是依《你看起來好像很好吃》（宮西達也）故事主軸重新編排的原創表演示範稿，並非繪本原文。正式參賽前，請對照手上的繪本核對情節與台詞，也請依孩子實際語速調整。注音由轉寫工具產生並做部分修正，多音字仍建議由家長核對。時間與勾選紀錄儲存在本機瀏覽器，不會上傳。</p>
+  </main>
+ </div>
+</div>
+<div class="floating-timer" id="floating-timer" hidden><span class="dock-time" id="dock-time">00:00</span><span class="dock-name" id="dock-name">第 1 幕</span><button type="button" class="dock-play" id="dock-play">⏸ 暫停</button><button type="button" id="dock-next">下一幕 →</button></div>
+<div class="toast" id="toast" aria-live="polite"></div>
+<script id="app-data" type="application/json">[
+  {
+    "title": "肚子餓的霸王龍",
+    "sub": "神祕開場・第一個笑點",
+    "start": 0,
+    "target": 35,
+    "emotion": "神祕 → 搞笑",
+    "guide": "神祕地開場，第一個笑點來自霸王龍的壞笑。",
+    "lines": [
+      {
+        "role": "旁白",
+        "text": "很久很久以前，在一個有好多恐龍的世界裡，住著一隻又大、又可怕的霸王龍！",
+        "hints": {
+          "聲音": "先輕再強調「又大、又可怕」",
+          "表情": "帶點神祕、眼睛張大",
+          "動作": "站在中央，雙手自然放好",
+          "停頓": "「以前」後停半拍",
+          "目的": "一開口就讓人想聽下去"
+        },
+        "ruby": [
+          {
+            "c": "很",
+            "z": "ㄏㄣˇ"
+          },
+          {
+            "c": "久",
+            "z": "ㄐㄧㄡˇ"
+          },
+          {
+            "c": "很",
+            "z": "ㄏㄣˇ"
+          },
+          {
+            "c": "久",
+            "z": "ㄐㄧㄡˇ"
+          },
+          {
+            "c": "以",
+            "z": "ㄧˇ"
+          },
+          {
+            "c": "前",
+            "z": "ㄑㄧㄢˊ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "在",
+            "z": "ㄗㄞˋ"
+          },
+          {
+            "c": "一",
+            "z": "ㄧˊ"
+          },
+          {
+            "c": "個",
+            "z": "ㄍㄜˋ"
+          },
+          {
+            "c": "有",
+            "z": "ㄧㄡˇ"
+          },
+          {
+            "c": "好",
+            "z": "ㄏㄠˇ"
+          },
+          {
+            "c": "多",
+            "z": "ㄉㄨㄛ"
+          },
+          {
+            "c": "恐",
+            "z": "ㄎㄨㄥˇ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "世",
+            "z": "ㄕˋ"
+          },
+          {
+            "c": "界",
+            "z": "ㄐㄧㄝˋ"
+          },
+          {
+            "c": "裡",
+            "z": "ㄌㄧˇ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "住",
+            "z": "ㄓㄨˋ"
+          },
+          {
+            "c": "著",
+            "z": "ㄓㄜ˙"
+          },
+          {
+            "c": "一",
+            "z": "ㄧˋ"
+          },
+          {
+            "c": "隻",
+            "z": "ㄓ"
+          },
+          {
+            "c": "又",
+            "z": "ㄧㄡˋ"
+          },
+          {
+            "c": "大",
+            "z": "ㄉㄚˋ"
+          },
+          {
+            "c": "、",
+            "z": ""
+          },
+          {
+            "c": "又",
+            "z": "ㄧㄡˋ"
+          },
+          {
+            "c": "可",
+            "z": "ㄎㄜˇ"
+          },
+          {
+            "c": "怕",
+            "z": "ㄆㄚˋ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "霸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "王",
+            "z": "ㄨㄤˊ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "霸王龍",
+        "text": "吼～～！我的肚子好餓啊！",
+        "hints": {
+          "聲音": "低沉、有力，但不要尖叫",
+          "表情": "皺眉、嘴巴微張",
+          "動作": "挺胸、雙手彎成短短的小爪子",
+          "停頓": "吼聲結束停半拍",
+          "目的": "讓角色與旁白明顯不同"
+        },
+        "ruby": [
+          {
+            "c": "吼",
+            "z": "ㄏㄡˇ"
+          },
+          {
+            "c": "～",
+            "z": ""
+          },
+          {
+            "c": "～",
+            "z": ""
+          },
+          {
+            "c": "！",
+            "z": ""
+          },
+          {
+            "c": "我",
+            "z": "ㄨㄛˇ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "肚",
+            "z": "ㄉㄨˋ"
+          },
+          {
+            "c": "子",
+            "z": "ㄗˇ"
+          },
+          {
+            "c": "好",
+            "z": "ㄏㄠˇ"
+          },
+          {
+            "c": "餓",
+            "z": "ㄜˋ"
+          },
+          {
+            "c": "啊",
+            "z": "ㄚ˙"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "旁白",
+        "text": "突然，霸王龍發現草地上有一隻小小的甲龍。",
+        "hints": {
+          "聲音": "「突然」稍快，後半放輕",
+          "表情": "好奇",
+          "動作": "眼睛往前下方看，像看見小甲龍",
+          "停頓": "句尾停一拍",
+          "目的": "帶出大小反差"
+        },
+        "ruby": [
+          {
+            "c": "突",
+            "z": "ㄊㄨ"
+          },
+          {
+            "c": "然",
+            "z": "ㄖㄢˊ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "霸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "王",
+            "z": "ㄨㄤˊ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "發",
+            "z": "ㄈㄚ"
+          },
+          {
+            "c": "現",
+            "z": "ㄒㄧㄢˋ"
+          },
+          {
+            "c": "草",
+            "z": "ㄘㄠˇ"
+          },
+          {
+            "c": "地",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "上",
+            "z": "ㄕㄤˋ"
+          },
+          {
+            "c": "有",
+            "z": "ㄧㄡˇ"
+          },
+          {
+            "c": "一",
+            "z": "ㄧˋ"
+          },
+          {
+            "c": "隻",
+            "z": "ㄓ"
+          },
+          {
+            "c": "小",
+            "z": "ㄒㄧㄠˇ"
+          },
+          {
+            "c": "小",
+            "z": "ㄒㄧㄠˇ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "甲",
+            "z": "ㄐㄧㄚˇ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "。",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "霸王龍",
+        "text": "嘿嘿嘿……你看起來……好像很好吃！",
+        "hints": {
+          "聲音": "低聲壞笑，最後一句分三段",
+          "表情": "露出淘氣的壞笑",
+          "動作": "頭慢慢前傾，不走動",
+          "停頓": "「你看起來」後停一拍",
+          "目的": "第一個幽默記憶點"
+        },
+        "ruby": [
+          {
+            "c": "嘿",
+            "z": "ㄏㄟ"
+          },
+          {
+            "c": "嘿",
+            "z": "ㄏㄟ"
+          },
+          {
+            "c": "嘿",
+            "z": "ㄏㄟ"
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "你",
+            "z": "ㄋㄧˇ"
+          },
+          {
+            "c": "看",
+            "z": "ㄎㄢˋ"
+          },
+          {
+            "c": "起",
+            "z": "ㄑㄧˇ"
+          },
+          {
+            "c": "來",
+            "z": "ㄌㄞˊ"
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "好",
+            "z": "ㄏㄠˇ"
+          },
+          {
+            "c": "像",
+            "z": "ㄒㄧㄤˋ"
+          },
+          {
+            "c": "很",
+            "z": "ㄏㄣˇ"
+          },
+          {
+            "c": "好",
+            "z": "ㄏㄠˇ"
+          },
+          {
+            "c": "吃",
+            "z": "ㄔ"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "什麼？我是爸爸？",
+    "sub": "角色反差・讓觀眾會心一笑",
+    "start": 35,
+    "target": 35,
+    "emotion": "意外 → 笑點",
+    "guide": "用「甜美小甲龍 × 驚慌霸王龍」製造角色反差。",
+    "lines": [
+      {
+        "role": "旁白",
+        "text": "就在霸王龍張開大嘴巴，準備靠近小甲龍的時候……",
+        "hints": {
+          "聲音": "放輕，語尾懸住",
+          "表情": "緊張",
+          "動作": "雙手稍微打開，模擬張嘴但不誇張",
+          "停頓": "句尾停一拍",
+          "目的": "預告意外"
+        },
+        "ruby": [
+          {
+            "c": "就",
+            "z": "ㄐㄧㄡˋ"
+          },
+          {
+            "c": "在",
+            "z": "ㄗㄞˋ"
+          },
+          {
+            "c": "霸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "王",
+            "z": "ㄨㄤˊ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "張",
+            "z": "ㄓㄤ"
+          },
+          {
+            "c": "開",
+            "z": "ㄎㄞ"
+          },
+          {
+            "c": "大",
+            "z": "ㄉㄚˋ"
+          },
+          {
+            "c": "嘴",
+            "z": "ㄗㄨㄟˇ"
+          },
+          {
+            "c": "巴",
+            "z": "ㄅㄚ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "準",
+            "z": "ㄓㄨㄣˇ"
+          },
+          {
+            "c": "備",
+            "z": "ㄅㄟˋ"
+          },
+          {
+            "c": "靠",
+            "z": "ㄎㄠˋ"
+          },
+          {
+            "c": "近",
+            "z": "ㄐㄧㄣˋ"
+          },
+          {
+            "c": "小",
+            "z": "ㄒㄧㄠˇ"
+          },
+          {
+            "c": "甲",
+            "z": "ㄐㄧㄚˇ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "時",
+            "z": "ㄕˊ"
+          },
+          {
+            "c": "候",
+            "z": "ㄏㄡˋ"
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "…",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "小甲龍",
+        "text": "爸爸～～！",
+        "hints": {
+          "聲音": "提高音調，開心得像找到家人",
+          "表情": "眼睛亮、嘴角上揚",
+          "動作": "微微抬頭，雙手靠近胸前",
+          "停頓": "叫完停半拍",
+          "目的": "最重要的角色反差起點"
+        },
+        "ruby": [
+          {
+            "c": "爸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚ˙"
+          },
+          {
+            "c": "～",
+            "z": ""
+          },
+          {
+            "c": "～",
+            "z": ""
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "霸王龍",
+        "text": "什麼？！你……你叫我爸爸？",
+        "hints": {
+          "聲音": "「什麼」短促有力，後面變結巴",
+          "表情": "眼睛瞪大、眉毛上揚",
+          "動作": "快速縮後半步，右手指向自己",
+          "停頓": "「什麼？！」後停0.5秒",
+          "目的": "全場第一個笑點"
+        },
+        "ruby": [
+          {
+            "c": "什",
+            "z": "ㄕㄣˊ"
+          },
+          {
+            "c": "麼",
+            "z": "ㄇㄜ˙"
+          },
+          {
+            "c": "？",
+            "z": ""
+          },
+          {
+            "c": "！",
+            "z": ""
+          },
+          {
+            "c": "你",
+            "z": "ㄋㄧˇ"
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "你",
+            "z": "ㄋㄧˇ"
+          },
+          {
+            "c": "叫",
+            "z": "ㄐㄧㄠˋ"
+          },
+          {
+            "c": "我",
+            "z": "ㄨㄛˇ"
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚ˙"
+          },
+          {
+            "c": "？",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "小甲龍",
+        "text": "爸爸！我終於找到你了！",
+        "hints": {
+          "聲音": "清亮、篤定",
+          "表情": "天真微笑",
+          "動作": "輕歪頭、往前看",
+          "停頓": "「爸爸」後停半拍",
+          "目的": "讓小甲龍顯得真誠"
+        },
+        "ruby": [
+          {
+            "c": "爸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚ˙"
+          },
+          {
+            "c": "！",
+            "z": ""
+          },
+          {
+            "c": "我",
+            "z": "ㄨㄛˇ"
+          },
+          {
+            "c": "終",
+            "z": "ㄓㄨㄥ"
+          },
+          {
+            "c": "於",
+            "z": "ㄩˊ"
+          },
+          {
+            "c": "找",
+            "z": "ㄓㄠˇ"
+          },
+          {
+            "c": "到",
+            "z": "ㄉㄠˋ"
+          },
+          {
+            "c": "你",
+            "z": "ㄋㄧˇ"
+          },
+          {
+            "c": "了",
+            "z": "ㄌㄜ˙"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "霸王龍",
+        "text": "我……我什麼時候有孩子了？",
+        "hints": {
+          "聲音": "低聲自言自語",
+          "表情": "皺眉、困惑",
+          "動作": "摸摸頭，身體稍偏",
+          "停頓": "第一個「我」後短停",
+          "目的": "表演出兇猛外表下的笨拙"
+        },
+        "ruby": [
+          {
+            "c": "我",
+            "z": "ㄨㄛˇ"
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "我",
+            "z": "ㄨㄛˇ"
+          },
+          {
+            "c": "什",
+            "z": "ㄕㄣˊ"
+          },
+          {
+            "c": "麼",
+            "z": "ㄇㄜ˙"
+          },
+          {
+            "c": "時",
+            "z": "ㄕˊ"
+          },
+          {
+            "c": "候",
+            "z": "ㄏㄡˋ"
+          },
+          {
+            "c": "有",
+            "z": "ㄧㄡˇ"
+          },
+          {
+            "c": "孩",
+            "z": "ㄏㄞˊ"
+          },
+          {
+            "c": "子",
+            "z": "ㄗˇ"
+          },
+          {
+            "c": "了",
+            "z": "ㄌㄜ˙"
+          },
+          {
+            "c": "？",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "旁白",
+        "text": "霸王龍嚇了一大跳！牠本來想吃掉小甲龍，沒想到竟然被叫做爸爸！",
+        "hints": {
+          "聲音": "輕快，後句帶笑意",
+          "表情": "忍不住覺得好笑",
+          "動作": "回正站姿、看觀眾",
+          "停頓": "「沒想到」前停半拍",
+          "目的": "替聽眾整理情節"
+        },
+        "ruby": [
+          {
+            "c": "霸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "王",
+            "z": "ㄨㄤˊ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "嚇",
+            "z": "ㄒㄧㄚˋ"
+          },
+          {
+            "c": "了",
+            "z": "ㄌㄜ˙"
+          },
+          {
+            "c": "一",
+            "z": "ㄧ"
+          },
+          {
+            "c": "大",
+            "z": "ㄉㄚˋ"
+          },
+          {
+            "c": "跳",
+            "z": "ㄊㄧㄠˋ"
+          },
+          {
+            "c": "！",
+            "z": ""
+          },
+          {
+            "c": "牠",
+            "z": "ㄊㄚ"
+          },
+          {
+            "c": "本",
+            "z": "ㄅㄣˇ"
+          },
+          {
+            "c": "來",
+            "z": "ㄌㄞˊ"
+          },
+          {
+            "c": "想",
+            "z": "ㄒㄧㄤˇ"
+          },
+          {
+            "c": "吃",
+            "z": "ㄔ"
+          },
+          {
+            "c": "掉",
+            "z": "ㄉㄧㄠˋ"
+          },
+          {
+            "c": "小",
+            "z": "ㄒㄧㄠˇ"
+          },
+          {
+            "c": "甲",
+            "z": "ㄐㄧㄚˇ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "沒",
+            "z": "ㄇㄟˊ"
+          },
+          {
+            "c": "想",
+            "z": "ㄒㄧㄤˇ"
+          },
+          {
+            "c": "到",
+            "z": "ㄉㄠˋ"
+          },
+          {
+            "c": "竟",
+            "z": "ㄐㄧㄥˋ"
+          },
+          {
+            "c": "然",
+            "z": "ㄖㄢˊ"
+          },
+          {
+            "c": "被",
+            "z": "ㄅㄟˋ"
+          },
+          {
+            "c": "叫",
+            "z": "ㄐㄧㄠˋ"
+          },
+          {
+            "c": "做",
+            "z": "ㄗㄨㄛˋ"
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚ˙"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "最厲害的恐龍爸爸",
+    "sub": "活力十足・慢慢變溫柔",
+    "start": 70,
+    "target": 60,
+    "emotion": "活潑 → 溫馨",
+    "guide": "逐漸由喜劇轉溫馨，讓孩子自然展現活力。",
+    "lines": [
+      {
+        "role": "旁白",
+        "text": "從那天開始，小甲龍總是跟著霸王龍。",
+        "hints": {
+          "聲音": "輕快自然",
+          "表情": "溫暖",
+          "動作": "恢復中央站姿",
+          "停頓": "句尾短停",
+          "目的": "開始建立感情"
+        },
+        "ruby": [
+          {
+            "c": "從",
+            "z": "ㄘㄨㄥˊ"
+          },
+          {
+            "c": "那",
+            "z": "ㄋㄚˋ"
+          },
+          {
+            "c": "天",
+            "z": "ㄊㄧㄢ"
+          },
+          {
+            "c": "開",
+            "z": "ㄎㄞ"
+          },
+          {
+            "c": "始",
+            "z": "ㄕˇ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "小",
+            "z": "ㄒㄧㄠˇ"
+          },
+          {
+            "c": "甲",
+            "z": "ㄐㄧㄚˇ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "總",
+            "z": "ㄗㄨㄥˇ"
+          },
+          {
+            "c": "是",
+            "z": "ㄕˋ"
+          },
+          {
+            "c": "跟",
+            "z": "ㄍㄣ"
+          },
+          {
+            "c": "著",
+            "z": "ㄓㄜ˙"
+          },
+          {
+            "c": "霸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "王",
+            "z": "ㄨㄤˊ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "。",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "小甲龍",
+        "text": "爸爸！爸爸！我也想變得像你一樣厲害！",
+        "hints": {
+          "聲音": "興奮、明亮",
+          "表情": "眼睛發亮",
+          "動作": "抬頭看向想像中的大恐龍",
+          "停頓": "兩個「爸爸」中間略停",
+          "目的": "呈現崇拜"
+        },
+        "ruby": [
+          {
+            "c": "爸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚ˙"
+          },
+          {
+            "c": "！",
+            "z": ""
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚ˙"
+          },
+          {
+            "c": "！",
+            "z": ""
+          },
+          {
+            "c": "我",
+            "z": "ㄨㄛˇ"
+          },
+          {
+            "c": "也",
+            "z": "ㄧㄝˇ"
+          },
+          {
+            "c": "想",
+            "z": "ㄒㄧㄤˇ"
+          },
+          {
+            "c": "變",
+            "z": "ㄅㄧㄢˋ"
+          },
+          {
+            "c": "得",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "像",
+            "z": "ㄒㄧㄤˋ"
+          },
+          {
+            "c": "你",
+            "z": "ㄋㄧˇ"
+          },
+          {
+            "c": "一",
+            "z": "ㄧ"
+          },
+          {
+            "c": "樣",
+            "z": "ㄧㄤˋ"
+          },
+          {
+            "c": "厲",
+            "z": "ㄌㄧˋ"
+          },
+          {
+            "c": "害",
+            "z": "ㄏㄞˋ"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "霸王龍",
+        "text": "哈哈哈！那有什麼難的！",
+        "hints": {
+          "聲音": "神氣又有點愛面子",
+          "表情": "得意",
+          "動作": "挺胸，手叉腰一瞬間",
+          "停頓": "笑完停半拍",
+          "目的": "溫柔又好笑的爸爸"
+        },
+        "ruby": [
+          {
+            "c": "哈",
+            "z": "ㄏㄚ"
+          },
+          {
+            "c": "哈",
+            "z": "ㄏㄚ"
+          },
+          {
+            "c": "哈",
+            "z": "ㄏㄚ"
+          },
+          {
+            "c": "！",
+            "z": ""
+          },
+          {
+            "c": "那",
+            "z": "ㄋㄚˋ"
+          },
+          {
+            "c": "有",
+            "z": "ㄧㄡˇ"
+          },
+          {
+            "c": "什",
+            "z": "ㄕㄣˊ"
+          },
+          {
+            "c": "麼",
+            "z": "ㄇㄜ˙"
+          },
+          {
+            "c": "難",
+            "z": "ㄋㄢˊ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "旁白",
+        "text": "於是，霸王龍教小甲龍跑步，也教牠怎麼變得強壯。",
+        "hints": {
+          "聲音": "節奏稍快",
+          "表情": "開朗",
+          "動作": "原地做兩次小小的跑步手勢",
+          "停頓": "兩件事之間短停",
+          "目的": "以動作提示時間流逝"
+        },
+        "ruby": [
+          {
+            "c": "於",
+            "z": "ㄩˊ"
+          },
+          {
+            "c": "是",
+            "z": "ㄕˋ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "霸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "王",
+            "z": "ㄨㄤˊ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "教",
+            "z": "ㄐㄧㄠ"
+          },
+          {
+            "c": "小",
+            "z": "ㄒㄧㄠˇ"
+          },
+          {
+            "c": "甲",
+            "z": "ㄐㄧㄚˇ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "跑",
+            "z": "ㄆㄠˇ"
+          },
+          {
+            "c": "步",
+            "z": "ㄅㄨˋ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "也",
+            "z": "ㄧㄝˇ"
+          },
+          {
+            "c": "教",
+            "z": "ㄐㄧㄠ"
+          },
+          {
+            "c": "牠",
+            "z": "ㄊㄚ"
+          },
+          {
+            "c": "怎",
+            "z": "ㄗㄣˇ"
+          },
+          {
+            "c": "麼",
+            "z": "ㄇㄜ˙"
+          },
+          {
+            "c": "變",
+            "z": "ㄅㄧㄢˋ"
+          },
+          {
+            "c": "得",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "強",
+            "z": "ㄑㄧㄤˊ"
+          },
+          {
+            "c": "壯",
+            "z": "ㄓㄨㄤˋ"
+          },
+          {
+            "c": "。",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "霸王龍",
+        "text": "一、二、三！跑！",
+        "hints": {
+          "聲音": "像教練，充滿精神",
+          "表情": "認真",
+          "動作": "右手往前輕指，不真的跑",
+          "停頓": "「三」後停半拍",
+          "目的": "帶出活潑節奏"
+        },
+        "ruby": [
+          {
+            "c": "一",
+            "z": "ㄧ"
+          },
+          {
+            "c": "、",
+            "z": ""
+          },
+          {
+            "c": "二",
+            "z": "ㄦˋ"
+          },
+          {
+            "c": "、",
+            "z": ""
+          },
+          {
+            "c": "三",
+            "z": "ㄙㄢ"
+          },
+          {
+            "c": "！",
+            "z": ""
+          },
+          {
+            "c": "跑",
+            "z": "ㄆㄠˇ"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "小甲龍",
+        "text": "哇！爸爸你好厲害！",
+        "hints": {
+          "聲音": "真心佩服",
+          "表情": "驚喜",
+          "動作": "雙手靠近臉頰、稍微抬頭",
+          "停頓": "「哇」後短停",
+          "目的": "讓觀眾跟著開心"
+        },
+        "ruby": [
+          {
+            "c": "哇",
+            "z": "ㄨㄚ˙"
+          },
+          {
+            "c": "！",
+            "z": ""
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚ˙"
+          },
+          {
+            "c": "你",
+            "z": "ㄋㄧˇ"
+          },
+          {
+            "c": "好",
+            "z": "ㄏㄠˇ"
+          },
+          {
+            "c": "厲",
+            "z": "ㄌㄧˋ"
+          },
+          {
+            "c": "害",
+            "z": "ㄏㄞˋ"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "霸王龍",
+        "text": "要好好吃東西，才能長得又高又壯！",
+        "hints": {
+          "聲音": "放慢、叮嚀",
+          "表情": "認真慈愛",
+          "動作": "雙手輕張、比出長高",
+          "停頓": "「才能」前短停",
+          "目的": "從裝兇轉為照顧"
+        },
+        "ruby": [
+          {
+            "c": "要",
+            "z": "ㄧㄠˋ"
+          },
+          {
+            "c": "好",
+            "z": "ㄏㄠˇ"
+          },
+          {
+            "c": "好",
+            "z": "ㄏㄠˇ"
+          },
+          {
+            "c": "吃",
+            "z": "ㄔ"
+          },
+          {
+            "c": "東",
+            "z": "ㄉㄨㄥ"
+          },
+          {
+            "c": "西",
+            "z": "ㄒㄧ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "才",
+            "z": "ㄘㄞˊ"
+          },
+          {
+            "c": "能",
+            "z": "ㄋㄥˊ"
+          },
+          {
+            "c": "長",
+            "z": "ㄓㄤˇ"
+          },
+          {
+            "c": "得",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "又",
+            "z": "ㄧㄡˋ"
+          },
+          {
+            "c": "高",
+            "z": "ㄍㄠ"
+          },
+          {
+            "c": "又",
+            "z": "ㄧㄡˋ"
+          },
+          {
+            "c": "壯",
+            "z": "ㄓㄨㄤˋ"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "小甲龍",
+        "text": "爸爸！我最喜歡你了！",
+        "hints": {
+          "聲音": "開心而真誠",
+          "表情": "燦爛笑容",
+          "動作": "雙手放胸前",
+          "停頓": "句尾停一拍",
+          "目的": "感情轉折的起點"
+        },
+        "ruby": [
+          {
+            "c": "爸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚ˙"
+          },
+          {
+            "c": "！",
+            "z": ""
+          },
+          {
+            "c": "我",
+            "z": "ㄨㄛˇ"
+          },
+          {
+            "c": "最",
+            "z": "ㄗㄨㄟˋ"
+          },
+          {
+            "c": "喜",
+            "z": "ㄒㄧˇ"
+          },
+          {
+            "c": "歡",
+            "z": "ㄏㄨㄢ"
+          },
+          {
+            "c": "你",
+            "z": "ㄋㄧˇ"
+          },
+          {
+            "c": "了",
+            "z": "ㄌㄜ˙"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "旁白",
+        "text": "霸王龍聽了，心裡暖暖的。以前，牠只想著自己；可是現在，牠開始想保護這隻小小的恐龍。",
+        "hints": {
+          "聲音": "語速慢下來，柔和",
+          "表情": "由開心轉溫柔",
+          "動作": "放下雙手，站穩",
+          "停頓": "「可是現在」前停一拍",
+          "目的": "預備進入高潮"
+        },
+        "ruby": [
+          {
+            "c": "霸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "王",
+            "z": "ㄨㄤˊ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "聽",
+            "z": "ㄊㄧㄥ"
+          },
+          {
+            "c": "了",
+            "z": "ㄌㄜ˙"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "心",
+            "z": "ㄒㄧㄣ"
+          },
+          {
+            "c": "裡",
+            "z": "ㄌㄧˇ"
+          },
+          {
+            "c": "暖",
+            "z": "ㄋㄨㄢˇ"
+          },
+          {
+            "c": "暖",
+            "z": "ㄋㄨㄢˇ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "。",
+            "z": ""
+          },
+          {
+            "c": "以",
+            "z": "ㄧˇ"
+          },
+          {
+            "c": "前",
+            "z": "ㄑㄧㄢˊ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "牠",
+            "z": "ㄊㄚ"
+          },
+          {
+            "c": "只",
+            "z": "ㄓˇ"
+          },
+          {
+            "c": "想",
+            "z": "ㄒㄧㄤˇ"
+          },
+          {
+            "c": "著",
+            "z": "ㄓㄜ˙"
+          },
+          {
+            "c": "自",
+            "z": "ㄗˋ"
+          },
+          {
+            "c": "己",
+            "z": "ㄐㄧˇ"
+          },
+          {
+            "c": "；",
+            "z": ""
+          },
+          {
+            "c": "可",
+            "z": "ㄎㄜˇ"
+          },
+          {
+            "c": "是",
+            "z": "ㄕˋ"
+          },
+          {
+            "c": "現",
+            "z": "ㄒㄧㄢˋ"
+          },
+          {
+            "c": "在",
+            "z": "ㄗㄞˋ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "牠",
+            "z": "ㄊㄚ"
+          },
+          {
+            "c": "開",
+            "z": "ㄎㄞ"
+          },
+          {
+            "c": "始",
+            "z": "ㄕˇ"
+          },
+          {
+            "c": "想",
+            "z": "ㄒㄧㄤˇ"
+          },
+          {
+            "c": "保",
+            "z": "ㄅㄠˇ"
+          },
+          {
+            "c": "護",
+            "z": "ㄏㄨˋ"
+          },
+          {
+            "c": "這",
+            "z": "ㄓㄜˋ"
+          },
+          {
+            "c": "隻",
+            "z": "ㄓ"
+          },
+          {
+            "c": "小",
+            "z": "ㄒㄧㄠˇ"
+          },
+          {
+            "c": "小",
+            "z": "ㄒㄧㄠˇ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "恐",
+            "z": "ㄎㄨㄥˇ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "。",
+            "z": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "爸爸，救命！",
+    "sub": "故事高潮・勇敢的保護",
+    "start": 130,
+    "target": 40,
+    "emotion": "緊張 → 勇敢",
+    "guide": "力量來自一聲堅定的保護，不是全程尖叫。",
+    "lines": [
+      {
+        "role": "旁白",
+        "text": "可是有一天……危險突然出現了！一隻可怕的恐龍想傷害小甲龍！",
+        "hints": {
+          "聲音": "先低，再突然加快",
+          "表情": "緊張、警覺",
+          "動作": "身體微前傾",
+          "停頓": "「有一天」後停一拍",
+          "目的": "情緒明顯翻轉"
+        },
+        "ruby": [
+          {
+            "c": "可",
+            "z": "ㄎㄜˇ"
+          },
+          {
+            "c": "是",
+            "z": "ㄕˋ"
+          },
+          {
+            "c": "有",
+            "z": "ㄧㄡˇ"
+          },
+          {
+            "c": "一",
+            "z": "ㄧ"
+          },
+          {
+            "c": "天",
+            "z": "ㄊㄧㄢ"
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "危",
+            "z": "ㄨㄟ"
+          },
+          {
+            "c": "險",
+            "z": "ㄒㄧㄢˇ"
+          },
+          {
+            "c": "突",
+            "z": "ㄊㄨ"
+          },
+          {
+            "c": "然",
+            "z": "ㄖㄢˊ"
+          },
+          {
+            "c": "出",
+            "z": "ㄔㄨ"
+          },
+          {
+            "c": "現",
+            "z": "ㄒㄧㄢˋ"
+          },
+          {
+            "c": "了",
+            "z": "ㄌㄜ˙"
+          },
+          {
+            "c": "！",
+            "z": ""
+          },
+          {
+            "c": "一",
+            "z": "ㄧˋ"
+          },
+          {
+            "c": "隻",
+            "z": "ㄓ"
+          },
+          {
+            "c": "可",
+            "z": "ㄎㄜˇ"
+          },
+          {
+            "c": "怕",
+            "z": "ㄆㄚˋ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "恐",
+            "z": "ㄎㄨㄥˇ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "想",
+            "z": "ㄒㄧㄤˇ"
+          },
+          {
+            "c": "傷",
+            "z": "ㄕㄤ"
+          },
+          {
+            "c": "害",
+            "z": "ㄏㄞˋ"
+          },
+          {
+            "c": "小",
+            "z": "ㄒㄧㄠˇ"
+          },
+          {
+            "c": "甲",
+            "z": "ㄐㄧㄚˇ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "小甲龍",
+        "text": "爸爸！救命啊！",
+        "hints": {
+          "聲音": "短促驚慌",
+          "表情": "害怕",
+          "動作": "雙手微縮在胸前",
+          "停頓": "「爸爸」後短停",
+          "目的": "讓觀眾產生擔心"
+        },
+        "ruby": [
+          {
+            "c": "爸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚ˙"
+          },
+          {
+            "c": "！",
+            "z": ""
+          },
+          {
+            "c": "救",
+            "z": "ㄐㄧㄡˋ"
+          },
+          {
+            "c": "命",
+            "z": "ㄇㄧㄥˋ"
+          },
+          {
+            "c": "啊",
+            "z": "ㄚ˙"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "霸王龍",
+        "text": "不准欺負牠！",
+        "hints": {
+          "聲音": "堅定、響亮、清楚",
+          "表情": "目光專注",
+          "動作": "向前跨半步、挺胸",
+          "停頓": "說完停一拍",
+          "目的": "全場最高張力"
+        },
+        "ruby": [
+          {
+            "c": "不",
+            "z": "ㄅㄨˋ"
+          },
+          {
+            "c": "准",
+            "z": "ㄓㄨㄣˇ"
+          },
+          {
+            "c": "欺",
+            "z": "ㄑㄧ"
+          },
+          {
+            "c": "負",
+            "z": "ㄈㄨˋ"
+          },
+          {
+            "c": "牠",
+            "z": "ㄊㄚ"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "旁白",
+        "text": "霸王龍立刻衝過去！牠勇敢地保護小甲龍，不讓任何恐龍傷害牠。",
+        "hints": {
+          "聲音": "先快後穩",
+          "表情": "從緊張轉安心",
+          "動作": "手向前一伸，隨即收回",
+          "停頓": "第一句後短停",
+          "目的": "衝突獲得解決"
+        },
+        "ruby": [
+          {
+            "c": "霸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "王",
+            "z": "ㄨㄤˊ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "立",
+            "z": "ㄌㄧˋ"
+          },
+          {
+            "c": "刻",
+            "z": "ㄎㄜˋ"
+          },
+          {
+            "c": "衝",
+            "z": "ㄔㄨㄥ"
+          },
+          {
+            "c": "過",
+            "z": "ㄍㄨㄛˋ"
+          },
+          {
+            "c": "去",
+            "z": "ㄑㄩˋ"
+          },
+          {
+            "c": "！",
+            "z": ""
+          },
+          {
+            "c": "牠",
+            "z": "ㄊㄚ"
+          },
+          {
+            "c": "勇",
+            "z": "ㄩㄥˇ"
+          },
+          {
+            "c": "敢",
+            "z": "ㄍㄢˇ"
+          },
+          {
+            "c": "地",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "保",
+            "z": "ㄅㄠˇ"
+          },
+          {
+            "c": "護",
+            "z": "ㄏㄨˋ"
+          },
+          {
+            "c": "小",
+            "z": "ㄒㄧㄠˇ"
+          },
+          {
+            "c": "甲",
+            "z": "ㄐㄧㄚˇ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "不",
+            "z": "ㄅㄨˋ"
+          },
+          {
+            "c": "讓",
+            "z": "ㄖㄤˋ"
+          },
+          {
+            "c": "任",
+            "z": "ㄖㄣˋ"
+          },
+          {
+            "c": "何",
+            "z": "ㄏㄜˊ"
+          },
+          {
+            "c": "恐",
+            "z": "ㄎㄨㄥˇ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "傷",
+            "z": "ㄕㄤ"
+          },
+          {
+            "c": "害",
+            "z": "ㄏㄞˋ"
+          },
+          {
+            "c": "牠",
+            "z": "ㄊㄚ"
+          },
+          {
+            "c": "。",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "小甲龍",
+        "text": "爸爸……謝謝你！",
+        "hints": {
+          "聲音": "帶一點鼻音即可，不必真哭",
+          "表情": "感激",
+          "動作": "微抬頭、手放胸前",
+          "停頓": "「爸爸」後停半拍",
+          "目的": "情緒落下"
+        },
+        "ruby": [
+          {
+            "c": "爸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚ˙"
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "謝",
+            "z": "ㄒㄧㄝˋ"
+          },
+          {
+            "c": "謝",
+            "z": "ㄒㄧㄝˋ"
+          },
+          {
+            "c": "你",
+            "z": "ㄋㄧˇ"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "霸王龍",
+        "text": "傻孩子，沒事就好。",
+        "hints": {
+          "聲音": "比前面低且溫柔",
+          "表情": "淡淡微笑",
+          "動作": "雙手放下，肩膀放鬆",
+          "停頓": "句末停一拍",
+          "目的": "凸顯霸王龍的改變"
+        },
+        "ruby": [
+          {
+            "c": "傻",
+            "z": "ㄕㄚˇ"
+          },
+          {
+            "c": "孩",
+            "z": "ㄏㄞˊ"
+          },
+          {
+            "c": "子",
+            "z": "ㄗˇ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "沒",
+            "z": "ㄇㄟˊ"
+          },
+          {
+            "c": "事",
+            "z": "ㄕˋ"
+          },
+          {
+            "c": "就",
+            "z": "ㄐㄧㄡˋ"
+          },
+          {
+            "c": "好",
+            "z": "ㄏㄠˇ"
+          },
+          {
+            "c": "。",
+            "z": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "再見了，我的孩子",
+    "sub": "安靜道別・感人的結尾",
+    "start": 170,
+    "target": 40,
+    "emotion": "不捨 → 感動",
+    "guide": "安靜的力量比假哭更有感染力。",
+    "lines": [
+      {
+        "role": "旁白",
+        "text": "後來，霸王龍知道，小甲龍終究要回到真正的家人身邊。",
+        "hints": {
+          "聲音": "明顯放慢",
+          "表情": "不捨",
+          "動作": "站穩，看向遠方",
+          "停頓": "「後來」後停半拍",
+          "目的": "轉入告別"
+        },
+        "ruby": [
+          {
+            "c": "後",
+            "z": "ㄏㄡˋ"
+          },
+          {
+            "c": "來",
+            "z": "ㄌㄞˊ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "霸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "王",
+            "z": "ㄨㄤˊ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "知",
+            "z": "ㄓ"
+          },
+          {
+            "c": "道",
+            "z": "ㄉㄠˋ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "小",
+            "z": "ㄒㄧㄠˇ"
+          },
+          {
+            "c": "甲",
+            "z": "ㄐㄧㄚˇ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "終",
+            "z": "ㄓㄨㄥ"
+          },
+          {
+            "c": "究",
+            "z": "ㄐㄧㄡ"
+          },
+          {
+            "c": "要",
+            "z": "ㄧㄠˋ"
+          },
+          {
+            "c": "回",
+            "z": "ㄏㄨㄟˊ"
+          },
+          {
+            "c": "到",
+            "z": "ㄉㄠˋ"
+          },
+          {
+            "c": "真",
+            "z": "ㄓㄣ"
+          },
+          {
+            "c": "正",
+            "z": "ㄓㄥˋ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "家",
+            "z": "ㄐㄧㄚ"
+          },
+          {
+            "c": "人",
+            "z": "ㄖㄣˊ"
+          },
+          {
+            "c": "身",
+            "z": "ㄕㄣ"
+          },
+          {
+            "c": "邊",
+            "z": "ㄅㄧㄢ"
+          },
+          {
+            "c": "。",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "小甲龍",
+        "text": "爸爸……我們還可以一直在一起嗎？",
+        "hints": {
+          "聲音": "輕聲、帶期待",
+          "表情": "捨不得",
+          "動作": "歪頭、看向霸王龍位置",
+          "停頓": "「爸爸」後停一拍",
+          "目的": "留下情感空間"
+        },
+        "ruby": [
+          {
+            "c": "爸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "爸",
+            "z": "ㄅㄚ˙"
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "我",
+            "z": "ㄨㄛˇ"
+          },
+          {
+            "c": "們",
+            "z": "ㄇㄣ˙"
+          },
+          {
+            "c": "還",
+            "z": "ㄏㄞˊ"
+          },
+          {
+            "c": "可",
+            "z": "ㄎㄜˇ"
+          },
+          {
+            "c": "以",
+            "z": "ㄧˇ"
+          },
+          {
+            "c": "一",
+            "z": "ㄧ"
+          },
+          {
+            "c": "直",
+            "z": "ㄓˊ"
+          },
+          {
+            "c": "在",
+            "z": "ㄗㄞˋ"
+          },
+          {
+            "c": "一",
+            "z": "ㄧ"
+          },
+          {
+            "c": "起",
+            "z": "ㄑㄧˇ"
+          },
+          {
+            "c": "嗎",
+            "z": "ㄇㄚ˙"
+          },
+          {
+            "c": "？",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "霸王龍",
+        "text": "你要勇敢，也要平平安安地長大。",
+        "hints": {
+          "聲音": "慢、低沉而柔和",
+          "表情": "溫柔堅定",
+          "動作": "雙手緩緩放下，微微點頭",
+          "停頓": "「勇敢」後短停",
+          "目的": "像真正的父親叮嚀"
+        },
+        "ruby": [
+          {
+            "c": "你",
+            "z": "ㄋㄧˇ"
+          },
+          {
+            "c": "要",
+            "z": "ㄧㄠˋ"
+          },
+          {
+            "c": "勇",
+            "z": "ㄩㄥˇ"
+          },
+          {
+            "c": "敢",
+            "z": "ㄍㄢˇ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "也",
+            "z": "ㄧㄝˇ"
+          },
+          {
+            "c": "要",
+            "z": "ㄧㄠˋ"
+          },
+          {
+            "c": "平",
+            "z": "ㄆㄧㄥˊ"
+          },
+          {
+            "c": "平",
+            "z": "ㄆㄧㄥˊ"
+          },
+          {
+            "c": "安",
+            "z": "ㄢ"
+          },
+          {
+            "c": "安",
+            "z": "ㄢ"
+          },
+          {
+            "c": "地",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "長",
+            "z": "ㄓㄤˇ"
+          },
+          {
+            "c": "大",
+            "z": "ㄉㄚˋ"
+          },
+          {
+            "c": "。",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "旁白",
+        "text": "小甲龍依依不捨地離開了。霸王龍靜靜地看著牠的背影。",
+        "hints": {
+          "聲音": "輕而清楚",
+          "表情": "難過但不哭",
+          "動作": "視線慢慢移向遠處",
+          "停頓": "兩句之間停一拍",
+          "目的": "為最後一句留空間"
+        },
+        "ruby": [
+          {
+            "c": "小",
+            "z": "ㄒㄧㄠˇ"
+          },
+          {
+            "c": "甲",
+            "z": "ㄐㄧㄚˇ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "依",
+            "z": "ㄧ"
+          },
+          {
+            "c": "依",
+            "z": "ㄧ"
+          },
+          {
+            "c": "不",
+            "z": "ㄅㄨˋ"
+          },
+          {
+            "c": "捨",
+            "z": "ㄕㄜˇ"
+          },
+          {
+            "c": "地",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "離",
+            "z": "ㄌㄧˊ"
+          },
+          {
+            "c": "開",
+            "z": "ㄎㄞ"
+          },
+          {
+            "c": "了",
+            "z": "ㄌㄜ˙"
+          },
+          {
+            "c": "。",
+            "z": ""
+          },
+          {
+            "c": "霸",
+            "z": "ㄅㄚˋ"
+          },
+          {
+            "c": "王",
+            "z": "ㄨㄤˊ"
+          },
+          {
+            "c": "龍",
+            "z": "ㄌㄨㄥˊ"
+          },
+          {
+            "c": "靜",
+            "z": "ㄐㄧㄥˋ"
+          },
+          {
+            "c": "靜",
+            "z": "ㄐㄧㄥˋ"
+          },
+          {
+            "c": "地",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "看",
+            "z": "ㄎㄢˋ"
+          },
+          {
+            "c": "著",
+            "z": "ㄓㄜ˙"
+          },
+          {
+            "c": "牠",
+            "z": "ㄊㄚ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "背",
+            "z": "ㄅㄟˋ"
+          },
+          {
+            "c": "影",
+            "z": "ㄧㄥˇ"
+          },
+          {
+            "c": "。",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "霸王龍",
+        "text": "再見了……我的孩子。",
+        "hints": {
+          "聲音": "幾乎像說給自己聽，但全場聽得見",
+          "表情": "微笑中帶不捨",
+          "動作": "看向前方，不揮手也可以",
+          "停頓": "「再見了」後停一秒",
+          "目的": "最重要的感動記憶點"
+        },
+        "ruby": [
+          {
+            "c": "再",
+            "z": "ㄗㄞˋ"
+          },
+          {
+            "c": "見",
+            "z": "ㄐㄧㄢˋ"
+          },
+          {
+            "c": "了",
+            "z": "ㄌㄜ˙"
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "…",
+            "z": ""
+          },
+          {
+            "c": "我",
+            "z": "ㄨㄛˇ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "孩",
+            "z": "ㄏㄞˊ"
+          },
+          {
+            "c": "子",
+            "z": "ㄗˇ"
+          },
+          {
+            "c": "。",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "旁白",
+        "text": "原來，真正的愛，不是把最喜歡的人留在身邊，而是希望牠能平安、快樂地長大。",
+        "hints": {
+          "聲音": "真誠、慢、清晰",
+          "表情": "柔和微笑",
+          "動作": "回正面向評審",
+          "停頓": "「原來」後停半拍",
+          "目的": "讓觀眾帶走故事主題"
+        },
+        "ruby": [
+          {
+            "c": "原",
+            "z": "ㄩㄢˊ"
+          },
+          {
+            "c": "來",
+            "z": "ㄌㄞˊ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "真",
+            "z": "ㄓㄣ"
+          },
+          {
+            "c": "正",
+            "z": "ㄓㄥˋ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "愛",
+            "z": "ㄞˋ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "不",
+            "z": "ㄅㄨˋ"
+          },
+          {
+            "c": "是",
+            "z": "ㄕˋ"
+          },
+          {
+            "c": "把",
+            "z": "ㄅㄚˇ"
+          },
+          {
+            "c": "最",
+            "z": "ㄗㄨㄟˋ"
+          },
+          {
+            "c": "喜",
+            "z": "ㄒㄧˇ"
+          },
+          {
+            "c": "歡",
+            "z": "ㄏㄨㄢ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "人",
+            "z": "ㄖㄣˊ"
+          },
+          {
+            "c": "留",
+            "z": "ㄌㄧㄡˊ"
+          },
+          {
+            "c": "在",
+            "z": "ㄗㄞˋ"
+          },
+          {
+            "c": "身",
+            "z": "ㄕㄣ"
+          },
+          {
+            "c": "邊",
+            "z": "ㄅㄧㄢ"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "而",
+            "z": "ㄦˊ"
+          },
+          {
+            "c": "是",
+            "z": "ㄕˋ"
+          },
+          {
+            "c": "希",
+            "z": "ㄒㄧ"
+          },
+          {
+            "c": "望",
+            "z": "ㄨㄤˋ"
+          },
+          {
+            "c": "牠",
+            "z": "ㄊㄚ"
+          },
+          {
+            "c": "能",
+            "z": "ㄋㄥˊ"
+          },
+          {
+            "c": "平",
+            "z": "ㄆㄧㄥˊ"
+          },
+          {
+            "c": "安",
+            "z": "ㄢ"
+          },
+          {
+            "c": "、",
+            "z": ""
+          },
+          {
+            "c": "快",
+            "z": "ㄎㄨㄞˋ"
+          },
+          {
+            "c": "樂",
+            "z": "ㄌㄜˋ"
+          },
+          {
+            "c": "地",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "長",
+            "z": "ㄓㄤˇ"
+          },
+          {
+            "c": "大",
+            "z": "ㄉㄚˋ"
+          },
+          {
+            "c": "。",
+            "z": ""
+          }
+        ]
+      },
+      {
+        "role": "本人",
+        "text": "我的故事說完了，謝謝大家！",
+        "hints": {
+          "聲音": "明亮自然，恢復平常聲線",
+          "表情": "開心微笑",
+          "動作": "站穩，最後鞠躬",
+          "停頓": "說完再鞠躬",
+          "目的": "乾淨收尾"
+        },
+        "ruby": [
+          {
+            "c": "我",
+            "z": "ㄨㄛˇ"
+          },
+          {
+            "c": "的",
+            "z": "ㄉㄜ˙"
+          },
+          {
+            "c": "故",
+            "z": "ㄍㄨˋ"
+          },
+          {
+            "c": "事",
+            "z": "ㄕˋ"
+          },
+          {
+            "c": "說",
+            "z": "ㄕㄨㄛ"
+          },
+          {
+            "c": "完",
+            "z": "ㄨㄢˊ"
+          },
+          {
+            "c": "了",
+            "z": "ㄌㄜ˙"
+          },
+          {
+            "c": "，",
+            "z": ""
+          },
+          {
+            "c": "謝",
+            "z": "ㄒㄧㄝˋ"
+          },
+          {
+            "c": "謝",
+            "z": "ㄒㄧㄝˋ"
+          },
+          {
+            "c": "大",
+            "z": "ㄉㄚˋ"
+          },
+          {
+            "c": "家",
+            "z": "ㄐㄧㄚ"
+          },
+          {
+            "c": "！",
+            "z": ""
+          }
+        ]
+      }
+    ]
+  }
+]</script>
+<script>
+(()=>{'use strict';
+const scenes=JSON.parse(document.getElementById('app-data').textContent);
+const KEY='dinosaur_story_practice_v1';
+const goalFull=210;
+const state={mode:'stage',index:0,elapsed:0,startedAt:null,running:false,countdown:false,zhuyin:true,hints:true,focus:false,line:0,font:0,records:[],checks:[false,false,false,false],splits:[],lastMark:0};
+try {const obj=JSON.parse(localStorage.getItem(KEY)||'{}');state.records=Array.isArray(obj.records)?obj.records:[];state.checks=Array.isArray(obj.checks)&&obj.checks.length===4?obj.checks:state.checks;}catch(e){}
+const $=id=>document.getElementById(id);
+const format=s=>{s=Math.max(0,Math.floor(s));return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`};
+const rawMs=()=>state.elapsed+(state.running?performance.now()-state.startedAt:0);
+const seconds=()=>rawMs()/1000;
+const goal=()=>state.mode==='full'?goalFull:scenes[state.index].target;
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify({records:state.records.slice(0,40),checks:state.checks}))}catch(e){}};
+const roleStyle={旁白:'narrator',霸王龍:'rex',小甲龍:'baby',本人:'self'};
+const escapes=(s)=>String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let toastTimeout;
+const toast=msg=>{const e=$('toast');e.textContent=msg;e.classList.add('show');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>e.classList.remove('show'),3000)};
+function pronunciation(a){
+ if(!a.z)return `<span class="zpunct">${escapes(a.c)}</span>`;
+ const z=a.z.replace(/[ˊˇˋ˙]/g,'');const tone=(a.z.match(/[ˊˇˋ˙]/)||[])[0]||'';
+ return `<span class="zchar"><span class="zhan">${escapes(a.c)}</span><span class="bopobox" aria-hidden="true"><span class="bopostack">${[...z].map(c=>`<span>${escapes(c)}</span>`).join('')}</span>${tone?`<span class="bopotone ${tone==='˙'?'neutral':''}">${tone}</span>`:''}</span></span>`;
+}
+function writeStageList(){ $('stage-list').innerHTML=scenes.map((s,i)=>{
+ const done=state.records.some(r=>r.mode==='stage'&&r.scene===i);
+ return `<button type="button" class="stage-btn ${i===state.index?'active':''}" data-scene="${i}" aria-current="${i===state.index?'step':'false'}"><span class="stage-no">${String(i+1).padStart(2,'0')}</span><span style="min-width:0"><div class="stage-name">${escapes(s.title)}</div><div class="stage-duration">${format(s.target)} · ${escapes(s.emotion)}</div></span>${done?'<span class="stage-done" title="已練習">✓</span>':''}</button>`
+ }).join('');
+ $('stage-list').querySelectorAll('[data-scene]').forEach(b=>b.addEventListener('click',()=>selectScene(Number(b.dataset.scene))));
+}
+function scriptLine(l,i){const role=roleStyle[l.role]||'self';const text=state.zhuyin?`<div class="ruby-flow" aria-label="${escapes(l.text)}">${l.ruby.map(pronunciation).join('')}</div>`:`<div class="speech-plain">${escapes(l.text)}</div>`;
+ const dir=['聲音','表情','動作','停頓','目的'].map(k=>l.hints[k]?`<div class="dir-row ${k==='目的'?'purpose':''}"><b>${k}</b>${escapes(l.hints[k])}</div>`:'').join('');
+ return `<article class="line-card role-${role}"><div class="role-line"><span class="role-tag">${escapes(l.role)}</span><span class="line-num">台詞 ${String(i+1).padStart(2,'0')}</span></div><div class="line-speech">${text}</div>${state.hints?`<div class="director">${dir}</div>`:''}</article>`;
+}
+function renderScript(){const scene=scenes[state.index];$('scene-kicker').textContent=`ACT ${String(state.index+1).padStart(2,'0')} / 05  ·  ${format(scene.target)}`;$('scene-title').textContent=`第${['一','二','三','四','五'][state.index]}幕｜${scene.title}`;$('scene-sub').textContent=scene.sub+'　·　'+scene.emotion;$('scene-guide').textContent='導演提醒：'+scene.guide;
+ $('script-lines').innerHTML=(state.focus?[scene.lines[state.line]]:scene.lines).map((l,i)=>scriptLine(l,state.focus?state.line:i)).join('');
+ $('focus-pager').hidden=!state.focus;$('line-count').textContent=`第 ${state.line+1} / ${scene.lines.length} 句`;$('prev-line').disabled=state.line===0;$('next-line').disabled=state.line===scene.lines.length-1;
+ document.documentElement.style.setProperty('--han-size',`${(innerWidth<391?27:30)+state.font*3}px`);
+ for(const [id,on] of [['zhuyin-btn',state.zhuyin],['hint-btn',state.hints],['focus-btn',state.focus]]){$(id).classList.toggle('active',on);$(id).setAttribute('aria-pressed',String(on))}
+ $('zhuyin-btn').textContent=state.zhuyin?'注音 ✓':'注音';$('hint-btn').textContent=state.hints?'導演提示 ✓':'導演提示';
+}
+function setMode(mode){if(state.mode===mode)return;pause();state.mode=mode;state.index=0;state.line=0;state.elapsed=0;state.lastMark=0;state.splits=[];$('mode-stage').classList.toggle('active',mode==='stage');$('mode-full').classList.toggle('active',mode==='full');$('mode-stage').setAttribute('aria-pressed',String(mode==='stage'));$('mode-full').setAttribute('aria-pressed',String(mode==='full'));
+ $('mode-note').textContent=mode==='stage'?'一次練習一幕，完成後記錄秒數':'計時不會因換幕中斷；說完一幕按「下一幕」';$('finish-btn').textContent=mode==='stage'?'✓ 完成並記錄':'✓ 結束全篇並記錄';renderAll()}
+function pause(){if(state.running){state.elapsed=rawMs();state.running=false;state.startedAt=null}}
+function startPause(){if(state.running)pause();else{state.startedAt=performance.now();state.running=true}updateClock()}
+function reset(){pause();state.elapsed=0;state.lastMark=0;state.splits=[];updateClock();toast('計時已重設，練習紀錄仍保留')}
+function selectScene(i){if(i===state.index)return;if(state.mode==='stage'){if(state.running)pause();state.elapsed=0}else if(state.running){const now=seconds();state.splits.push({scene:state.index,time:Math.max(0,now-state.lastMark)});state.lastMark=now}state.index=i;state.line=0;renderAll();if(state.mode==='full'&&state.running)toast(`已切換到第 ${i+1} 幕，全篇計時持續中`)}
+function nextScene(){if(state.index===4){if(state.mode==='full')finish();else toast('已經是最後一幕，挑戰全篇模擬吧！');return}selectScene(state.index+1)}
+function finish(){const sec=seconds();if(sec<.5){toast('先按「開始練習」，說完後再存檔喔');return}pause();
+ const rec={mode:state.mode,scene:state.mode==='stage'?state.index:null,time:Math.round(sec*10)/10,date:new Date().toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}),splits:state.mode==='full'?[...state.splits,{scene:state.index,time:Math.max(0,sec-state.lastMark)}]:[]};
+ state.records.unshift(rec);state.records=state.records.slice(0,40);persist();renderAll();const target=goal(),delta=sec-target;
+ if(state.mode==='full')toast(sec>=180&&sec<=240?`太棒了！全篇 ${format(sec)}，符合 3～4 分鐘規定 🎉`:`全篇 ${format(sec)} 已記錄，下一次一起調整節奏！`);
+ else toast(`第 ${state.index+1} 幕完成：${format(sec)}（${delta>0?'比參考多':'比參考少'} ${Math.abs(Math.round(delta))} 秒）`);
+}
+function updateClock(){const sec=seconds(),g=goal(),v=state.countdown?g-sec:sec,over=state.countdown&&v<0;
+ $('time-text').textContent=over?'+'+format(-v):format(v);$('dock-time').textContent=$('time-text').textContent;$('dock-name').textContent='第 '+(state.index+1)+' 幕';$('dock-play').textContent=state.running?'⏸ 暫停':'▶ 繼續';$('dock-next').disabled=state.mode==='stage'&&state.index===4;
+ $('time-text').classList.toggle('over',sec>g+1);
+ $('clock-mode-label').textContent=(state.mode==='full'?'全篇模擬':'本幕練習')+(state.countdown?' · 倒數':' · 正數計時');
+ $('time-goal').textContent='目標 '+format(g);
+ $('timer-under').textContent=state.countdown?`剩餘時間，超過目標會繼續顯示超時秒數`:(state.mode==='full'?'正式時間範圍 03:00～04:00':'本幕參考 '+format(g)+'，可依實際語速調整');
+ const p=Math.min(100,Math.max(0,100*sec/g));$('progress-fill').style.width=p+'%';$('timer-ring').style.background=`conic-gradient(${sec>g?'#b44939':'#bd5d3c'} ${p}%, #ede6de ${p}%)`;$('ring-label').textContent=Math.floor(p)+'%';
+ $('start-btn').textContent=state.running?'⏸ 暫停':'▶ '+(sec>.5?'繼續練習':'開始練習');$('finish-btn').disabled=sec<.5;
+ $('next-btn').textContent=state.index===4?(state.mode==='full'?'完成全篇 ✓':'已是最後一幕'):'下一幕 →';$('next-btn').disabled=state.index===4&&state.mode==='stage';
+ $('meta-line').textContent=state.running?(state.mode==='full'?`正在連續計時 · 第 ${state.index+1} 幕 · 切換幕次不會重新開始`:`正在練習第 ${state.index+1} 幕 · 可隨時暫停`):sec>.5?`目前 ${format(sec)} · ${state.mode==='full'?'比 3:30 目標': '比本幕參考'} ${sec>=g?'多':'少'} ${Math.round(Math.abs(sec-g))} 秒`:'尚未開始。時間記錄只儲存在目前的瀏覽器。';
+}
+function renderRecords(){const recs=state.records.slice(0,7);$('record-empty').hidden=recs.length>0;$('record-list').innerHTML=recs.map(r=>{const name=r.mode==='full'?'全篇模擬':`第 ${r.scene+1} 幕`;const within=r.mode==='full'&&r.time>=180&&r.time<=240?' ✓':'';return `<li><span>${escapes(name)}<span style="color:#9c9a8e;font-size:11px;display:block">${escapes(r.date)}</span></span><span>${format(r.time)}${within}</span></li>`}).join('')}
+function updateDock(){const timer=$('time-text').closest('.timer');const rect=timer.getBoundingClientRect();$('floating-timer').hidden=rect.bottom>30 || rawMs()<500}function renderAll(){writeStageList();renderScript();renderRecords();updateClock();updateDock()}
+$('dock-play').addEventListener('click',startPause);$('dock-next').addEventListener('click',nextScene);window.addEventListener('scroll',updateDock,{passive:true});$('mode-stage').addEventListener('click',()=>setMode('stage'));$('mode-full').addEventListener('click',()=>setMode('full'));$('start-btn').addEventListener('click',startPause);$('reset-btn').addEventListener('click',reset);$('finish-btn').addEventListener('click',finish);$('next-btn').addEventListener('click',nextScene);$('count-btn').addEventListener('click',()=>{state.countdown=!state.countdown;$('count-btn').textContent=state.countdown?'切換正數':'切換倒數';$('count-btn').setAttribute('aria-pressed',String(state.countdown));updateClock()});
+$('zhuyin-btn').addEventListener('click',()=>{state.zhuyin=!state.zhuyin;renderScript()});$('hint-btn').addEventListener('click',()=>{state.hints=!state.hints;renderScript()});$('focus-btn').addEventListener('click',()=>{state.focus=!state.focus;state.line=0;renderScript()});$('prev-line').addEventListener('click',()=>{state.line=Math.max(0,state.line-1);renderScript()});$('next-line').addEventListener('click',()=>{state.line=Math.min(scenes[state.index].lines.length-1,state.line+1);renderScript()});
+$('font-down').addEventListener('click',()=>{state.font=Math.max(-2,state.font-1);renderScript()});$('font-up').addEventListener('click',()=>{state.font=Math.min(3,state.font+1);renderScript()});
+for(let i=0;i<4;i++){$('check-'+(i+1)).checked=state.checks[i];$('check-'+(i+1)).addEventListener('change',(e)=>{state.checks[i]=e.target.checked;persist()})}
+$('clear-records').addEventListener('click',()=>{if(!state.records.length){toast('目前沒有練習紀錄');return}if(confirm('確定要刪除全部時間紀錄嗎？')){state.records=[];persist();renderAll();toast('練習紀錄已清除')}});
+window.addEventListener('keydown',e=>{if(e.code==='Space'&&!['BUTTON','INPUT','TEXTAREA'].includes(document.activeElement.tagName)&&!e.repeat){e.preventDefault();startPause()}});
+setInterval(()=>{if(state.running)updateClock()},120);renderAll();
+})();
+</script>
+</body>
+</html>
