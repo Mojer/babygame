@@ -12,6 +12,8 @@ npm run dev
 開啟終端顯示的本機網址。正式版本：`npm run build`；預覽產物：`npm run preview`。
 建議 Node.js 22.12 以上。
 
+寶貝遊戲首頁透過 `./miniature-city/dist/` 開啟城市。資源採相對路徑，支援 GitHub Pages 子目錄；修改原始碼後請執行 `npm run build`，並一併提交 `dist/` 建置產物。
+
 ## 操作
 
 - 拖曳旋轉、滾輪或雙指縮放；點選建築開啟資訊。
