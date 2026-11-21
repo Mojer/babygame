@@ -50,7 +50,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-// 揚塵震波 / Dust-Raising Shockwave
+// 星環聚爆 / Astral Ring Detonation
 // Three.js 0.187.0 / WebGL2 / SRGBColorSpace / NoToneMapping
 // 將 group 加入場景，在既有遊戲循環呼叫 update(deltaSeconds)，結束時 dispose()。
 // 建立後起始 → 持續；由遊戲碰撞呼叫 hit(worldPosition?, worldNormal?)，或 stop() 自然收尾。
@@ -13115,31 +13115,45 @@ const createEffect = __vfxModule.createEffect;
 
 
 const preset = {
-  "id": "shockwave",
-  "lifecycle": {
-    "start": 0.27999999999999997,
-    "end": 1.26
+  "id": "astral-convergence",
+  "quantity": {
+    "min": 1,
+    "max": 20,
+    "default": 10,
+    "label": "爆發星束數量",
+    "unit": "道",
+    "help": "聚合後向外放射的星束數量；前段星軌與星座保留。",
+    "previewTime": 1.45
   },
-  "name": "揚塵震波",
-  "english": "Dust-Raising Shockwave",
-  "category": "burst",
-  "color": "#f0cf9d",
-  "description": "一圈塵土向外衝，捲起大片灰塵，小石頭再落回地面。",
-  "tags": "衝擊 地面 爆炸 範圍 卡通 賽璐璐 衝擊波 Shockwave",
-  "maxParticles": 512,
+  "lifecycle": {
+    "start": 0.34,
+    "end": 1.53
+  },
+  "name": "星環聚爆",
+  "english": "Astral Ring Detonation",
   "kind": 3,
-  "variant": 2,
-  "duration": 2.8,
+  "variant": 7,
+  "color": "#c1b8ff",
+  "duration": 3.4,
   "burst": true,
-  "seed": 137805,
-  "renderStyle": "toon"
+  "description": "星光繞圈聚到中央，縮成一團後炸開，留下閃亮的光痕。",
+  "category": "burst",
+  "tags": "星界 Astral 法術 魔法 星軌匯爆 Astral convergence",
+  "schools": [
+    "astral"
+  ],
+  "maxParticles": 512,
+  "seed": 402189,
+  "previewTime": 0.35,
+  "thumbnailTime": 0.35
 };
 export const defaultOptions = {
   "speed": 1,
   "detail": 1,
-  "color": "#f0cf9d",
+  "color": "#c1b8ff",
   "size": 1,
-  "density": 0.5
+  "density": 0.5,
+  "quantity": 10
 };
 export default function createVFX(options = {}) {
   return createEffect(preset, { ...defaultOptions, ...options });

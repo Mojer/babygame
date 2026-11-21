@@ -5,6 +5,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
 import { Pass } from 'three/examples/jsm/postprocessing/Pass.js'
 import createImpactFramePass, { type ImpactFramePass } from '../vfx/vendor/effect-impact-frame.js'
+import { ColorImpactPass } from './colorImpact'
 
 const MASK_LAYER = 5
 
@@ -71,6 +72,8 @@ export class Stage {
   private readonly outline: OutlineEffect
   private readonly composer: EffectComposer
   private readonly impactPass: ImpactFramePass
+  private readonly colorPass = new ColorImpactPass()
+  private hitStopLeft = 0
   private readonly clock = new THREE.Clock()
   private readonly tickers = new Set<(dt: number, t: number) => void>()
   private preset: ViewPreset = 'top'
@@ -126,6 +129,7 @@ export class Stage {
     this.composer.addPass(new OutlineScenePass(this.outline, this.scene, this.camera))
     this.impactPass = createImpactFramePass({ backgroundSuppression: 0.5 })
     this.composer.addPass(this.impactPass)
+    this.composer.addPass(this.colorPass)
     this.composer.addPass(new OutputPass())
 
     window.addEventListener('resize', () => this.resize())
@@ -203,7 +207,18 @@ export class Stage {
     this.shakeAmount = Math.max(this.shakeAmount, amount)
   }
 
-  /** Comic impact frame centred on a world point, keeping `subjects` as silhouettes. */
+  /** Freeze gameplay time (not the camera or screen effects) for a beat on a hit. */
+  hitStop(seconds: number): void {
+    this.hitStopLeft = Math.max(this.hitStopLeft, seconds)
+  }
+
+  /** Full-colour hit flash with speed lines tinted `color`, centred on a world point. */
+  colorImpact(worldPoint: THREE.Vector3, color: number): void {
+    this.impactCenter = worldPoint.clone()
+    this.colorPass.trigger(this.toUv(worldPoint), color)
+  }
+
+  /** Black-and-white comic impact frame, kept for the checkmate; `subjects` stay as silhouettes. */
   impact(worldPoint: THREE.Vector3, subjects: THREE.Object3D[]): void {
     this.setSubjectLayer(false)
     this.impactSubjects = subjects
@@ -299,6 +314,7 @@ export class Stage {
     this.composer.setSize(w, h)
     this.camera.aspect = w / h
     this.camera.updateProjectionMatrix()
+    this.colorPass.setAspect(w / h)
     this.controls.maxDistance = 24 * Math.max(1, 1 / this.camera.aspect)
     if (!this.tween && !this.cinematic) this.setView(this.preset, false)
   }
@@ -307,6 +323,12 @@ export class Stage {
     const dt = Math.min(this.clock.getDelta(), 0.05)
     const t = this.clock.elapsedTime
     this.impactPass.update(dt)
+    this.colorPass.update(dt)
+    let gameDt = dt
+    if (this.hitStopLeft > 0) {
+      this.hitStopLeft -= dt
+      gameDt = 0
+    }
 
     if (this.tween) {
       const tw = this.tween
@@ -323,7 +345,7 @@ export class Stage {
     }
     if (!this.cinematic && !this.tween) this.controls.update()
 
-    for (const fn of this.tickers) fn(dt, t)
+    for (const fn of this.tickers) fn(gameDt, t)
 
     const shaking = this.shakeAmount > 0.001
     const saved = this.camera.position.clone()
@@ -333,9 +355,13 @@ export class Stage {
       this.shakeAmount *= Math.pow(0.002, dt)
     }
 
-    if (this.impactPass.active) {
-      if (this.impactCenter) this.impactPass.setCenter(this.toUv(this.impactCenter))
-      this.renderSubjectMask()
+    if (this.impactPass.active || this.colorPass.active) {
+      if (this.impactCenter) {
+        const uv = this.toUv(this.impactCenter)
+        this.impactPass.setCenter(uv)
+        this.colorPass.setCenter(uv)
+      }
+      if (this.impactPass.active) this.renderSubjectMask()
       this.composer.render(dt)
       this.restoreViewport()
     } else if (this.outlines) {

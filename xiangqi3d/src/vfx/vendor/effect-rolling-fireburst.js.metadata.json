@@ -1,25 +1,20 @@
 {
   "kind": "effect",
-  "id": "energy-burst",
+  "id": "rolling-fireburst",
   "origin": "https://00gamedevs.com",
   "schemaVersion": 2,
   "integrationType": "scene-object",
   "contentVersion": "a1b0aff06de586e4fd9afdabb314177f2d6ce9049b890ac6cf7f727b1c14ca34",
-  "sha256": "39f6cbe53f3391739c4a53a89bda1b09a68817ac5ae05cbb30589e1b40a28fe6",
+  "sha256": "1e75685eb5ac3f3a12a6dd27a3bfe609644b5059bd10717165e3090de1e83e70",
   "methods": [
     "update",
-    "stop",
-    "hit",
     "reset",
+    "rerollDebris",
     "dispose",
     "setOptions"
   ],
   "defaultOptions": {
-    "color": "#2878ff",
     "size": 1,
-    "density": 0.5,
-    "speed": 1,
-    "detail": 1,
-    "quantity": 12
+    "speed": 1
   }
 }

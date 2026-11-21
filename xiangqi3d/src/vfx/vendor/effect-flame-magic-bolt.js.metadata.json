@@ -1,0 +1,22 @@
+{
+  "kind": "effect",
+  "id": "flame-magic-bolt",
+  "origin": "https://00gamedevs.com",
+  "schemaVersion": 2,
+  "integrationType": "scene-object",
+  "contentVersion": "a1b0aff06de586e4fd9afdabb314177f2d6ce9049b890ac6cf7f727b1c14ca34",
+  "sha256": "4bd82d94c43745e06895501ad53d233e78f7c628e32f136578a56b2df38b2791",
+  "methods": [
+    "update",
+    "reset",
+    "dispose",
+    "setOptions",
+    "seek",
+    "setCameraPosition",
+    "setLayerVisible"
+  ],
+  "defaultOptions": {
+    "size": 1,
+    "speed": 1
+  }
+}

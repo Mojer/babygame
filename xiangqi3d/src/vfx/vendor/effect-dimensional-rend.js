@@ -50,7 +50,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-// 雷弧綻爆 / Lightning Arc Burst
+// 裂空碎斬 / Rift-Shattering Slashes
 // Three.js 0.187.0 / WebGL2 / SRGBColorSpace / NoToneMapping
 // 將 group 加入場景，在既有遊戲循環呼叫 update(deltaSeconds)，結束時 dispose()。
 // 建立後起始 → 持續；由遊戲碰撞呼叫 hit(worldPosition?, worldNormal?)，或 stop() 自然收尾。
@@ -62,6 +62,9 @@ THE SOFTWARE.
 // spread 僅用於支援款的散布範圍，預設值見 defaultOptions；不改主體大小、數量或演出時間。
 // 無外部貼圖；Fireball 的 render 包含光暈合成，其他素材依各自說明。不同渲染設定可能影響外觀。
 
+// panelCount 控制獨立三角扭曲板數量（0–32），預設 9；不改變刀光或碎片數量。
+// 空間錯位使用 Three.js 內建透射；支援背景、不透明場景與本素材刀光，其他透明物件不保證被扭曲。
+// Spatial distortion samples the background, opaque scene and this effect's blade; other transparent objects may be excluded.
 import * as THREE from "three";
 var __vfxModule = (function(exports, three) {
 
@@ -13115,44 +13118,64 @@ const createEffect = __vfxModule.createEffect;
 
 
 const preset = {
-  "id": "energy-burst",
-  "quantity": {
-    "previewTime": 0.35,
-    "min": 1,
-    "max": 24,
-    "default": 12,
-    "label": "主放電數量",
-    "unit": "道",
-    "help": "每道主放電及其兩條子分岔一起增減；裝飾碎電另由密度調整。"
-  },
-  "lifecycle": {
-    "start": 0.27999999999999997,
-    "end": 1.26
-  },
-  "name": "雷弧綻爆",
-  "english": "Lightning Arc Burst",
-  "category": "burst",
-  "color": "#2878ff",
-  "description": "藍白亮光突然炸開，閃電向四周伸展，最後剩下零星電光。",
-  "tags": "科幻 命中 能量 雷電 放電 電弧 能量爆裂 Energy burst",
-  "maxParticles": 768,
-  "kind": 3,
+  "id": "dimensional-rend",
+  "name": "裂空碎斬",
+  "english": "Rift-Shattering Slashes",
+  "category": "area",
+  "kind": 6,
   "variant": 1,
-  "duration": 2.8,
-  "burst": true,
-  "seed": 128618,
-  "renderStyle": "toon",
   "schools": [
-    "storm"
-  ]
+    "astral"
+  ],
+  "color": "#729dff",
+  "seed": 671423,
+  "duration": 3.4,
+  "burst": true,
+  "maxParticles": 128,
+  "defaultDensity": 0.3,
+  "lifecycle": {
+    "start": 0.2,
+    "end": 2.4
+  },
+  "previewTime": 0.64,
+  "thumbnailTime": 0.64,
+  "sizeRange": {
+    "min": 0.25,
+    "max": 4,
+    "default": 2
+  },
+  "panelCount": {
+    "min": 0,
+    "max": 32,
+    "default": 9
+  },
+  "quantity": {
+    "min": 1,
+    "max": 32,
+    "default": 18,
+    "label": "斬痕數量",
+    "unit": "道",
+    "help": "一次施放劃出的斬痕總數；空間切片由粒子密度控制。"
+  },
+  "spread": {
+    "min": 0.5,
+    "max": 4,
+    "default": 2,
+    "label": "散布範圍",
+    "help": "只改變斬痕之間的距離，不改斬痕長度、數量或演出時間。"
+  },
+  "description": "刀光劃過時，背景像碎玻璃一樣錯開、散開，再慢慢恢復。",
+  "tags": "斬擊 次元 空間 裂縫 連斬 星界 slash cut rift dimensional rend spatial astral 次元裂斬 Dimensional Rend"
 };
 export const defaultOptions = {
   "speed": 1,
   "detail": 1,
-  "color": "#2878ff",
-  "size": 1,
-  "density": 0.5,
-  "quantity": 12
+  "color": "#729dff",
+  "size": 2,
+  "density": 0.3,
+  "panelCount": 9,
+  "quantity": 18,
+  "spread": 2
 };
 export default function createVFX(options = {}) {
   return createEffect(preset, { ...defaultOptions, ...options });

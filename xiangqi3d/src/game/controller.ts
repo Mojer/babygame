@@ -272,7 +272,7 @@ export class GameController {
     if (victim) {
       if (wantsCutscene(this.cutsceneMode, mover.piece, victim.piece, mating)) {
         this.hud.showSkipHint(true)
-        await this.cutscene.playCapture(mover, victim, move.from, move.to)
+        await this.cutscene.playCapture(mover, victim, move.from, move.to, mating)
         this.hud.showSkipHint(false)
       } else {
         await mover.moveTo(squareToWorld(move.to))

@@ -1,11 +1,11 @@
 {
   "kind": "effect",
-  "id": "shockwave",
+  "id": "dimensional-rend",
   "origin": "https://00gamedevs.com",
   "schemaVersion": 2,
   "integrationType": "scene-object",
   "contentVersion": "a1b0aff06de586e4fd9afdabb314177f2d6ce9049b890ac6cf7f727b1c14ca34",
-  "sha256": "780897f80b72180495a750e4ad24393f8dd3550fd8e44f1f91bd4e20be4306b0",
+  "sha256": "2528e2fcf5ca7f8521b29dc258a65d17b1b91ccf0c20d6093903742802f056db",
   "methods": [
     "update",
     "stop",
@@ -15,10 +15,13 @@
     "setOptions"
   ],
   "defaultOptions": {
-    "color": "#f0cf9d",
-    "size": 1,
-    "density": 0.5,
+    "color": "#729dff",
+    "size": 2,
+    "density": 0.3,
     "speed": 1,
-    "detail": 1
+    "detail": 1,
+    "quantity": 18,
+    "spread": 2,
+    "panelCount": 9
   }
 }

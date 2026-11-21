@@ -1,0 +1,25 @@
+{
+  "kind": "effect",
+  "id": "astral-convergence",
+  "origin": "https://00gamedevs.com",
+  "schemaVersion": 2,
+  "integrationType": "scene-object",
+  "contentVersion": "a1b0aff06de586e4fd9afdabb314177f2d6ce9049b890ac6cf7f727b1c14ca34",
+  "sha256": "f563c880e3847076f2e12b65910e784f94432ec3a2ec92a355975ebe16c59004",
+  "methods": [
+    "update",
+    "stop",
+    "hit",
+    "reset",
+    "dispose",
+    "setOptions"
+  ],
+  "defaultOptions": {
+    "color": "#c1b8ff",
+    "size": 1,
+    "density": 0.5,
+    "speed": 1,
+    "detail": 1,
+    "quantity": 10
+  }
+}
