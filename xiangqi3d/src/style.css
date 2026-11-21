@@ -80,3 +80,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe6ff; tou
   .bar { gap: 6px; }
   .bar .btn { font-size: 14px; padding: 7px 10px; border-width: 2px; box-shadow: 0 2px 0 #4a3426; }
 }
+.settings { z-index: 6; }
+.settings-card { display: flex; flex-direction: column; gap: 12px; min-width: min(360px, calc(100vw - 48px)); text-align: left; }
+.settings-card h2 { text-align: center; margin: 0; font-size: 28px; }
+.menu .btn.big.primary { background: #ffdf4a; }

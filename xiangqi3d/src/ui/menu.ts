@@ -6,6 +6,7 @@ import { LESSONS } from '../teach/lessons'
 import { loadPassed } from '../teach/progress'
 import { button, el } from './hud'
 import { STR } from './strings'
+import type { SavedMatch } from '../game/save'
 
 /** Start screen: hotseat, vs AI, or learning (piece guide and lessons). */
 export class Menu {
@@ -14,7 +15,12 @@ export class Menu {
   private human: Side = 'red'
   private assist: Assist = { red: true, black: true }
 
-  constructor(parent: HTMLElement, private readonly onStart: (s: GameSettings) => void) {
+  constructor(
+    parent: HTMLElement,
+    private readonly onStart: (s: GameSettings) => void,
+    private readonly saved: () => SavedMatch | null,
+    private readonly onResume: (save: SavedMatch) => void,
+  ) {
     this.root = el('div', 'menu')
     parent.append(this.root)
   }
@@ -43,8 +49,19 @@ export class Menu {
   }
 
   private renderMain(): void {
+    const save = this.saved()
+    const resume = save
+      ? [
+          bigChoice(STR.continueGame, STR.continueHint(save.settings.mode === 'ai' ? STR.vsAi : STR.hotseat), () => {
+            this.root.classList.remove('show')
+            this.onResume(save)
+          }),
+        ]
+      : []
+    resume.forEach((b) => b.classList.add('primary'))
     this.card(
       STR.title,
+      ...resume,
       bigChoice(STR.hotseat, STR.hotseatHint, () => this.renderHotseat()),
       bigChoice(STR.vsAi, STR.vsAiHint, () => this.renderAi()),
       bigChoice(STR.learn, STR.learnHint, () => this.renderLearn()),

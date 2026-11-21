@@ -81,6 +81,8 @@ export class Stage {
   private beforeCinematic: { pos: THREE.Vector3; look: THREE.Vector3 } | null = null
   private shakeAmount = 0
   private impactCenter: THREE.Vector3 | null = null
+  private readonly sun: THREE.DirectionalLight
+  private outlines = true
   private impactSubjects: THREE.Object3D[] = []
   private readonly maskTarget = new THREE.WebGLRenderTarget(1, 1)
   private readonly maskMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
@@ -96,7 +98,7 @@ export class Stage {
     this.scene.background = new THREE.Color(0xbfe6ff)
     this.scene.fog = new THREE.Fog(0xbfe6ff, 30, 60)
     const hemi = new THREE.HemisphereLight(0xfff8ec, 0x9cc7a0, 1.8)
-    const sun = new THREE.DirectionalLight(0xfff1dc, 1.7)
+    const sun = (this.sun = new THREE.DirectionalLight(0xfff1dc, 1.7))
     sun.position.set(4, 12, 6)
     sun.castShadow = true
     sun.shadow.mapSize.set(2048, 2048)
@@ -134,6 +136,14 @@ export class Stage {
   onTick(fn: (dt: number, t: number) => void): () => void {
     this.tickers.add(fn)
     return () => this.tickers.delete(fn)
+  }
+
+  /** Low quality: 1x pixel ratio, no shadows, no toon outlines. */
+  setLowQuality(low: boolean): void {
+    this.renderer.setPixelRatio(low ? 1 : Math.min(window.devicePixelRatio, 2))
+    this.sun.castShadow = !low
+    this.outlines = !low
+    this.resize()
   }
 
   get view(): ViewPreset {
@@ -328,8 +338,10 @@ export class Stage {
       this.renderSubjectMask()
       this.composer.render(dt)
       this.restoreViewport()
-    } else {
+    } else if (this.outlines) {
       this.outline.render(this.scene, this.camera)
+    } else {
+      this.renderer.render(this.scene, this.camera)
     }
     if (shaking) this.camera.position.copy(saved)
   }

@@ -5,6 +5,7 @@ import { LESSONS } from '../teach/lessons'
 import { markPassed } from '../teach/progress'
 import { button, el } from './hud'
 import { STR } from './strings'
+import { sound } from '../audio/sound'
 
 export interface TeachActions {
   openGuide(entry: GuideEntry): void
@@ -82,6 +83,7 @@ export class TeachPanel {
     const h = el('h2', '')
     const p = el('p', '')
     if (result === 'success') {
+      sound.play('pass')
       markPassed(run.lesson.id)
       const last = index === LESSONS.length - 1
       h.textContent = `🎉 ${STR.lessonPassed}`
@@ -92,6 +94,7 @@ export class TeachPanel {
       next.classList.add('primary')
       card.append(h, p, this.row(button(STR.retry, this.actions.restart), next))
     } else {
+      sound.play('fail')
       h.textContent = STR.lessonFailed
       p.textContent = run.lesson.tip
       const retry = button(STR.retry, this.actions.restart)

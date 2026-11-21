@@ -4,6 +4,7 @@ import { GRASS_TOP, squareToWorld } from '../render/board'
 import type { PieceView } from '../render/pieces'
 import type { Stage } from '../render/stage'
 import type { AttackStyle, VfxManager } from '../vfx/vfx'
+import { sound } from '../audio/sound'
 
 export type CutsceneMode = 'all' | 'major' | 'off'
 
@@ -189,6 +190,7 @@ export class BattleCutscene {
   }
 
   private strike(attacker: PieceView, victim: PieceView, style: AttackStyle, at: THREE.Vector3): void {
+    sound.play('capture')
     if (this.skipping) {
       this.vfx.burst(style, at, 1)
       return

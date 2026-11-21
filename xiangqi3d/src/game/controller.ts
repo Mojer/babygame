@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { AiClient } from '../ai/client'
 import type { Level } from '../ai/search'
 import { Match } from '../rules/match'
-import { type Move, isInCheck } from '../rules/moves'
+import { type Move, isInCheck, moveToIccs } from '../rules/moves'
 import { type Side, squareIndex, toFen } from '../rules/position'
 import { LessonRun, type StepResult } from '../teach/lessonRun'
 import type { Lesson } from '../teach/lessons'
@@ -12,6 +12,8 @@ import { PieceView } from '../render/pieces'
 import type { Stage } from '../render/stage'
 import type { Hud } from '../ui/hud'
 import type { VfxManager } from '../vfx/vfx'
+import { sound } from '../audio/sound'
+import type { SavedMatch } from './save'
 import { BattleCutscene, type CutsceneMode, attackStyle, wantsCutscene } from './cutscene'
 
 export type Assist = Record<Side, boolean>
@@ -48,6 +50,8 @@ export class GameController {
   private readonly cutscene: BattleCutscene
   cutsceneMode: CutsceneMode = 'all'
   teach: TeachHooks | null = null
+  /** called after every change to a hotseat/AI match; null once it is over or left */
+  onMatchChange: ((save: SavedMatch | null) => void) | null = null
 
   constructor(
     private readonly stage: Stage,
@@ -80,6 +84,32 @@ export class GameController {
     this.hud.setMode(settings.mode)
     this.stage.setView(settings.mode === 'ai' ? settings.human : settings.mode === 'hotseat' ? 'top' : 'red')
     this.restart()
+  }
+
+  /** Continue a saved hotseat/AI match by replaying its moves without animation. */
+  resume(save: SavedMatch): void {
+    this.settings = save.settings
+    if (save.settings.mode === 'ai' && !this.ai) this.ai = new AiClient()
+    this.lesson = null
+    this.hud.setMode(save.settings.mode)
+    this.stage.setView(save.settings.mode === 'ai' ? save.settings.human : 'top')
+    const match = new Match()
+    for (const m of save.moves) {
+      try {
+        match.play(m)
+      } catch {
+        break
+      }
+    }
+    this.reset(match)
+  }
+
+  private emitSave(): void {
+    const s = this.settings
+    if (!this.onMatchChange) return
+    if (s.mode !== 'hotseat' && s.mode !== 'ai') return
+    if (this.match.status.kind !== 'ongoing' || !this.match.history.length) return this.onMatchChange(null)
+    this.onMatchChange({ version: 1, settings: s, moves: this.match.history.map(moveToIccs) })
   }
 
   restart(): void {
@@ -141,6 +171,7 @@ export class GameController {
     this.match = match
     this.rebuild()
     this.updateHud()
+    this.emitSave()
     void this.maybeAiTurn()
   }
 
@@ -208,6 +239,7 @@ export class GameController {
     const pos = this.match.position
     const piece = pos.board[square]
     if (piece && piece.side === pos.turn) {
+      if (this.selected !== square) sound.play('select')
       this.hintMove = null
       this.selected = this.selected === square ? null : square
       this.refresh()
@@ -245,6 +277,7 @@ export class GameController {
       } else {
         await mover.moveTo(squareToWorld(move.to))
         if (gen !== this.generation) return
+        sound.play('capture')
         this.vfx.burst(attackStyle(mover.piece.kind), squareToWorld(move.to), 1)
         await victim.die()
       }
@@ -258,6 +291,7 @@ export class GameController {
       this.hud.showSkipHint(false)
     } else {
       await mover.moveTo(squareToWorld(move.to))
+      sound.play('place')
     }
     if (gen !== this.generation) return
     this.views.delete(move.from)
@@ -265,7 +299,9 @@ export class GameController {
     this.busy = false
     this.afterTeachMove(move)
     this.showCheck()
+    this.announceEnd()
     this.updateHud()
+    this.emitSave()
     void this.maybeAiTurn()
   }
 
@@ -283,6 +319,14 @@ export class GameController {
     }
   }
 
+  private announceEnd(): void {
+    const status = this.match.status
+    if (this.mode === 'lesson' || this.mode === 'guide' || status.kind === 'ongoing') return
+    if (!('winner' in status)) return sound.play('draw')
+    const s = this.settings
+    sound.play(s.mode === 'ai' && status.winner !== s.human ? 'lose' : 'win')
+  }
+
   private showCheck(): void {
     const pos = this.match.position
     if (this.mode === 'lesson' || this.mode === 'guide') {
@@ -295,6 +339,7 @@ export class GameController {
     }
     const king = pos.board.findIndex((p) => p?.kind === 'king' && p.side === pos.turn)
     this.vfx.warnCheck(squareToWorld(king, 0.02))
+    sound.play('check')
   }
 
   private bindPointer(): void {

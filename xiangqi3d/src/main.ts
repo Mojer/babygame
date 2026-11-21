@@ -1,26 +1,46 @@
 import { Board } from './render/board'
 import { Stage } from './render/stage'
-import { GameController } from './game/controller'
+import { FpsWatch, type QualityMode, looksLowEnd } from './render/quality'
+import { type GameSettings, GameController } from './game/controller'
 import type { CutsceneMode } from './game/cutscene'
+import { loadSavedMatch, storeSavedMatch } from './game/save'
+import { sound } from './audio/sound'
 import { Hud } from './ui/hud'
 import { Menu } from './ui/menu'
+import { SettingsPanel } from './ui/settings'
 import { STR } from './ui/strings'
-import { VfxManager } from './vfx/vfx'
 import { TeachPanel } from './ui/teach'
 import { LESSONS } from './teach/lessons'
-import type { GameSettings } from './game/controller'
+import { VfxManager } from './vfx/vfx'
 
-const CUTSCENE_KEY = 'xq3d.cutscene'
-const CUTSCENE_ORDER: CutsceneMode[] = ['all', 'major', 'off']
+// ---------- persisted preferences ----------
 
-function loadCutsceneMode(): CutsceneMode {
+const PREFS_KEY = 'xq3d.prefs'
+interface Prefs {
+  cutscene?: CutsceneMode
+  quality?: QualityMode
+}
+
+function loadPrefs(): Prefs {
   try {
-    const v = localStorage.getItem(CUTSCENE_KEY) as CutsceneMode | null
-    return v && CUTSCENE_ORDER.includes(v) ? v : 'all'
+    return JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') as Prefs
   } catch {
-    return 'all'
+    return {}
   }
 }
+
+function savePrefs(p: Prefs): void {
+  try {
+    localStorage.setItem(PREFS_KEY, JSON.stringify(p))
+  } catch {
+    /* preference lasts for this visit only */
+  }
+}
+
+const prefs = loadPrefs()
+const lowEndGuess = looksLowEnd()
+
+// ---------- scene ----------
 
 const app = document.getElementById('app')!
 const stage = new Stage(app)
@@ -31,19 +51,32 @@ stage.onTick((dt) => vfx.update(dt))
 let game: GameController | null = null
 let menu: Menu | null = null
 let teach: TeachPanel | null = null
+let settings: SettingsPanel | null = null
+
+// ---------- quality ----------
+
+let qualityMode: QualityMode = prefs.quality ?? 'auto'
+let autoDowngraded = false
+
+function applyQuality(): void {
+  const low = qualityMode === 'low' || (qualityMode === 'auto' && (lowEndGuess || autoDowngraded))
+  stage.setLowQuality(low)
+  vfx.quality = low ? 'low' : 'high'
+}
+
+const fpsWatch = new FpsWatch(() => {
+  if (qualityMode !== 'auto' || autoDowngraded) return
+  autoDowngraded = true
+  applyQuality()
+})
+stage.onTick((dt) => fpsWatch.sample(dt))
+applyQuality()
+
+// ---------- UI ----------
+
 const hud = new Hud(document.body, {
   hint: () => void game?.hint(),
-  cycleCutscene: () => {
-    if (!game) return ''
-    const next = CUTSCENE_ORDER[(CUTSCENE_ORDER.indexOf(game.cutsceneMode) + 1) % CUTSCENE_ORDER.length]
-    game.cutsceneMode = next
-    try {
-      localStorage.setItem(CUTSCENE_KEY, next)
-    } catch {
-      /* storage unavailable: keep the choice for this session only */
-    }
-    return STR.cutscene[next]
-  },
+  openSettings: () => settings?.open(),
   undo: () => game?.undo(),
   restart: () => game?.restart(),
   cycleView: () => STR.view[stage.cycleView()],
@@ -52,38 +85,88 @@ const hud = new Hud(document.body, {
     menu?.show()
   },
 })
+
 game = new GameController(stage, new Board(), hud, vfx)
-game.cutsceneMode = loadCutsceneMode()
-hud.setCutsceneLabel(STR.cutscene[game.cutsceneMode])
-function startGame(settings: GameSettings): void {
-  game?.newGame(settings)
+// low-end devices default to fewer cutscenes unless the player already chose
+game.cutsceneMode = prefs.cutscene ?? (lowEndGuess ? 'major' : 'all')
+game.onMatchChange = storeSavedMatch
+
+function startGame(s: GameSettings): void {
+  game!.newGame(s)
   hud.setViewLabel(STR.view[stage.view])
-  if (settings.mode === 'guide') teach?.showGuide(settings.entry)
-  else if (settings.mode === 'lesson') teach?.showLesson(game!.lessonRun!)
-  else teach?.hide()
+  if (s.mode === 'guide') teach!.showGuide(s.entry)
+  else if (s.mode === 'lesson') teach!.showLesson(game!.lessonRun!)
+  else teach!.hide()
 }
 
 teach = new TeachPanel(document.body, {
   openGuide: (entry) => startGame({ mode: 'guide', entry }),
   openLesson: (i) => startGame({ mode: 'lesson', lesson: LESSONS[i] }),
   restart: () => {
-    game?.restart()
-    if (game?.mode === 'lesson') teach?.showLesson(game.lessonRun!)
+    game!.restart()
+    if (game!.mode === 'lesson') teach!.showLesson(game!.lessonRun!)
   },
   hint: () => void game?.hint(),
   lessonList: () => {
-    teach?.hide()
-    menu?.showLessons()
+    teach!.hide()
+    menu!.showLessons()
   },
 })
-game.teach = { lessonStep: (result, run) => teach?.lessonStep(result, run) }
-menu = new Menu(document.body, startGame)
-hud.setViewLabel(STR.view[stage.view])
-menu.show()
+game.teach = { lessonStep: (result, run) => teach!.lessonStep(result, run) }
 
+settings = new SettingsPanel(
+  document.body,
+  STR.settings,
+  [
+    {
+      label: STR.cutsceneLabel,
+      options: STR.cutscene,
+      get: () => game!.cutsceneMode,
+      set: (v) => {
+        game!.cutsceneMode = v as CutsceneMode
+        prefs.cutscene = game!.cutsceneMode
+        savePrefs(prefs)
+      },
+    },
+    {
+      label: STR.qualityLabel,
+      options: STR.quality,
+      get: () => qualityMode,
+      set: (v) => {
+        qualityMode = v as QualityMode
+        prefs.quality = qualityMode
+        savePrefs(prefs)
+        applyQuality()
+      },
+    },
+    {
+      label: STR.sfxLabel,
+      options: STR.onOff,
+      get: () => (sound.sfxOn ? 'on' : 'off'),
+      set: (v) => sound.setSfx(v === 'on'),
+    },
+    {
+      label: STR.musicLabel,
+      options: STR.onOff,
+      get: () => (sound.musicOn ? 'on' : 'off'),
+      set: (v) => sound.setMusic(v === 'on'),
+    },
+  ],
+  STR.close,
+)
+
+menu = new Menu(document.body, startGame, loadSavedMatch, (save) => {
+  game!.resume(save)
+  hud.setViewLabel(STR.view[stage.view])
+  teach!.hide()
+})
+menu.show()
+hud.setViewLabel(STR.view[stage.view])
+
+// effects and shader warm-up happen behind the menu
 requestAnimationFrame(() => {
-  vfx.prewarm(stage.scene, stage.camera)
   stage.prewarmImpact()
+  void vfx.load(stage.scene, stage.camera)
 })
 
-if (import.meta.env.DEV) Object.assign(window, { __xq: { stage, game, vfx } })
+if (import.meta.env.DEV) Object.assign(window, { __xq: { stage, game, vfx, sound } })
