@@ -235,7 +235,11 @@ html, body {
 @media (hover: hover) { .btn.big:hover .piece-ico { transform: rotate(-12deg) scale(1.06); } }
 
 .field-label { font-weight: 900; margin-bottom: 7px; letter-spacing: .04em; }
-.seg { display: flex; gap: 8px; }
+/* buttons cast a 4px block shadow below their box: keep it out of the next label */
+.seg { display: flex; gap: 8px; padding-bottom: 4px; }
+/* a group (走法提示) holding one row per side: indent the rows and soften their labels */
+.field .field { margin-top: 10px; padding-left: 12px; border-left: 3px solid rgba(74, 52, 38, .18); }
+.field .field .field-label { font-size: 15px; font-weight: 700; color: var(--ink-soft); margin-bottom: 6px; }
 .seg .btn { flex: 1; padding: 10px 6px; font-size: 16px; }
 .seg .btn.on {
   color: #fff; background: linear-gradient(180deg, #ef6a5d, var(--red) 60%, var(--red-deep));
