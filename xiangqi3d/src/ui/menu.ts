@@ -21,6 +21,7 @@ export class Menu {
     private readonly onStart: (s: GameSettings) => void,
     private readonly saved: () => SavedMatch | null,
     private readonly onResume: (save: SavedMatch) => void,
+    private readonly finished: () => SavedMatch | null,
   ) {
     this.root = el('div', 'menu')
     parent.append(this.root)
@@ -68,12 +69,21 @@ export class Menu {
         ]
       : []
     resume.forEach((b) => b.classList.add('primary'))
+    const last = this.finished()
+    const replay = last
+      ? [
+          bigChoice(STR.replayLast, STR.replayLastHint(last.settings.mode === 'ai' ? STR.vsAi : STR.hotseat), () =>
+            this.start({ mode: 'replay', source: last.settings, moves: last.moves }),
+          '譜', 'gold'),
+        ]
+      : []
     this.card(
       titleLogo(),
       ...resume,
       bigChoice(STR.hotseat, STR.hotseatHint, () => this.renderHotseat(), '帥', 'red'),
       bigChoice(STR.vsAi, STR.vsAiHint, () => this.renderAi(), '炮', 'black'),
       bigChoice(STR.learn, STR.learnHint, () => this.renderLearn(), '兵', 'green'),
+      ...replay,
     )
   }
 

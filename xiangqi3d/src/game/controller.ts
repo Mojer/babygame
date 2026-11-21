@@ -2,7 +2,8 @@ import * as THREE from 'three'
 import { AiClient } from '../ai/client'
 import type { Level } from '../ai/search'
 import { Match } from '../rules/match'
-import { type Move, isInCheck, moveToIccs } from '../rules/moves'
+import { type Move, isInCheck, moveToIccs, parseMove } from '../rules/moves'
+import { moveToChinese } from '../rules/notation'
 import { type Side, squareIndex, toFen } from '../rules/position'
 import { LessonRun, type StepResult } from '../teach/lessonRun'
 import type { Lesson } from '../teach/lessons'
@@ -13,7 +14,7 @@ import type { Stage } from '../render/stage'
 import type { Hud } from '../ui/hud'
 import type { VfxManager } from '../vfx/vfx'
 import { sound } from '../audio/sound'
-import type { SavedMatch } from './save'
+import type { MatchSettings, SavedMatch } from './save'
 import { BattleCutscene, type CutsceneMode, wantsCutscene } from './cutscene'
 
 export type Assist = Record<Side, boolean>
@@ -23,6 +24,7 @@ export type GameSettings =
   | { mode: 'ai'; level: Level; human: Side; assist: Assist }
   | { mode: 'lesson'; lesson: Lesson }
   | { mode: 'guide'; entry: GuideEntry }
+  | { mode: 'replay'; source: MatchSettings; moves: string[] }
 
 export type PlayMode = GameSettings['mode']
 
@@ -31,6 +33,21 @@ export interface TeachHooks {
 }
 
 const FULL_ASSIST: Assist = { red: true, black: true }
+
+/** Where a replay stands: `cursor` moves of `total` have been played on the board. */
+export interface ReplayState {
+  cursor: number
+  total: number
+  playing: boolean
+  /** notation of the last move shown, empty at the start */
+  notation: string
+  /** side that made that move (red before the first move) */
+  side: Side
+}
+
+const REPLAY_PAUSE_MS = 650
+/** rough share of the screen height taken by the replay panel and the button bar */
+const REPLAY_PANEL_INSET = 0.2
 
 export class GameController {
   private match = new Match()
@@ -52,6 +69,13 @@ export class GameController {
   teach: TeachHooks | null = null
   /** called after every change to a hotseat/AI match; null once it is over or left */
   onMatchChange: ((save: SavedMatch | null) => void) | null = null
+  /** called once when a hotseat/AI match finishes, with its full move list */
+  onMatchEnd: ((game: SavedMatch) => void) | null = null
+  onReplayChange: ((state: ReplayState) => void) | null = null
+  private replayMoves: Move[] = []
+  private replayNotation: string[] = []
+  private replayPlaying = false
+  private replayLoopId = 0
 
   constructor(
     private readonly stage: Stage,
@@ -79,11 +103,119 @@ export class GameController {
 
   newGame(settings: GameSettings): void {
     this.settings = settings
+    this.replayPlaying = false
     if (settings.mode === 'ai' && !this.ai) this.ai = new AiClient()
     this.lesson = settings.mode === 'lesson' ? new LessonRun(settings.lesson) : null
+    if (settings.mode === 'replay') this.loadReplay(settings.moves)
     this.hud.setMode(settings.mode)
-    this.stage.setView(settings.mode === 'ai' ? settings.human : settings.mode === 'hotseat' ? 'top' : 'red')
+    this.stage.setBottomInset(settings.mode === 'replay' ? REPLAY_PANEL_INSET : 0)
+    this.stage.setView(this.viewFor(settings))
     this.restart()
+  }
+
+  private viewFor(s: GameSettings): 'top' | 'red' | 'black' {
+    if (s.mode === 'ai') return s.human
+    if (s.mode === 'replay') return s.source.mode === 'ai' ? s.source.human : 'top'
+    return s.mode === 'hotseat' ? 'top' : 'red'
+  }
+
+  // ---------- replay ----------
+
+  /** Replay the match just finished (or still on the board). */
+  replayCurrent(): void {
+    const s = this.settings
+    if (s.mode !== 'hotseat' && s.mode !== 'ai') return
+    this.newGame({ mode: 'replay', source: s, moves: this.match.history.map(moveToIccs) })
+  }
+
+  private loadReplay(moves: string[]): void {
+    const check = new Match()
+    this.replayMoves = []
+    this.replayNotation = []
+    for (const iccs of moves) {
+      try {
+        const move = parseMove(iccs)
+        const before = check.position
+        check.play(move)
+        this.replayMoves.push(move)
+        this.replayNotation.push(moveToChinese(before, move))
+      } catch {
+        break
+      }
+    }
+  }
+
+  get replayCursor(): number {
+    return this.mode === 'replay' ? this.match.history.length : 0
+  }
+
+  /** Jump straight to the position after `n` moves, without animation. */
+  replayTo(n: number): void {
+    if (this.mode !== 'replay') return
+    const target = Math.max(0, Math.min(this.replayMoves.length, n))
+    const match = new Match()
+    for (const m of this.replayMoves.slice(0, target)) match.play(m)
+    this.reset(match)
+    this.showCheck(false)
+    this.emitReplay()
+  }
+
+  /** Animate the next move; resolves when it has landed. */
+  async replayForward(): Promise<void> {
+    if (this.mode !== 'replay' || this.busy) return
+    const next = this.replayMoves[this.match.history.length]
+    if (!next) return
+    await this.perform(next, true)
+    this.emitReplay()
+  }
+
+  replayBack(): void {
+    this.replayPlaying = false
+    this.replayTo(this.replayCursor - 1)
+  }
+
+  replayToggle(): void {
+    if (this.mode !== 'replay') return
+    this.replayPlaying = !this.replayPlaying
+    if (this.replayPlaying && this.replayCursor >= this.replayMoves.length) this.replayTo(0)
+    this.emitReplay()
+    if (this.replayPlaying) void this.replayLoop()
+  }
+
+  replayPause(): void {
+    this.replayPlaying = false
+    this.emitReplay()
+  }
+
+  private async replayLoop(): Promise<void> {
+    // a fresh loop retires any earlier one still sleeping between moves
+    const id = ++this.replayLoopId
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
+    while (id === this.replayLoopId && this.replayPlaying && this.mode === 'replay' && this.replayCursor < this.replayMoves.length) {
+      if (this.busy) {
+        await wait(100)
+        continue
+      }
+      await this.replayForward()
+      await wait(REPLAY_PAUSE_MS)
+    }
+    if (id !== this.replayLoopId) return
+    this.replayPlaying = false
+    this.emitReplay()
+  }
+
+  private emitReplay(): void {
+    if (this.mode !== 'replay') return
+    const cursor = this.replayCursor
+    const last = this.replayMoves[cursor - 1]
+    const mover = last ? this.match.position.board[last.to]?.side : undefined
+    this.onReplayChange?.({
+      cursor,
+      total: this.replayMoves.length,
+      playing: this.replayPlaying,
+      notation: cursor ? this.replayNotation[cursor - 1] : '',
+      side: mover ?? 'red',
+    })
   }
 
   /** Continue a saved hotseat/AI match by replaying its moves without animation. */
@@ -117,6 +249,9 @@ export class GameController {
     if (s.mode === 'lesson') {
       this.lesson!.restart()
       this.reset(new Match(s.lesson.fen))
+    } else if (s.mode === 'replay') {
+      this.reset(new Match())
+      this.emitReplay()
     } else if (s.mode === 'guide') {
       this.reset(new Match(s.entry.fen))
       this.selected = squareIndex(s.entry.focus)
@@ -127,7 +262,7 @@ export class GameController {
   }
 
   undo(): void {
-    if (this.mode === 'lesson' || this.mode === 'guide') return
+    if (this.mode === 'lesson' || this.mode === 'guide' || this.mode === 'replay') return
     if (!this.match.history.length || (this.busy && !this.thinking)) return
     do this.match.undo()
     while (this.match.history.length && !this.isHumanTurn())
@@ -138,6 +273,7 @@ export class GameController {
   assistOn(): boolean {
     const s = this.settings
     if (s.mode === 'lesson' || s.mode === 'guide') return true
+    if (s.mode === 'replay') return false
     return s.assist[this.match.position.turn]
   }
 
@@ -176,6 +312,7 @@ export class GameController {
   }
 
   private isHumanTurn(): boolean {
+    if (this.settings.mode === 'replay') return false
     return this.settings.mode !== 'ai' || this.match.position.turn === this.settings.human
   }
 
@@ -221,7 +358,7 @@ export class GameController {
   }
 
   private updateHud(): void {
-    if (this.mode === 'lesson' || this.mode === 'guide') return
+    if (this.mode === 'lesson' || this.mode === 'guide' || this.mode === 'replay') return
     const pos = this.match.position
     const ai = this.settings.mode === 'ai' ? { human: this.settings.human, thinking: this.thinking } : null
     this.hud.update({
@@ -257,7 +394,8 @@ export class GameController {
     void this.perform(move)
   }
 
-  private async perform(move: Move): Promise<void> {
+  /** `quick` (replay) skips battle cutscenes except the mating blow. */
+  private async perform(move: Move, quick = false): Promise<void> {
     const gen = this.generation
     this.busy = true
     const mover = this.views.get(move.from)!
@@ -270,7 +408,7 @@ export class GameController {
     const mating = status.kind === 'checkmate'
 
     if (victim) {
-      if (wantsCutscene(this.cutsceneMode, mover.piece, victim.piece, mating)) {
+      if (wantsCutscene(quick ? 'off' : this.cutsceneMode, mover.piece, victim.piece, mating)) {
         this.hud.showSkipHint(true)
         await this.cutscene.playCapture(mover, victim, move.from, move.to, mating)
         this.hud.showSkipHint(false)
@@ -302,7 +440,14 @@ export class GameController {
     this.announceEnd()
     this.updateHud()
     this.emitSave()
+    this.emitEnd()
     void this.maybeAiTurn()
+  }
+
+  private emitEnd(): void {
+    const s = this.settings
+    if ((s.mode !== 'hotseat' && s.mode !== 'ai') || this.match.status.kind === 'ongoing') return
+    this.onMatchEnd?.({ version: 1, settings: s, moves: this.match.history.map(moveToIccs) })
   }
 
   /** Lessons and the guide keep the learner on the move: black never answers. */
@@ -327,7 +472,7 @@ export class GameController {
     sound.play(s.mode === 'ai' && status.winner !== s.human ? 'lose' : 'win')
   }
 
-  private showCheck(): void {
+  private showCheck(withSound = true): void {
     const pos = this.match.position
     if (this.mode === 'lesson' || this.mode === 'guide') {
       this.vfx.clearCheck()
@@ -339,7 +484,7 @@ export class GameController {
     }
     const king = pos.board.findIndex((p) => p?.kind === 'king' && p.side === pos.turn)
     this.vfx.warnCheck(squareToWorld(king, 0.02))
-    sound.play('check')
+    if (withSound) sound.play('check')
   }
 
   private bindPointer(): void {

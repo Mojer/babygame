@@ -78,6 +78,8 @@ export class Stage {
   private readonly clock = new THREE.Clock()
   private readonly tickers = new Set<(dt: number, t: number) => void>()
   private preset: ViewPreset = 'top'
+  /** share of the screen bottom covered by UI (the replay panel); the board is framed above it */
+  private bottomInset = 0
   private tween: CameraTween | null = null
   private readonly look = new THREE.Vector3()
   private cinematic = false
@@ -162,21 +164,29 @@ export class Stage {
     return this.preset
   }
 
+  /** Keep the board clear of a UI panel covering this fraction of the screen bottom. */
+  setBottomInset(fraction: number): void {
+    if (fraction === this.bottomInset) return
+    this.bottomInset = fraction
+    if (!this.tween && !this.cinematic) this.setView(this.preset)
+  }
+
   setView(preset: ViewPreset, animate = true): void {
     this.preset = preset
+    const look = this.viewLook(preset)
     if (this.cinematic) {
-      this.beforeCinematic = { pos: this.fittedView(preset), look: new THREE.Vector3() }
+      this.beforeCinematic = { pos: this.fittedView(preset), look }
       return
     }
     const to = this.fittedView(preset)
     if (!animate) {
       this.tween = null
       this.camera.position.copy(to)
-      this.controls.target.set(0, 0, 0)
+      this.controls.target.copy(look)
       this.controls.update()
       return
     }
-    this.moveCamera(to, new THREE.Vector3(), 0.9)
+    this.moveCamera(to, look, 0.9)
   }
 
   // ---------- cinematic camera (battle cutscenes) ----------
@@ -197,7 +207,7 @@ export class Stage {
   endCinematic(dur = 0.45): void {
     if (!this.cinematic) return
     this.cinematic = false
-    const back = this.beforeCinematic ?? { pos: this.fittedView(this.preset), look: new THREE.Vector3() }
+    const back = this.beforeCinematic ?? { pos: this.fittedView(this.preset), look: this.viewLook(this.preset) }
     this.beforeCinematic = null
     this.moveCamera(back.pos, back.look, dur, () => {
       this.controls.enabled = true
@@ -303,8 +313,20 @@ export class Stage {
   /** Pull the camera back on portrait screens so the whole board fits. */
   private fittedView(preset: ViewPreset): THREE.Vector3 {
     const aspect = this.camera.aspect
-    const scale = aspect < 1 ? Math.min(1.9, 0.95 / aspect) : 1
-    return VIEWS[preset].clone().multiplyScalar(scale)
+    const scale = (aspect < 1 ? Math.min(1.9, 0.95 / aspect) : 1) * (1 + this.bottomInset * 0.9)
+    return VIEWS[preset].clone().multiplyScalar(scale).add(this.viewLook(preset))
+  }
+
+  /**
+   * Look point for a preset: the board centre, nudged toward the bottom of the screen
+   * (the camera's own side) when UI covers the bottom, so the board sits higher up.
+   */
+  private viewLook(preset: ViewPreset): THREE.Vector3 {
+    if (!this.bottomInset) return new THREE.Vector3()
+    const toward = VIEWS[preset].clone().setY(0)
+    if (toward.lengthSq() < 1e-6) toward.set(0, 0, 1)
+    const span = this.camera.aspect < 1 ? 11 / this.camera.aspect * 0.55 : 11
+    return toward.normalize().multiplyScalar(this.bottomInset * span)
   }
 
   private resize(): void {

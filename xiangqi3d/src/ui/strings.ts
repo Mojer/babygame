@@ -60,6 +60,13 @@ export const STR = {
   restart: '重新開始',
   view: { top: '視角：俯視', red: '視角：紅方', black: '視角：黑方' } as const,
   playAgain: '再來一局',
+  replay: '覆盤',
+  replayLast: '覆盤上一盤',
+  replayLastHint: (mode: string) => `一步一步重看剛下完的${mode}`,
+  replayTitle: '覆盤',
+  replayStep: (n: number, total: number) => `第 ${n}／${total} 步`,
+  replayStartPos: '開局',
+  replayNav: { start: '回到開局', back: '上一步', play: '播放', pause: '暫停', forward: '下一步', end: '到最後' } as const,
   confirmRestart: '確定要重新開始這一局嗎？',
   confirmMenu: '要離開這一局回到選單嗎？',
   result(status: MatchStatus): { title: string; detail: string } {

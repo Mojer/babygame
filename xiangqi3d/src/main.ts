@@ -4,7 +4,7 @@ import { Stage } from './render/stage'
 import { FpsWatch, type QualityMode, looksLowEnd } from './render/quality'
 import { type GameSettings, GameController } from './game/controller'
 import type { CutsceneMode } from './game/cutscene'
-import { loadSavedMatch, storeSavedMatch } from './game/save'
+import { loadFinishedMatch, loadSavedMatch, storeFinishedMatch, storeSavedMatch } from './game/save'
 import { sound } from './audio/sound'
 import { Hud } from './ui/hud'
 import { Menu } from './ui/menu'
@@ -84,8 +84,23 @@ const hud = new Hud(document.body, {
   restart: () => game?.restart(),
   cycleView: () => STR.view[stage.cycleView()],
   menu: () => {
+    game?.replayPause()
     teach?.hide()
     menu?.show()
+  },
+  replay: () => game?.replayCurrent(),
+  replayNav: (cmd) => {
+    if (!game) return
+    if (cmd === 'toggle') return game.replayToggle()
+    if (cmd === 'back') return game.replayBack()
+    game.replayPause()
+    if (cmd === 'start') game.replayTo(0)
+    else if (cmd === 'end') game.replayTo(Number.MAX_SAFE_INTEGER)
+    else void game.replayForward()
+  },
+  replaySeek: (n) => {
+    game?.replayPause()
+    game?.replayTo(n)
   },
 })
 
@@ -94,6 +109,8 @@ game = new GameController(stage, new Board(), hud, vfx)
 // low-end devices default to fewer cutscenes unless the player already chose
 game.cutsceneMode = prefs.cutscene ?? (lowEndGuess ? 'major' : 'all')
 game.onMatchChange = storeSavedMatch
+game.onMatchEnd = storeFinishedMatch
+game.onReplayChange = (s) => hud.setReplay(s)
 
 function startGame(s: GameSettings): void {
   game!.newGame(s)
@@ -159,11 +176,17 @@ settings = new SettingsPanel(
   STR.close,
 )
 
-menu = new Menu(document.body, startGame, loadSavedMatch, (save) => {
-  game!.resume(save)
-  hud.setViewLabel(STR.view[stage.view])
-  teach!.hide()
-})
+menu = new Menu(
+  document.body,
+  startGame,
+  loadSavedMatch,
+  (save) => {
+    game!.resume(save)
+    hud.setViewLabel(STR.view[stage.view])
+    teach!.hide()
+  },
+  loadFinishedMatch,
+)
 menu.show()
 hud.setViewLabel(STR.view[stage.view])
 
