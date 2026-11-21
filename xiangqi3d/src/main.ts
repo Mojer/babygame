@@ -6,6 +6,9 @@ import { Hud } from './ui/hud'
 import { Menu } from './ui/menu'
 import { STR } from './ui/strings'
 import { VfxManager } from './vfx/vfx'
+import { TeachPanel } from './ui/teach'
+import { LESSONS } from './teach/lessons'
+import type { GameSettings } from './game/controller'
 
 const CUTSCENE_KEY = 'xq3d.cutscene'
 const CUTSCENE_ORDER: CutsceneMode[] = ['all', 'major', 'off']
@@ -27,7 +30,9 @@ stage.onTick((dt) => vfx.update(dt))
 
 let game: GameController | null = null
 let menu: Menu | null = null
+let teach: TeachPanel | null = null
 const hud = new Hud(document.body, {
+  hint: () => void game?.hint(),
   cycleCutscene: () => {
     if (!game) return ''
     const next = CUTSCENE_ORDER[(CUTSCENE_ORDER.indexOf(game.cutsceneMode) + 1) % CUTSCENE_ORDER.length]
@@ -42,15 +47,37 @@ const hud = new Hud(document.body, {
   undo: () => game?.undo(),
   restart: () => game?.restart(),
   cycleView: () => STR.view[stage.cycleView()],
-  menu: () => menu?.show(),
+  menu: () => {
+    teach?.hide()
+    menu?.show()
+  },
 })
 game = new GameController(stage, new Board(), hud, vfx)
 game.cutsceneMode = loadCutsceneMode()
 hud.setCutsceneLabel(STR.cutscene[game.cutsceneMode])
-menu = new Menu(document.body, (settings) => {
+function startGame(settings: GameSettings): void {
   game?.newGame(settings)
   hud.setViewLabel(STR.view[stage.view])
+  if (settings.mode === 'guide') teach?.showGuide(settings.entry)
+  else if (settings.mode === 'lesson') teach?.showLesson(game!.lessonRun!)
+  else teach?.hide()
+}
+
+teach = new TeachPanel(document.body, {
+  openGuide: (entry) => startGame({ mode: 'guide', entry }),
+  openLesson: (i) => startGame({ mode: 'lesson', lesson: LESSONS[i] }),
+  restart: () => {
+    game?.restart()
+    if (game?.mode === 'lesson') teach?.showLesson(game.lessonRun!)
+  },
+  hint: () => void game?.hint(),
+  lessonList: () => {
+    teach?.hide()
+    menu?.showLessons()
+  },
 })
+game.teach = { lessonStep: (result, run) => teach?.lessonStep(result, run) }
+menu = new Menu(document.body, startGame)
 hud.setViewLabel(STR.view[stage.view])
 menu.show()
 

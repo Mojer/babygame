@@ -155,8 +155,17 @@ export class Board {
   }
 
   /** Show selection ring and legal-move dots; captures get a red ring. */
-  showMarkers(selected: number | null, targets: { square: number; capture: boolean }[], lastMove?: { from: number; to: number }): void {
+  showMarkers(
+    selected: number | null,
+    targets: { square: number; capture: boolean }[],
+    lastMove?: { from: number; to: number },
+    hint?: { from: number; to: number } | null,
+  ): void {
     this.markers.clear()
+    if (hint) {
+      this.markers.add(this.ring(hint.from, 0x4fd96b, 0.42, 0.56, 1))
+      this.markers.add(this.ring(hint.to, 0x4fd96b, 0.3, 0.56, 0.9))
+    }
     if (lastMove) {
       for (const sq of [lastMove.from, lastMove.to]) this.markers.add(this.ring(sq, 0xffe08a, 0.36, 0.44, 0.45))
     }

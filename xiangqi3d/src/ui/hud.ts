@@ -3,6 +3,7 @@ import type { Side } from '../rules/position'
 import { STR } from './strings'
 
 export interface HudActions {
+  hint(): void
   cycleCutscene(): string
   undo(): void
   restart(): void
@@ -15,6 +16,7 @@ export interface HudState {
   status: MatchStatus
   inCheck: boolean
   canUndo: boolean
+  canHint: boolean
   ai: { human: Side; thinking: boolean } | null
 }
 
@@ -23,28 +25,37 @@ export class Hud {
   private readonly toast: HTMLDivElement
   private readonly overlay: HTMLDivElement
   private readonly undoBtn: HTMLButtonElement
+  private readonly hintBtn: HTMLButtonElement
+  private readonly root: HTMLDivElement
   private readonly skipHint: HTMLDivElement
   private toastTimer = 0
 
   constructor(parent: HTMLElement, actions: HudActions) {
-    const root = el('div', 'hud')
+    const root = (this.root = el('div', 'hud'))
     this.turn = el('div', 'turn')
     this.toast = el('div', 'toast')
     const bar = el('div', 'bar')
     this.undoBtn = button(STR.undo, actions.undo)
+    this.undoBtn.classList.add('match-only')
+    this.hintBtn = button(STR.hint, actions.hint)
+    this.hintBtn.classList.add('match-only')
     const cutsceneBtn = button('', () => (cutsceneBtn.textContent = actions.cycleCutscene()))
     const viewBtn = button('', () => (viewBtn.textContent = actions.cycleView()))
     this.skipHint = el('div', 'skip-hint')
     this.skipHint.textContent = STR.skipHint
+    const restartBtn = button(STR.restart, () => {
+      if (confirm(STR.confirmRestart)) actions.restart()
+    })
+    restartBtn.classList.add('match-only')
     bar.append(
+      this.hintBtn,
       cutsceneBtn,
       button(STR.menu, () => {
+        if (this.root.dataset.mode !== 'hotseat' && this.root.dataset.mode !== 'ai') return actions.menu()
         if (confirm(STR.confirmMenu)) actions.menu()
       }),
       this.undoBtn,
-      button(STR.restart, () => {
-        if (confirm(STR.confirmRestart)) actions.restart()
-      }),
+      restartBtn,
       viewBtn,
     )
     this.overlay = el('div', 'overlay')
@@ -62,6 +73,15 @@ export class Hud {
   readonly setCutsceneLabel: (label: string) => void
   readonly setViewLabel: (label: string) => void
 
+  /** Lessons and the guide use their own panel; hide the match-only controls there. */
+  setMode(mode: string): void {
+    this.root.dataset.mode = mode
+    if (mode === 'lesson' || mode === 'guide') {
+      this.turn.textContent = ''
+      this.overlay.classList.remove('show')
+    }
+  }
+
   showSkipHint(on: boolean): void {
     this.skipHint.classList.toggle('show', on)
   }
@@ -71,6 +91,7 @@ export class Hud {
     this.turn.dataset.side = s.turn
     this.turn.classList.toggle('thinking', !!s.ai?.thinking)
     this.undoBtn.disabled = !s.canUndo
+    this.hintBtn.disabled = !s.canHint
     if (s.status.kind === 'ongoing') {
       this.overlay.classList.remove('show')
       if (s.inCheck) this.flash(STR.check)

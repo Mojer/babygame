@@ -48,3 +48,35 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe6ff; tou
   padding: 6px 16px; border-radius: 999px; background: rgba(40, 30, 20, .55); color: #fff; font-weight: 700; font-size: 15px;
   opacity: 0; transition: opacity .2s; }
 .skip-hint.show { opacity: 1; }
+.hud[data-mode="lesson"] .match-only, .hud[data-mode="guide"] .match-only { display: none; }
+.btn[hidden] { display: none; }
+.teach-panel { position: fixed; top: max(12px, env(safe-area-inset-top)); left: max(12px, env(safe-area-inset-left));
+  width: min(340px, calc(100vw - 24px)); box-sizing: border-box; display: none; flex-direction: column; gap: 8px;
+  background: #fff6e2; border: 4px solid #4a3426; border-radius: 22px; box-shadow: 0 5px 0 #4a3426; padding: 14px 16px; color: #4a3426; }
+.teach-panel.show { display: flex; }
+.teach-title { margin: 0; font-size: 22px; }
+.teach-goal { margin: 0; font-size: 19px; font-weight: 800; color: #c8281e; }
+.teach-tip { margin: 0; font-size: 15px; line-height: 1.45; }
+.teach-moves { margin: 0; font-size: 15px; font-weight: 800; }
+.teach-lines { margin: 0; padding-left: 20px; font-size: 16px; line-height: 1.5; }
+.teach-panel .row { justify-content: flex-start; flex-wrap: wrap; gap: 8px; }
+.teach-panel .btn { font-size: 15px; padding: 8px 12px; }
+.guide-tabs { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.guide-tabs .btn { padding: 6px 0; font-size: 18px; color: #c8281e; }
+.guide-tabs .btn.on { background: #e0483e; color: #fff; }
+.teach-result { z-index: 5; }
+.lesson-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-height: 56vh; overflow-y: auto; }
+.lesson-btn { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; font-size: 13px; line-height: 1.25; }
+.lesson-btn b { font-size: 22px; }
+.lesson-btn.passed { background: #c9f0b8; }
+.lesson-btn.passed b::after { content: ' ✓'; color: #2f8f3a; }
+@media (max-aspect-ratio: 1/1) {
+  .teach-panel { left: 50%; transform: translateX(-50%); }
+  .hud[data-mode="lesson"] .turn, .hud[data-mode="guide"] .turn { display: none; }
+}
+.bar { flex-wrap: wrap; justify-content: flex-end; max-width: calc(100vw - 24px); }
+.btn { white-space: nowrap; }
+@media (max-width: 600px) {
+  .bar { gap: 6px; }
+  .bar .btn { font-size: 14px; padding: 7px 10px; border-width: 2px; box-shadow: 0 2px 0 #4a3426; }
+}

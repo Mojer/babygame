@@ -3,7 +3,10 @@ import { AiClient } from '../ai/client'
 import type { Level } from '../ai/search'
 import { Match } from '../rules/match'
 import { type Move, isInCheck } from '../rules/moves'
-import type { Side } from '../rules/position'
+import { type Side, squareIndex, toFen } from '../rules/position'
+import { LessonRun, type StepResult } from '../teach/lessonRun'
+import type { Lesson } from '../teach/lessons'
+import type { GuideEntry } from '../teach/guide'
 import { Board, squareToWorld, worldToSquare } from '../render/board'
 import { PieceView } from '../render/pieces'
 import type { Stage } from '../render/stage'
@@ -11,14 +14,30 @@ import type { Hud } from '../ui/hud'
 import type { VfxManager } from '../vfx/vfx'
 import { BattleCutscene, type CutsceneMode, attackStyle, wantsCutscene } from './cutscene'
 
-export type GameSettings = { mode: 'hotseat' } | { mode: 'ai'; level: Level; human: Side }
+export type Assist = Record<Side, boolean>
+
+export type GameSettings =
+  | { mode: 'hotseat'; assist: Assist }
+  | { mode: 'ai'; level: Level; human: Side; assist: Assist }
+  | { mode: 'lesson'; lesson: Lesson }
+  | { mode: 'guide'; entry: GuideEntry }
+
+export type PlayMode = GameSettings['mode']
+
+export interface TeachHooks {
+  lessonStep(result: StepResult, run: LessonRun): void
+}
+
+const FULL_ASSIST: Assist = { red: true, black: true }
 
 export class GameController {
   private match = new Match()
-  private settings: GameSettings = { mode: 'hotseat' }
+  private settings: GameSettings = { mode: 'hotseat', assist: FULL_ASSIST }
+  private lesson: LessonRun | null = null
   private readonly views = new Map<number, PieceView>()
   private readonly pieceLayer = new THREE.Group()
   private selected: number | null = null
+  private hintMove: Move | null = null
   private busy = false
   private thinking = false
   /** bumped on restart/undo so in-flight animations and AI answers are discarded */
@@ -28,6 +47,7 @@ export class GameController {
   private readonly ground = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)
   private readonly cutscene: BattleCutscene
   cutsceneMode: CutsceneMode = 'all'
+  teach: TeachHooks | null = null
 
   constructor(
     private readonly stage: Stage,
@@ -45,22 +65,72 @@ export class GameController {
     this.rebuild()
   }
 
+  get lessonRun(): LessonRun | null {
+    return this.lesson
+  }
+
+  get mode(): PlayMode {
+    return this.settings.mode
+  }
+
   newGame(settings: GameSettings): void {
     this.settings = settings
     if (settings.mode === 'ai' && !this.ai) this.ai = new AiClient()
-    this.stage.setView(settings.mode === 'ai' ? settings.human : 'top')
+    this.lesson = settings.mode === 'lesson' ? new LessonRun(settings.lesson) : null
+    this.hud.setMode(settings.mode)
+    this.stage.setView(settings.mode === 'ai' ? settings.human : settings.mode === 'hotseat' ? 'top' : 'red')
     this.restart()
   }
 
   restart(): void {
-    this.reset(new Match())
+    const s = this.settings
+    if (s.mode === 'lesson') {
+      this.lesson!.restart()
+      this.reset(new Match(s.lesson.fen))
+    } else if (s.mode === 'guide') {
+      this.reset(new Match(s.entry.fen))
+      this.selected = squareIndex(s.entry.focus)
+      this.refresh()
+    } else {
+      this.reset(new Match())
+    }
   }
 
   undo(): void {
+    if (this.mode === 'lesson' || this.mode === 'guide') return
     if (!this.match.history.length || (this.busy && !this.thinking)) return
     do this.match.undo()
     while (this.match.history.length && !this.isHumanTurn())
     this.reset(this.match)
+  }
+
+  /** Whether the side to move may see legal-move dots and ask for a hint. */
+  assistOn(): boolean {
+    const s = this.settings
+    if (s.mode === 'lesson' || s.mode === 'guide') return true
+    return s.assist[this.match.position.turn]
+  }
+
+  /** Highlight a suggested move: from the lesson solution, or from the computer. */
+  async hint(): Promise<void> {
+    if (this.busy || !this.assistOn() || !this.isHumanTurn() || this.match.status.kind !== 'ongoing') return
+    if (this.lesson) {
+      this.showHint(this.lesson.hint())
+      return
+    }
+    if (!this.ai) this.ai = new AiClient()
+    const gen = this.generation
+    this.busy = true
+    const move = await this.ai.think(this.match.position, 'normal', this.match.repeatedPositions(), 0)
+    if (gen !== this.generation) return
+    this.busy = false
+    this.showHint(move)
+  }
+
+  private showHint(move: Move | null): void {
+    this.hintMove = move
+    this.selected = move ? move.from : null
+    this.refresh()
   }
 
   private reset(match: Match): void {
@@ -75,7 +145,7 @@ export class GameController {
   }
 
   private isHumanTurn(): boolean {
-    return this.settings.mode === 'hotseat' || this.match.position.turn === this.settings.human
+    return this.settings.mode !== 'ai' || this.match.position.turn === this.settings.human
   }
 
   private async maybeAiTurn(): Promise<void> {
@@ -93,6 +163,7 @@ export class GameController {
     this.cutscene.skip()
     this.vfx.clearCheck()
     this.selected = null
+    this.hintMove = null
     for (const v of this.views.values()) this.pieceLayer.remove(v.root)
     this.views.clear()
     this.match.position.board.forEach((piece, square) => {
@@ -108,17 +179,18 @@ export class GameController {
   private refresh(): void {
     const pos = this.match.position
     const targets =
-      this.selected === null
+      this.selected === null || !this.assistOn()
         ? []
         : this.match
             .legalMoves()
             .filter((m) => m.from === this.selected)
             .map((m) => ({ square: m.to, capture: !!pos.board[m.to] }))
-    this.board.showMarkers(this.selected, targets, this.match.history.at(-1))
+    this.board.showMarkers(this.selected, targets, this.match.history.at(-1), this.hintMove)
     for (const [sq, v] of this.views) v.setSelected(sq === this.selected)
   }
 
   private updateHud(): void {
+    if (this.mode === 'lesson' || this.mode === 'guide') return
     const pos = this.match.position
     const ai = this.settings.mode === 'ai' ? { human: this.settings.human, thinking: this.thinking } : null
     this.hud.update({
@@ -126,6 +198,7 @@ export class GameController {
       status: this.match.status,
       inCheck: isInCheck(pos, pos.turn),
       canUndo: this.match.history.length > 0 && !(ai && this.match.history.length === 1 && ai.human === 'black'),
+      canHint: this.assistOn() && this.isHumanTurn() && !this.busy,
       ai,
     })
   }
@@ -135,6 +208,7 @@ export class GameController {
     const pos = this.match.position
     const piece = pos.board[square]
     if (piece && piece.side === pos.turn) {
+      this.hintMove = null
       this.selected = this.selected === square ? null : square
       this.refresh()
       return
@@ -142,6 +216,8 @@ export class GameController {
     if (this.selected === null) return
     const move = this.match.legalMoves().find((m) => m.from === this.selected && m.to === square)
     if (!move) {
+      if (this.mode === 'guide') return
+      this.hintMove = null
       this.selected = null
       this.refresh()
       return
@@ -156,6 +232,7 @@ export class GameController {
     const victim = this.views.get(move.to)
     this.match.play(move)
     this.selected = null
+    this.hintMove = null
     this.refresh()
     const status = this.match.status
     const mating = status.kind === 'checkmate'
@@ -186,13 +263,32 @@ export class GameController {
     this.views.delete(move.from)
     this.views.set(move.to, mover)
     this.busy = false
+    this.afterTeachMove(move)
     this.showCheck()
     this.updateHud()
     void this.maybeAiTurn()
   }
 
+  /** Lessons and the guide keep the learner on the move: black never answers. */
+  private afterTeachMove(move: Move): void {
+    if (this.mode === 'guide') {
+      this.match = new Match(toFen({ ...this.match.position, turn: 'red' }))
+      this.selected = move.to
+      this.refresh()
+    } else if (this.lesson) {
+      const result = this.lesson.play(move)
+      if (result === 'continue') this.match = new Match(toFen(this.lesson.position))
+      this.refresh()
+      this.teach?.lessonStep(result, this.lesson)
+    }
+  }
+
   private showCheck(): void {
     const pos = this.match.position
+    if (this.mode === 'lesson' || this.mode === 'guide') {
+      this.vfx.clearCheck()
+      return
+    }
     if (this.match.status.kind !== 'ongoing' || !isInCheck(pos, pos.turn)) {
       this.vfx.clearCheck()
       return
