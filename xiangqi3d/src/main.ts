@@ -41,13 +41,17 @@ const hud = new Hud(document.body, {
   },
   undo: () => game?.undo(),
   restart: () => game?.restart(),
-  resetView: () => stage.resetView(),
+  cycleView: () => STR.view[stage.cycleView()],
   menu: () => menu?.show(),
 })
 game = new GameController(stage, new Board(), hud, vfx)
 game.cutsceneMode = loadCutsceneMode()
 hud.setCutsceneLabel(STR.cutscene[game.cutsceneMode])
-menu = new Menu(document.body, (settings) => game?.newGame(settings))
+menu = new Menu(document.body, (settings) => {
+  game?.newGame(settings)
+  hud.setViewLabel(STR.view[stage.view])
+})
+hud.setViewLabel(STR.view[stage.view])
 menu.show()
 
 requestAnimationFrame(() => {

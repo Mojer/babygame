@@ -6,7 +6,7 @@ export interface HudActions {
   cycleCutscene(): string
   undo(): void
   restart(): void
-  resetView(): void
+  cycleView(): string
   menu(): void
 }
 
@@ -33,6 +33,7 @@ export class Hud {
     const bar = el('div', 'bar')
     this.undoBtn = button(STR.undo, actions.undo)
     const cutsceneBtn = button('', () => (cutsceneBtn.textContent = actions.cycleCutscene()))
+    const viewBtn = button('', () => (viewBtn.textContent = actions.cycleView()))
     this.skipHint = el('div', 'skip-hint')
     this.skipHint.textContent = STR.skipHint
     bar.append(
@@ -44,7 +45,7 @@ export class Hud {
       button(STR.restart, () => {
         if (confirm(STR.confirmRestart)) actions.restart()
       }),
-      button(STR.resetView, actions.resetView),
+      viewBtn,
     )
     this.overlay = el('div', 'overlay')
     this.overlay.addEventListener('click', (e) => {
@@ -55,9 +56,11 @@ export class Hud {
     root.append(this.turn, this.toast, this.skipHint, bar, this.overlay)
     parent.append(root)
     this.setCutsceneLabel = (label) => (cutsceneBtn.textContent = label)
+    this.setViewLabel = (label) => (viewBtn.textContent = label)
   }
 
   readonly setCutsceneLabel: (label: string) => void
+  readonly setViewLabel: (label: string) => void
 
   showSkipHint(on: boolean): void {
     this.skipHint.classList.toggle('show', on)

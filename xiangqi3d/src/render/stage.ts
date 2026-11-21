@@ -8,6 +8,25 @@ import createImpactFramePass, { type ImpactFramePass } from '../vfx/vendor/effec
 
 const MASK_LAYER = 5
 
+/**
+ * Interpolate a camera offset around its look-at point on a sphere (radius, height angle,
+ * azimuth via the shorter way round), so switching sides orbits the board instead of
+ * cutting straight through the point above it, where lookAt flips the view.
+ */
+function orbitLerp(from: THREE.Vector3, to: THREE.Vector3, k: number): THREE.Vector3 {
+  const a = new THREE.Spherical().setFromVector3(from)
+  const b = new THREE.Spherical().setFromVector3(to)
+  let dTheta = b.theta - a.theta
+  if (dTheta > Math.PI) dTheta -= Math.PI * 2
+  if (dTheta < -Math.PI) dTheta += Math.PI * 2
+  const out = new THREE.Spherical(
+    THREE.MathUtils.lerp(a.radius, b.radius, k),
+    Math.max(1e-4, THREE.MathUtils.lerp(a.phi, b.phi, k)),
+    a.theta + dTheta * k,
+  )
+  return new THREE.Vector3().setFromSpherical(out)
+}
+
 export type ViewPreset = 'top' | 'red' | 'black'
 
 const VIEWS: Record<ViewPreset, THREE.Vector3> = {
@@ -58,6 +77,8 @@ export class Stage {
   private tween: CameraTween | null = null
   private readonly look = new THREE.Vector3()
   private cinematic = false
+  /** where the camera was before a cutscene, so it can fly back to the player's own framing */
+  private beforeCinematic: { pos: THREE.Vector3; look: THREE.Vector3 } | null = null
   private shakeAmount = 0
   private impactCenter: THREE.Vector3 | null = null
   private impactSubjects: THREE.Object3D[] = []
@@ -115,9 +136,23 @@ export class Stage {
     return () => this.tickers.delete(fn)
   }
 
+  get view(): ViewPreset {
+    return this.preset
+  }
+
+  /** Step through top → red → black and return the new preset. */
+  cycleView(): ViewPreset {
+    const order: ViewPreset[] = ['top', 'red', 'black']
+    this.setView(order[(order.indexOf(this.preset) + 1) % order.length])
+    return this.preset
+  }
+
   setView(preset: ViewPreset, animate = true): void {
     this.preset = preset
-    if (this.cinematic) return
+    if (this.cinematic) {
+      this.beforeCinematic = { pos: this.fittedView(preset), look: new THREE.Vector3() }
+      return
+    }
     const to = this.fittedView(preset)
     if (!animate) {
       this.tween = null
@@ -126,16 +161,15 @@ export class Stage {
       this.controls.update()
       return
     }
-    this.moveCamera(to, new THREE.Vector3(), 0.6)
-  }
-
-  resetView(): void {
-    this.setView(this.preset)
+    this.moveCamera(to, new THREE.Vector3(), 0.9)
   }
 
   // ---------- cinematic camera (battle cutscenes) ----------
 
   beginCinematic(): void {
+    this.beforeCinematic = this.tween
+      ? { pos: this.tween.toPos.clone(), look: this.tween.toLook.clone() }
+      : { pos: this.camera.position.clone(), look: this.controls.target.clone() }
     this.cinematic = true
     this.controls.enabled = false
   }
@@ -148,7 +182,9 @@ export class Stage {
   endCinematic(dur = 0.45): void {
     if (!this.cinematic) return
     this.cinematic = false
-    this.moveCamera(this.fittedView(this.preset), new THREE.Vector3(), dur, () => {
+    const back = this.beforeCinematic ?? { pos: this.fittedView(this.preset), look: new THREE.Vector3() }
+    this.beforeCinematic = null
+    this.moveCamera(back.pos, back.look, dur, () => {
       this.controls.enabled = true
     })
   }
@@ -265,9 +301,9 @@ export class Stage {
     if (this.tween) {
       const tw = this.tween
       tw.t = Math.min(1, tw.t + dt / tw.dur)
-      const k = 1 - Math.pow(1 - tw.t, 3)
-      this.camera.position.lerpVectors(tw.fromPos, tw.toPos, k)
+      const k = tw.t < 0.5 ? 4 * tw.t ** 3 : 1 - Math.pow(-2 * tw.t + 2, 3) / 2
       this.look.lerpVectors(tw.fromLook, tw.toLook, k)
+      this.camera.position.copy(this.look).add(orbitLerp(tw.fromPos.clone().sub(tw.fromLook), tw.toPos.clone().sub(tw.toLook), k))
       this.camera.lookAt(this.look)
       if (tw.t >= 1) {
         this.tween = null

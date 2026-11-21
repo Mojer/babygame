@@ -26,7 +26,7 @@ export const STR = {
   check: '將軍！',
   undo: '悔棋',
   restart: '重新開始',
-  resetView: '視角',
+  view: { top: '視角：俯視', red: '視角：紅方', black: '視角：黑方' } as const,
   playAgain: '再來一局',
   confirmRestart: '確定要重新開始這一局嗎？',
   confirmMenu: '要離開這一局回到選單嗎？',
