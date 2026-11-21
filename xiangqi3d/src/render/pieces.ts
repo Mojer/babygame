@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import type { Piece, PieceKind, Side } from '../rules/position'
 import { GRASS_TOP } from './board'
+import { type ModelPart, type Role, modelParts } from './models'
 import { mesh, toon, withoutOutline } from './toon'
 
 const NAMES: Record<Side, Record<PieceKind, string>> = {
@@ -295,6 +296,55 @@ const BUILDERS: Record<PieceKind, (p: Palette) => THREE.Group> = {
   pawn: buildPawn,
 }
 
+// ---------- Blender figures ----------
+
+const flatCache = new Map<number, THREE.MeshBasicMaterial>()
+
+/** Unlit and outline-free, for blush and eye highlights. */
+function flat(color: number): THREE.MeshBasicMaterial {
+  let m = flatCache.get(color)
+  if (!m) {
+    m = withoutOutline(new THREE.MeshBasicMaterial({ color }))
+    flatCache.set(color, m)
+  }
+  return m
+}
+
+function roleMaterial(role: Role, side: Side): THREE.Material {
+  const p = PALETTE[side]
+  switch (role) {
+    case 'main': return toon(p.main)
+    case 'trim': return toon(p.trim)
+    case 'plume': return toon(p.plume)
+    case 'skin': return toon(SKIN)
+    case 'hair': return toon(0x4a3428)
+    case 'dark': return toon(DARK)
+    case 'wood': return toon(WOOD)
+    case 'metal': return toon(0x5b6270)
+    case 'grey': return toon(0xb6c2cf)
+    case 'coat': return toon(0xf3dcb0)
+    case 'snout': return toon(0xffeedd)
+    case 'pink': return toon(0xf1b6c0)
+    case 'white': return toon(0xfbf8f0)
+    case 'gem': return toon(side === 'red' ? 0xff3355 : 0x6fd3ff)
+    case 'fuse': return toon(0xffb02e)
+    case 'cheek': return flat(0xff9aa2)
+    case 'eyehi': return flat(0xffffff)
+  }
+}
+
+function buildFromModel(parts: ModelPart[], side: Side): THREE.Group {
+  const root = new THREE.Group()
+  for (const part of parts) {
+    const m = new THREE.Mesh(part.geometry, roleMaterial(part.role, side))
+    const tiny = part.role === 'cheek' || part.role === 'eyehi'
+    m.castShadow = !tiny
+    m.receiveShadow = !tiny
+    root.add(m)
+  }
+  return root
+}
+
 // ---------- piece view ----------
 
 export class PieceView {
@@ -328,7 +378,8 @@ export class PieceView {
     label.receiveShadow = true
     this.lift.add(label)
 
-    this.figure = BUILDERS[piece.kind](p)
+    const parts = modelParts(piece.kind)
+    this.figure = parts ? buildFromModel(parts, piece.side) : BUILDERS[piece.kind](p)
     this.figure.scale.setScalar(0.85)
     this.figure.position.set(0, BASE_TOP, -owner * 0.17)
     this.figure.rotation.y = piece.side === 'red' ? Math.PI : 0

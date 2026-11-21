@@ -1,4 +1,5 @@
 import { Board } from './render/board'
+import { loadPieceModels } from './render/models'
 import { Stage } from './render/stage'
 import { FpsWatch, type QualityMode, looksLowEnd } from './render/quality'
 import { type GameSettings, GameController } from './game/controller'
@@ -12,6 +13,8 @@ import { STR } from './ui/strings'
 import { TeachPanel } from './ui/teach'
 import { LESSONS } from './teach/lessons'
 import { VfxManager } from './vfx/vfx'
+
+const modelsReady = loadPieceModels()
 
 // ---------- persisted preferences ----------
 
@@ -86,6 +89,7 @@ const hud = new Hud(document.body, {
   },
 })
 
+await modelsReady
 game = new GameController(stage, new Board(), hud, vfx)
 // low-end devices default to fewer cutscenes unless the player already chose
 game.cutsceneMode = prefs.cutscene ?? (lowEndGuess ? 'major' : 'all')
