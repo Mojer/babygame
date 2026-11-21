@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 import type { SceneVfx } from './vendor/vfx-asset'
 import type { HyperdimensionalSoulFireballVFX } from './vendor/effect-flame-magic-bolt.js'
+import type { WeaponSmearVfx } from './vendor/effect-weapon-smear.js'
+import type { PieceKind } from '../rules/position'
 import { NO_OUTLINE } from '../render/toon'
 
 export type AttackStyle = 'melee' | 'charge' | 'ranged'
@@ -10,7 +12,10 @@ type Factory = (o?: Record<string, unknown>) => SceneVfx
 type BoltClass = typeof HyperdimensionalSoulFireballVFX
 
 interface Factories {
-  slash: Factory
+  sweep: Factory
+  swordWave: Factory
+  dust: Factory
+  smear: (o?: Record<string, unknown>) => WeaponSmearVfx
   fire: Factory
   mate: Factory
   circle: Factory
@@ -29,15 +34,21 @@ const BOLT_SCALE = 0.45
 
 /** The effect modules are large, so they load after the menu is up instead of blocking startup. */
 async function loadFactories(): Promise<Factories> {
-  const [slash, fire, mate, circle, bolt] = await Promise.all([
-    import('./vendor/effect-dimensional-rend.js'),
+  const [sweep, swordWave, dust, smear, fire, mate, circle, bolt] = await Promise.all([
+    import('./vendor/effect-azure-sweep.js'),
+    import('./vendor/effect-energy-sword-wave.js'),
+    import('./vendor/effect-shockwave.js'),
+    import('./vendor/effect-weapon-smear.js'),
     import('./vendor/effect-fire-explosion.js'),
     import('./vendor/effect-astral-convergence.js'),
     import('./vendor/effect-spell-indicator-circle.js'),
     import('./vendor/effect-flame-magic-bolt.js'),
   ])
   return {
-    slash: slash.default,
+    sweep: sweep.default,
+    swordWave: swordWave.default,
+    dust: dust.default,
+    smear: smear.default,
     fire: fire.default,
     mate: mate.default,
     circle: circle.default,
@@ -65,6 +76,8 @@ export class VfxManager {
   private rolling: Factory | null = null
   private camera: THREE.Camera | null = null
   private readonly boltRoot = new THREE.Group()
+  /** Invisible spear pivots swung each frame so the weapon-smear trail has something to follow. */
+  private readonly swings = new Set<{ pivot: THREE.Object3D; fx: WeaponSmearVfx; t: number; yaw: number }>()
 
   constructor(private readonly renderer: THREE.WebGLRenderer) {
     this.boltRoot.scale.setScalar(BOLT_SCALE)
@@ -88,30 +101,69 @@ export class VfxManager {
     return fx
   }
 
-  private spawn(style: AttackStyle, scale: number): SceneVfx {
+  /** Point bursts that only need a position; the directional ones are handled in capture(). */
+  private spawn(kind: PieceKind, scale: number): SceneVfx {
     const f = this.factories!
     const low = this.quality === 'low'
-    if (style === 'melee') {
-      return f.slash({
-        size: 0.55 * scale,
-        density: low ? 0.12 : 0.3,
-        quantity: low ? 8 : 14,
-        panelCount: low ? 0 : 6,
-        spread: 1.2,
-        speed: 1.2,
-        color: '#8fb4ff',
-      })
+    const density = low ? 0.2 : 0.5
+    switch (kind) {
+      case 'king':
+      case 'advisor':
+        return f.sweep({ size: 0.42 * scale, density, speed: 1.1, color: kind === 'king' ? '#ffcf4a' : '#5a9bff' })
+      case 'elephant':
+        // the default sand colour vanishes on the grass; a darker, bigger cloud reads as a stomp
+        return f.dust({ size: Math.min(2, 0.9 * scale), density: low ? 0.5 : 1, detail: 2, speed: 1.1, color: '#8a5a2b' })
+      case 'rook':
+        if (this.rolling) return this.rolling({ size: 0.42 * scale, speed: 1.15 })
+        return f.fire({ size: 0.4 * scale, density, speed: 1.15, color: '#ff7a26' })
+      default:
+        return f.fire({ size: 0.4 * scale, density, speed: 1.15, color: '#ff7a26' })
     }
-    if (style === 'charge' && this.rolling) return this.rolling({ size: 0.42 * scale, speed: 1.15 })
-    return f.fire({ size: 0.4 * scale, density: low ? 0.2 : 0.5, speed: 1.15, color: '#ff7a26' })
   }
 
-  /** Capture burst at a world point; `scale` 1 is a board-sized pop, larger for cutscenes. */
-  burst(style: AttackStyle, at: THREE.Vector3, scale = 1): void {
+  /**
+   * Capture effect for the attacking piece kind at the victim's square; `dir` is the
+   * attack direction on the board and `scale` 1 is a board-sized pop, larger in cutscenes.
+   */
+  capture(kind: PieceKind, at: THREE.Vector3, dir: THREE.Vector3, scale = 1): void {
     if (!this.factories) return
-    const fx = this.add(this.spawn(style, scale))
+    const flat = dir.clone().setY(0)
+    if (flat.lengthSq() < 1e-6) flat.set(0, 0, 1)
+    flat.normalize()
+    if (kind === 'pawn') return this.spearSwing(at, flat, scale)
+    if (kind === 'horse') {
+      // crescent waves launched from just behind the victim, flying along the attack
+      const fx = this.add(
+        this.factories.swordWave({ size: 0.25, quantity: this.quality === 'low' ? 1 : 3, spread: 0.45, speed: 1.3, theme: 'azure' }),
+      )
+      // size bottoms out at 0.25, still several squares wide, so shrink the object itself
+      fx.group.scale.setScalar(0.45 * scale)
+      fx.group.position.copy(at).addScaledVector(flat, -0.6 * scale)
+      fx.group.rotation.y = Math.atan2(flat.x, flat.z)
+      return
+    }
+    const fx = this.add(this.spawn(kind, scale))
     fx.group.position.copy(at)
     fx.hit?.(at.clone())
+  }
+
+  /** A pawn's spear slash: an invisible blade swept across the victim drives the smear trail. */
+  private spearSwing(at: THREE.Vector3, dir: THREE.Vector3, scale: number): void {
+    const f = this.factories!
+    const pivot = new THREE.Object3D()
+    pivot.position.copy(at).addScaledVector(dir, -0.45 * scale)
+    pivot.position.y += 0.45 * scale
+    pivot.rotation.order = 'YXZ'
+    const yaw = Math.atan2(dir.x, dir.z) - Math.PI / 2
+    pivot.rotation.set(0, yaw - 1.1, 0.45)
+    this.root.add(pivot)
+    pivot.updateMatrixWorld(true)
+    // detail is the trail brightness; the default is too faint against the sunny board
+    const fx = f.smear({ size: 1, speed: 0.6, detail: 2, density: this.quality === 'low' ? 0.4 : 1, color: '#5aa0ff' })
+    fx.attachWeapon(pivot, { base: [0.15 * scale, 0, 0], tip: [0.85 * scale, 0, 0] })
+    fx.reset()
+    this.add(fx)
+    this.swings.add({ pivot, fx, t: 0, yaw })
   }
 
   /** The checkmate finisher: a star-ring detonation over the fallen king. */
@@ -163,6 +215,18 @@ export class VfxManager {
   }
 
   update(dt: number): void {
+    // move the spear pivots first so the smear samples this frame's blade
+    for (const sw of this.swings) {
+      sw.t = Math.min(1, sw.t + dt / 0.24)
+      const k = 1 - Math.pow(1 - sw.t, 3)
+      sw.pivot.rotation.y = sw.yaw - 1.1 + 2.2 * k
+      sw.pivot.updateMatrixWorld(true)
+      if (sw.t >= 1) {
+        sw.fx.stop()
+        this.root.remove(sw.pivot)
+        this.swings.delete(sw)
+      }
+    }
     for (const fx of this.active) {
       fx.update(dt)
       if (fx.finished) {
@@ -189,6 +253,8 @@ export class VfxManager {
       fx.dispose()
     }
     this.active.clear()
+    for (const sw of this.swings) this.root.remove(sw.pivot)
+    this.swings.clear()
     this.cancelBolts()
     this.checkWarning = null
   }
@@ -197,7 +263,8 @@ export class VfxManager {
   private prewarm(scene: THREE.Scene, camera: THREE.Camera): void {
     const f = this.factories!
     const temp = [
-      ...(['melee', 'ranged'] as const).map((s) => this.spawn(s, 1)),
+      ...(['king', 'elephant', 'cannon'] as const).map((k) => this.spawn(k, 1)),
+      f.swordWave({ size: 0.25 }),
       f.mate({ size: 0.9 }),
       f.circle({ size: 0.6 }),
     ]

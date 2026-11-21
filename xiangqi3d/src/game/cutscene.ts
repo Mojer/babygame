@@ -164,7 +164,7 @@ export class BattleCutscene {
         }
       }
 
-      this.strike(attacker, victim, style, to, mating)
+      this.strike(attacker, victim, style, to, dir, mating)
       const fling = dir.clone().multiplyScalar(1.6).add(new THREE.Vector3(0, 0, 0))
       await this.animate(0.42, (k) => {
         victim.root.position.copy(to).addScaledVector(fling, easeOut(k))
@@ -190,7 +190,7 @@ export class BattleCutscene {
     void fromSquare
     return this.framed(squareToWorld(toSquare), kingPos, async () => {
       await this.wait(0.15)
-      this.strike(attacker, king, 'charge', kingPos, true)
+      this.strike(attacker, king, 'charge', kingPos, kingPos.clone().sub(attacker.root.position), true)
       await this.animate(0.5, (k) => {
         king.root.rotation.z = easeOut(k) * (Math.PI / 2)
         king.root.position.y = GRASS_TOP + Math.sin(k * Math.PI) * 0.4
@@ -200,10 +200,10 @@ export class BattleCutscene {
   }
 
   /** Normal hits stay in full colour; only the checkmate gets the black-and-white comic frame. */
-  private strike(attacker: PieceView, victim: PieceView, style: AttackStyle, at: THREE.Vector3, mating: boolean): void {
+  private strike(attacker: PieceView, victim: PieceView, style: AttackStyle, at: THREE.Vector3, dir: THREE.Vector3, mating: boolean): void {
     sound.play('capture')
     if (this.skipping) {
-      this.vfx.burst(style, at, 1)
+      this.vfx.capture(attacker.piece.kind, at, dir, 1)
       if (mating) this.vfx.mateBurst(at)
       return
     }
@@ -218,6 +218,6 @@ export class BattleCutscene {
       this.stage.hitStop(0.07)
       this.stage.shake(0.25)
     }
-    this.vfx.burst(style, at, 2.2)
+    this.vfx.capture(attacker.piece.kind, at, dir, 2.2)
   }
 }

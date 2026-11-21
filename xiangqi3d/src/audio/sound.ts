@@ -1,5 +1,6 @@
 /**
- * Procedural WebAudio sound effects and a looping pentatonic background tune.
+ * Procedural WebAudio sound effects plus the looping background track; if the track
+ * cannot load, a procedural pentatonic tune plays instead.
  * Nothing plays until the first user gesture unlocks the AudioContext.
  */
 
@@ -31,6 +32,10 @@ const PHRASE_B = [5, -1, 6, 7, 6, -1, 5, 4, 3, -1, 4, 3, 2, 1, 0, -1]
 const BASS = [0, 0, 3, 3, 4, 4, 0, 0]
 const STEP = 0.24
 
+const TRACK_URL = `${import.meta.env.BASE_URL}audio/whitechapel.mp3`
+const TRACK_GAIN = 0.45
+const SYNTH_GAIN = 0.16
+
 class Sound {
   private ctx: AudioContext | null = null
   private master: GainNode | null = null
@@ -40,6 +45,8 @@ class Sound {
   private step = 0
   private nextTime = 0
   private timer = 0
+  private track: HTMLAudioElement | null = null
+  private trackFailed = false
 
   constructor() {
     const unlock = () => {
@@ -50,8 +57,13 @@ class Sound {
     window.addEventListener('keydown', unlock)
     document.addEventListener('visibilitychange', () => {
       if (!this.ctx) return
-      if (document.hidden) void this.ctx.suspend()
-      else void this.ctx.resume()
+      if (document.hidden) {
+        void this.ctx.suspend()
+        this.track?.pause()
+      } else {
+        void this.ctx.resume()
+        this.syncTrack()
+      }
     })
   }
 
@@ -71,7 +83,34 @@ class Sound {
   setMusic(on: boolean): void {
     this.prefs.music = on
     this.save()
-    if (this.musicBus && this.ctx) this.musicBus.gain.setTargetAtTime(on ? 0.16 : 0, this.ctx.currentTime, 0.2)
+    if (this.musicBus && this.ctx) this.musicBus.gain.setTargetAtTime(on ? this.musicGain() : 0, this.ctx.currentTime, 0.2)
+    this.syncTrack()
+  }
+
+  private musicGain(): number {
+    return this.trackFailed ? SYNTH_GAIN : TRACK_GAIN
+  }
+
+  /** Streams the mp3 through the music bus so the music toggle and volume apply to it. */
+  private startTrack(ctx: AudioContext): void {
+    const el = new Audio(TRACK_URL)
+    el.loop = true
+    el.preload = 'auto'
+    el.addEventListener('error', () => {
+      this.trackFailed = true
+      this.track = null
+      if (this.musicBus) this.musicBus.gain.value = this.prefs.music ? SYNTH_GAIN : 0
+    })
+    ctx.createMediaElementSource(el).connect(this.musicBus!)
+    this.track = el
+    this.syncTrack()
+  }
+
+  private syncTrack(): void {
+    const el = this.track
+    if (!el) return
+    if (this.prefs.music && !document.hidden) void el.play().catch(() => {})
+    else el.pause()
   }
 
   private save(): void {
@@ -91,8 +130,9 @@ class Sound {
     this.master.gain.value = 0.7
     this.master.connect(ctx.destination)
     this.musicBus = ctx.createGain()
-    this.musicBus.gain.value = this.prefs.music ? 0.16 : 0
+    this.musicBus.gain.value = this.prefs.music ? TRACK_GAIN : 0
     this.musicBus.connect(this.master)
+    this.startTrack(ctx)
     const len = ctx.sampleRate * 0.5
     this.noise = ctx.createBuffer(1, len, ctx.sampleRate)
     const data = this.noise.getChannelData(0)
@@ -201,7 +241,7 @@ class Sound {
       const bar = Math.floor(this.step / 16) % 4
       const phrase = bar === 2 ? PHRASE_B : PHRASE_A
       const note = phrase[this.step % 16]
-      if (this.prefs.music) {
+      if (this.prefs.music && this.trackFailed) {
         if (note >= 0) this.pluck(midi(SCALE[note] + 12), this.nextTime, 0.32)
         if (this.step % 2 === 0) {
           const bass = BASS[(this.step / 2) % BASS.length]
@@ -215,6 +255,7 @@ class Sound {
 
   dispose(): void {
     clearInterval(this.timer)
+    this.track?.pause()
     void this.ctx?.close()
   }
 }

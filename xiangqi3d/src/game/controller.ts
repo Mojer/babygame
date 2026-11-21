@@ -14,7 +14,7 @@ import type { Hud } from '../ui/hud'
 import type { VfxManager } from '../vfx/vfx'
 import { sound } from '../audio/sound'
 import type { SavedMatch } from './save'
-import { BattleCutscene, type CutsceneMode, attackStyle, wantsCutscene } from './cutscene'
+import { BattleCutscene, type CutsceneMode, wantsCutscene } from './cutscene'
 
 export type Assist = Record<Side, boolean>
 
@@ -278,7 +278,7 @@ export class GameController {
         await mover.moveTo(squareToWorld(move.to))
         if (gen !== this.generation) return
         sound.play('capture')
-        this.vfx.burst(attackStyle(mover.piece.kind), squareToWorld(move.to), 1)
+        this.vfx.capture(mover.piece.kind, squareToWorld(move.to), squareToWorld(move.to).sub(squareToWorld(move.from)), 1)
         await victim.die()
       }
       if (gen !== this.generation) return

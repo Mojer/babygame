@@ -1,0 +1,26 @@
+{
+  "kind": "effect",
+  "id": "weapon-smear",
+  "origin": "https://00gamedevs.com",
+  "schemaVersion": 2,
+  "integrationType": "scene-object",
+  "contentVersion": "a1b0aff06de586e4fd9afdabb314177f2d6ce9049b890ac6cf7f727b1c14ca34",
+  "sha256": "dccd1ee0a102d4ee93efe50ea5cd0545423eb59fcccdada0d04590ebc7fa3adb",
+  "methods": [
+    "update",
+    "stop",
+    "hit",
+    "reset",
+    "dispose",
+    "setOptions",
+    "attachWeapon",
+    "detachWeapon"
+  ],
+  "defaultOptions": {
+    "color": "#2878ff",
+    "size": 1,
+    "density": 0.5,
+    "speed": 1,
+    "detail": 1
+  }
+}
