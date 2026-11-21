@@ -27,3 +27,20 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe6ff; tou
   box-shadow: 0 6px 0 #4a3426; color: #4a3426; }
 .card h2 { margin: 0 0 6px; font-size: 44px; }
 .card p { margin: 0 0 18px; font-size: 20px; }
+.turn.thinking { animation: breathe 1s ease-in-out infinite alternate; }
+@keyframes breathe { from { opacity: 1 } to { opacity: .6 } }
+.row { display: flex; gap: 12px; justify-content: center; }
+.menu { position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+  background: rgba(191, 230, 255, .55); backdrop-filter: blur(3px); }
+.menu.show { display: flex; }
+.menu-card { background: #fff6e2; border: 4px solid #4a3426; border-radius: 28px; box-shadow: 0 7px 0 #4a3426;
+  padding: 26px 30px; width: min(420px, calc(100vw - 32px)); box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; color: #4a3426; }
+.menu-title { margin: 0 0 4px; text-align: center; font-size: 40px; color: #e0483e; -webkit-text-stroke: 1.5px #4a3426; }
+.btn.big { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 14px; font-size: 24px; }
+.btn.big small { font-size: 14px; font-weight: 600; opacity: .7; }
+.btn.primary { background: #ffdf4a; }
+.field-label { font-weight: 800; margin-bottom: 6px; }
+.seg { display: flex; gap: 8px; }
+.seg .btn { flex: 1; padding: 10px 6px; font-size: 16px; }
+.seg .btn.on { background: #e0483e; color: #fff; }
+.turn:empty { display: none; }

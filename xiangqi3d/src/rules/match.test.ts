@@ -52,4 +52,12 @@ describe('Match', () => {
     playAll(match, 'h8h9 e9e8 h9h8 e8e9 h8h9 e9e8 h9h8 e8e9')
     expect(match.status).toEqual({ kind: 'perpetual-check', winner: 'black' })
   })
+
+  it('reports positions that have already occurred twice', () => {
+    const match = new Match('3k4r/9/9/9/9/9/9/9/9/R3K4 w')
+    playAll(match, 'a0a1 i9i8 a1a0')
+    expect([...match.repeatedPositions()]).toEqual([])
+    match.play('i8i9')
+    expect([...match.repeatedPositions()]).toEqual(['3k4r/9/9/9/9/9/9/9/9/R3K4 w'])
+  })
 })

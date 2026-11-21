@@ -42,6 +42,13 @@ export class Match {
     return this.plies.map((p) => p.move)
   }
 
+  /** Positions seen twice so far; reaching one again triggers the repetition rules. */
+  repeatedPositions(): Set<string> {
+    const counts = new Map<string, number>()
+    for (const k of [toFen(this.start), ...this.plies.map((p) => p.key)]) counts.set(k, (counts.get(k) ?? 0) + 1)
+    return new Set([...counts].filter(([, n]) => n >= REPETITION_LIMIT - 1).map(([k]) => k))
+  }
+
   legalMoves(): Move[] {
     return this.cachedStatus.kind === 'ongoing' ? legalMoves(this.position) : []
   }

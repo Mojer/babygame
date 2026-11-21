@@ -114,26 +114,54 @@ export function applyMove(pos: Position, move: Move): Position {
 }
 
 function kingSquare(pos: Position, side: Side): number {
-  return pos.board.findIndex((p) => p?.kind === 'king' && p.side === side)
+  for (let i = 0; i < pos.board.length; i++) {
+    const p = pos.board[i]
+    if (p && p.kind === 'king' && p.side === side) return i
+  }
+  return -1
 }
 
-function kingsFace(pos: Position): boolean {
-  const red = kingSquare(pos, 'red')
-  const black = kingSquare(pos, 'black')
-  if (red < 0 || black < 0 || fileOf(red) !== fileOf(black)) return false
-  for (let i = red + FILES; i < black; i += FILES) if (pos.board[i]) return false
-  return true
-}
-
+/** Looks outward from the king for every way an enemy piece (or the facing king) could reach it. */
 export function isInCheck(pos: Position, side: Side): boolean {
   const king = kingSquare(pos, side)
   if (king < 0) return false
-  if (kingsFace(pos)) return true
-  const attacks: Move[] = []
-  pos.board.forEach((p, i) => {
-    if (p && p.side !== side) pseudoMovesFrom(pos, i, attacks)
-  })
-  return attacks.some((m) => m.to === king)
+  const b = pos.board
+  const kf = fileOf(king)
+  const kr = rankOf(king)
+  const isEnemy = (file: number, rank: number, kind: string) => {
+    if (!onBoard(file, rank)) return false
+    const p = b[at(file, rank)]
+    return !!p && p.side !== side && p.kind === kind
+  }
+
+  for (const [df, dr] of ORTHOGONAL) {
+    let seen = 0
+    for (let f = kf + df, r = kr + dr; onBoard(f, r); f += df, r += dr) {
+      const p = b[at(f, r)]
+      if (!p) continue
+      seen++
+      if (seen === 1) {
+        if (p.side !== side && (p.kind === 'rook' || (p.kind === 'king' && df === 0))) return true
+      } else {
+        if (p.side !== side && p.kind === 'cannon') return true
+        break
+      }
+    }
+  }
+
+  for (const [df, dr] of [[1, 2], [-1, 2], [1, -2], [-1, -2], [2, 1], [2, -1], [-2, 1], [-2, -1]] as const) {
+    if (!isEnemy(kf + df, kr + dr, 'horse')) continue
+    const legF = Math.abs(df) === 2 ? kf + df - Math.sign(df) : kf + df
+    const legR = Math.abs(dr) === 2 ? kr + dr - Math.sign(dr) : kr + dr
+    if (!b[at(legF, legR)]) return true
+  }
+
+  const enemy: Side = side === 'red' ? 'black' : 'red'
+  if (isEnemy(kf, kr - forward(enemy), 'pawn')) return true
+  for (const df of [-1, 1]) {
+    if (isEnemy(kf + df, kr, 'pawn') && !onOwnSide(enemy, kr)) return true
+  }
+  return false
 }
 
 export function legalMoves(pos: Position): Move[] {
