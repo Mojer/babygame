@@ -5,6 +5,7 @@ import { GUIDE } from '../teach/guide'
 import { LESSONS } from '../teach/lessons'
 import { loadPassed } from '../teach/progress'
 import { button, el } from './hud'
+import { titleLogo } from './logo'
 import { STR } from './strings'
 import type { SavedMatch } from '../game/save'
 
@@ -40,11 +41,19 @@ export class Menu {
     this.onStart(s)
   }
 
-  private card(title: string, ...children: HTMLElement[]): void {
+  /** The main screen gets the logo; sub-screens get a plain heading. */
+  private card(title: string | HTMLElement, ...children: HTMLElement[]): void {
     const card = el('div', 'menu-card')
-    const h = el('h1', 'menu-title')
-    h.textContent = title
-    card.append(h, ...children)
+    let head: HTMLElement
+    if (typeof title === 'string') {
+      head = el('h1', 'menu-title')
+      head.textContent = title
+    } else {
+      head = title
+      card.classList.add('home')
+    }
+    children.forEach((c, i) => c.style.setProperty('--i', String(i)))
+    card.append(head, ...children)
     this.root.replaceChildren(card)
   }
 
@@ -55,16 +64,16 @@ export class Menu {
           bigChoice(STR.continueGame, STR.continueHint(save.settings.mode === 'ai' ? STR.vsAi : STR.hotseat), () => {
             this.root.classList.remove('show')
             this.onResume(save)
-          }),
+          }, '續', 'gold'),
         ]
       : []
     resume.forEach((b) => b.classList.add('primary'))
     this.card(
-      STR.title,
+      titleLogo(),
       ...resume,
-      bigChoice(STR.hotseat, STR.hotseatHint, () => this.renderHotseat()),
-      bigChoice(STR.vsAi, STR.vsAiHint, () => this.renderAi()),
-      bigChoice(STR.learn, STR.learnHint, () => this.renderLearn()),
+      bigChoice(STR.hotseat, STR.hotseatHint, () => this.renderHotseat(), '帥', 'red'),
+      bigChoice(STR.vsAi, STR.vsAiHint, () => this.renderAi(), '炮', 'black'),
+      bigChoice(STR.learn, STR.learnHint, () => this.renderLearn(), '兵', 'green'),
     )
   }
 
@@ -100,8 +109,8 @@ export class Menu {
     const back = button(STR.back, () => this.renderMain())
     this.card(
       STR.learn,
-      bigChoice(STR.guide, STR.guideHint, () => this.start({ mode: 'guide', entry: GUIDE[0] })),
-      bigChoice(STR.lessons, STR.lessonsHint, () => this.renderLessons()),
+      bigChoice(STR.guide, STR.guideHint, () => this.start({ mode: 'guide', entry: GUIDE[0] }), '傌', 'red'),
+      bigChoice(STR.lessons, STR.lessonsHint, () => this.renderLessons(), '將', 'black'),
       back,
     )
   }
@@ -128,10 +137,14 @@ export class Menu {
   }
 }
 
-function bigChoice(label: string, hint: string, onClick: () => void): HTMLButtonElement {
+type Tone = 'red' | 'black' | 'gold' | 'green'
+
+/** A large menu option with a xiangqi-piece badge on the left. */
+function bigChoice(label: string, hint: string, onClick: () => void, badge: string, tone: Tone): HTMLButtonElement {
   const b = button('', onClick)
   b.classList.add('big')
-  b.innerHTML = `<span>${label}</span><small>${hint}</small>`
+  b.innerHTML = `<span class="piece-ico" data-tone="${tone}" aria-hidden="true">${badge}</span>
+    <span class="big-txt"><span class="big-label">${label}</span><small>${hint}</small></span>`
   return b
 }
 

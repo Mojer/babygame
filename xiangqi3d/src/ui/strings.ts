@@ -4,7 +4,8 @@ import type { MatchStatus } from '../rules/match'
 export const SIDE_NAME: Record<Side, string> = { red: '紅方', black: '黑方' }
 
 export const STR = {
-  title: '3D 象棋',
+  title: 'Q 版象棋王國',
+  tagline: '和家人一起下的 3D 象棋',
   turn: (side: Side) => `${SIDE_NAME[side]}走棋`,
   yourTurn: (side: Side) => `輪到你了（${SIDE_NAME[side]}）`,
   aiThinking: '電腦思考中…',

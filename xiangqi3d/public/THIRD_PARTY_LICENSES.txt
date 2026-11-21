@@ -1,4 +1,4 @@
-Third-party notices for 3D 象棋 (xiangqi3d)
+Third-party notices for Q 版象棋王國 (xiangqi3d)
 
 Visual effects in src/vfx/vendor/ are exported from 00GameDevs (https://00gamedevs.com).
 The notices below are copied verbatim from those files.

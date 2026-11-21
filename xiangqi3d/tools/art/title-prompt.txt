@@ -1,0 +1,10 @@
+Game title logo artwork for a cute kids' 3D Chinese chess (xiangqi) game. Image size 1536x1024, landscape.
+
+The logo text must read exactly, in Traditional Chinese, on one line:  Q版象棋王國
+Characters left to right: "Q" (Latin capital letter), "版", "象", "棋", "王", "國". Render every character correctly and legibly; no extra or missing characters, no other text anywhere.
+
+Style: chunky, rounded, bouncy toy-like display lettering, as if moulded from glossy candy plastic. Each glyph has a thick dark chocolate-brown outline (#4a3426), a bold drop/extrusion toward the bottom (3D depth in the same brown), a warm red face (#e0483e) for 象棋, golden yellow (#ffdf4a) for 王國, and cream white (#fff6e2) for Q版. Soft top highlight on each glyph for a glossy feel. Letters slightly tilted and bouncing at different heights, playful but still easy to read.
+
+Decoration: a small golden crown sitting on top of the character 王; the letter Q is designed as a round red xiangqi piece disc with a cream rim. A few tiny sparkle stars around the logo. Keep decoration minimal so the text stays dominant.
+
+Background: plain pure white (#ffffff) flat background with no shadow, no gradient, no texture, no frame — the logo will be cut out. Centered composition with generous margins. Flat 2D game UI art, clean vector-like edges, no photorealism.
