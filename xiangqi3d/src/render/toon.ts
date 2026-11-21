@@ -33,3 +33,13 @@ export function mesh(geometry: THREE.BufferGeometry, color: number | THREE.Mater
   m.receiveShadow = true
   return m
 }
+
+/**
+ * A fresh (uncached) toon material, so callers may patch it with onBeforeCompile.
+ * Without a colour it reads per-vertex colours from the geometry.
+ */
+export function toonVertexMaterial(color?: number): THREE.MeshToonMaterial {
+  return color === undefined
+    ? new THREE.MeshToonMaterial({ vertexColors: true, gradientMap: gradient })
+    : new THREE.MeshToonMaterial({ color, gradientMap: gradient })
+}

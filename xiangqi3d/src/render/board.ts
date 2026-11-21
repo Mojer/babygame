@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { FILES, RANKS } from '../rules/position'
-import { mesh, toon, withoutOutline } from './toon'
+import { Terrain } from './terrain'
+import { mesh, withoutOutline } from './toon'
 
 export const GRASS_TOP = 0
 const RIVER_HALF = 0.32
@@ -58,21 +59,15 @@ function grassHalf(zFrom: number, zTo: number): THREE.Group {
   const cz = (zFrom + zTo) / 2
   const top = mesh(new THREE.BoxGeometry(w, 0.35, d), 0x8fd16a)
   top.position.set(0, GRASS_TOP - 0.175, cz)
-  const soil = mesh(new THREE.BoxGeometry(w - 0.1, 0.9, d - 0.1), 0xa8744a)
-  soil.position.set(0, GRASS_TOP - 0.8, cz)
-  const rock = mesh(new THREE.CylinderGeometry(0.1, 1, 1.2, 7), 0x8d6748)
-  rock.scale.set(w * 0.42, 1, d * 0.42)
-  rock.position.set(0, GRASS_TOP - 1.85, cz)
-  rock.rotation.y = 0.3
-  g.add(top, soil, rock)
+  g.add(top)
   return g
 }
 
 export class Board {
   readonly root = new THREE.Group()
   private readonly markers = new THREE.Group()
-  private readonly clouds: THREE.Group[] = []
   private readonly water: THREE.Mesh
+  private readonly terrain: Terrain
 
   constructor() {
     const halfDepth = 4.5 + MARGIN
@@ -83,6 +78,8 @@ export class Board {
     this.water.position.y = GRASS_TOP - 0.33
     this.water.receiveShadow = true
     this.root.add(this.water)
+    this.terrain = new Terrain(waterMat)
+    this.root.add(this.terrain.root)
 
     const label = new THREE.Mesh(
       new THREE.PlaneGeometry(7.2, 0.9),
@@ -129,28 +126,10 @@ export class Board {
       tuft.position.set((rnd() - 0.5) * 9.4, GRASS_TOP + 0.13, zSide * (4.95 + rnd() * 0.3))
       this.root.add(tuft)
     }
-
-    const cloudMat = withoutOutline(toon(0xffffff).clone())
-    const spots: [number, number, number][] = [
-      [-8, -3, -2], [8.5, -2.5, 3], [-7, -4, 5], [6.5, -4.5, -6], [0, -5, -9], [-3, -3.5, 9], [10, -1, -4],
-    ]
-    for (const [x, y, z] of spots) {
-      const c = new THREE.Group()
-      const n = 3 + Math.floor(rnd() * 3)
-      for (let i = 0; i < n; i++) {
-        const puff = new THREE.Mesh(new THREE.SphereGeometry(0.6 + rnd() * 0.6, 14, 10), cloudMat)
-        puff.position.set((i - n / 2) * 0.8, rnd() * 0.3, (rnd() - 0.5) * 0.6)
-        c.add(puff)
-      }
-      c.position.set(x, y, z)
-      c.userData.phase = rnd() * Math.PI * 2
-      this.clouds.push(c)
-      this.root.add(c)
-    }
   }
 
   tick(t: number): void {
-    for (const c of this.clouds) c.position.y += Math.sin(t * 0.6 + c.userData.phase) * 0.002
+    this.terrain.tick(t)
     ;(this.water.material as THREE.MeshToonMaterial).color.setHSL(0.55, 0.8, 0.64 + Math.sin(t * 1.4) * 0.02)
   }
 
