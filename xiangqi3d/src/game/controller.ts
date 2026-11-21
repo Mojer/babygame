@@ -8,6 +8,8 @@ import { Board, squareToWorld, worldToSquare } from '../render/board'
 import { PieceView } from '../render/pieces'
 import type { Stage } from '../render/stage'
 import type { Hud } from '../ui/hud'
+import type { VfxManager } from '../vfx/vfx'
+import { BattleCutscene, type CutsceneMode, attackStyle, wantsCutscene } from './cutscene'
 
 export type GameSettings = { mode: 'hotseat' } | { mode: 'ai'; level: Level; human: Side }
 
@@ -24,12 +26,16 @@ export class GameController {
   private ai: AiClient | null = null
   private readonly raycaster = new THREE.Raycaster()
   private readonly ground = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)
+  private readonly cutscene: BattleCutscene
+  cutsceneMode: CutsceneMode = 'all'
 
   constructor(
     private readonly stage: Stage,
     private readonly board: Board,
     private readonly hud: Hud,
+    private readonly vfx: VfxManager,
   ) {
+    this.cutscene = new BattleCutscene(stage, vfx)
     stage.scene.add(board.root, this.pieceLayer)
     stage.onTick((dt, t) => {
       board.tick(t)
@@ -84,6 +90,8 @@ export class GameController {
   }
 
   private rebuild(): void {
+    this.cutscene.skip()
+    this.vfx.clearCheck()
     this.selected = null
     for (const v of this.views.values()) this.pieceLayer.remove(v.root)
     this.views.clear()
@@ -149,19 +157,48 @@ export class GameController {
     this.match.play(move)
     this.selected = null
     this.refresh()
+    const status = this.match.status
+    const mating = status.kind === 'checkmate'
 
-    await mover.moveTo(squareToWorld(move.to))
-    if (gen !== this.generation) return
     if (victim) {
-      await victim.die()
+      if (wantsCutscene(this.cutsceneMode, mover.piece, victim.piece, mating)) {
+        this.hud.showSkipHint(true)
+        await this.cutscene.playCapture(mover, victim, move.from, move.to)
+        this.hud.showSkipHint(false)
+      } else {
+        await mover.moveTo(squareToWorld(move.to))
+        if (gen !== this.generation) return
+        this.vfx.burst(attackStyle(mover.piece.kind), squareToWorld(move.to), 1)
+        await victim.die()
+      }
       if (gen !== this.generation) return
       this.pieceLayer.remove(victim.root)
+    } else if (mating) {
+      const loser = this.match.position.turn
+      const kingSquare = this.match.position.board.findIndex((p) => p?.kind === 'king' && p.side === loser)
+      this.hud.showSkipHint(true)
+      await this.cutscene.playCheckmate(mover, move.from, move.to, this.views.get(kingSquare)!, kingSquare)
+      this.hud.showSkipHint(false)
+    } else {
+      await mover.moveTo(squareToWorld(move.to))
     }
+    if (gen !== this.generation) return
     this.views.delete(move.from)
     this.views.set(move.to, mover)
     this.busy = false
+    this.showCheck()
     this.updateHud()
     void this.maybeAiTurn()
+  }
+
+  private showCheck(): void {
+    const pos = this.match.position
+    if (this.match.status.kind !== 'ongoing' || !isInCheck(pos, pos.turn)) {
+      this.vfx.clearCheck()
+      return
+    }
+    const king = pos.board.findIndex((p) => p?.kind === 'king' && p.side === pos.turn)
+    this.vfx.warnCheck(squareToWorld(king, 0.02))
   }
 
   private bindPointer(): void {
@@ -178,6 +215,10 @@ export class GameController {
       const wasMulti = multiTouch
       if (downs.size === 0) multiTouch = false
       if (!start || wasMulti || e.button > 0) return
+      if (this.cutscene.active) {
+        this.cutscene.skip()
+        return
+      }
       if (Math.hypot(e.clientX - start.x, e.clientY - start.y) > 10) return
       const square = this.pick(e.clientX, e.clientY)
       if (square !== null) this.onSquare(square)

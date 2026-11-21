@@ -1,6 +1,12 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { OutlineEffect } from 'three/examples/jsm/effects/OutlineEffect.js'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
+import { Pass } from 'three/examples/jsm/postprocessing/Pass.js'
+import createImpactFramePass, { type ImpactFramePass } from '../vfx/vendor/effect-impact-frame.js'
+
+const MASK_LAYER = 5
 
 export type ViewPreset = 'top' | 'red' | 'black'
 
@@ -10,16 +16,53 @@ const VIEWS: Record<ViewPreset, THREE.Vector3> = {
   black: new THREE.Vector3(0, 11, -10.5),
 }
 
+interface CameraTween {
+  fromPos: THREE.Vector3
+  toPos: THREE.Vector3
+  fromLook: THREE.Vector3
+  toLook: THREE.Vector3
+  t: number
+  dur: number
+  done?: () => void
+}
+
+/** Renders the scene through OutlineEffect so the composer keeps the toon outlines. */
+class OutlineScenePass extends Pass {
+  constructor(
+    private readonly outline: OutlineEffect,
+    private readonly scene: THREE.Scene,
+    private readonly camera: THREE.Camera,
+  ) {
+    super()
+    this.needsSwap = false
+  }
+
+  render(renderer: THREE.WebGLRenderer, _write: THREE.WebGLRenderTarget, read: THREE.WebGLRenderTarget): void {
+    renderer.setRenderTarget(this.renderToScreen ? null : read)
+    renderer.clear()
+    this.outline.render(this.scene, this.camera)
+  }
+}
+
 export class Stage {
   readonly renderer: THREE.WebGLRenderer
   readonly scene = new THREE.Scene()
   readonly camera = new THREE.PerspectiveCamera(40, 1, 0.1, 200)
   readonly controls: OrbitControls
   private readonly outline: OutlineEffect
+  private readonly composer: EffectComposer
+  private readonly impactPass: ImpactFramePass
   private readonly clock = new THREE.Clock()
   private readonly tickers = new Set<(dt: number, t: number) => void>()
   private preset: ViewPreset = 'top'
-  private viewTween: { from: THREE.Vector3; to: THREE.Vector3; t: number } | null = null
+  private tween: CameraTween | null = null
+  private readonly look = new THREE.Vector3()
+  private cinematic = false
+  private shakeAmount = 0
+  private impactCenter: THREE.Vector3 | null = null
+  private impactSubjects: THREE.Object3D[] = []
+  private readonly maskTarget = new THREE.WebGLRenderTarget(1, 1)
+  private readonly maskMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
 
   constructor(private readonly container: HTMLElement) {
     const r = (this.renderer = new THREE.WebGLRenderer({ antialias: true }))
@@ -56,6 +99,12 @@ export class Stage {
     this.camera.position.copy(VIEWS.top)
     c.update()
 
+    this.composer = new EffectComposer(r)
+    this.composer.addPass(new OutlineScenePass(this.outline, this.scene, this.camera))
+    this.impactPass = createImpactFramePass({ backgroundSuppression: 0.5 })
+    this.composer.addPass(this.impactPass)
+    this.composer.addPass(new OutputPass())
+
     window.addEventListener('resize', () => this.resize())
     this.resize()
     r.setAnimationLoop(() => this.frame())
@@ -68,17 +117,125 @@ export class Stage {
 
   setView(preset: ViewPreset, animate = true): void {
     this.preset = preset
+    if (this.cinematic) return
     const to = this.fittedView(preset)
     if (!animate) {
+      this.tween = null
       this.camera.position.copy(to)
+      this.controls.target.set(0, 0, 0)
       this.controls.update()
       return
     }
-    this.viewTween = { from: this.camera.position.clone(), to, t: 0 }
+    this.moveCamera(to, new THREE.Vector3(), 0.6)
   }
 
   resetView(): void {
     this.setView(this.preset)
+  }
+
+  // ---------- cinematic camera (battle cutscenes) ----------
+
+  beginCinematic(): void {
+    this.cinematic = true
+    this.controls.enabled = false
+  }
+
+  /** Fly the camera to a shot; resolves when it arrives. */
+  shot(position: THREE.Vector3, lookAt: THREE.Vector3, dur: number): Promise<void> {
+    return new Promise((done) => this.moveCamera(position, lookAt, dur, done))
+  }
+
+  endCinematic(dur = 0.45): void {
+    if (!this.cinematic) return
+    this.cinematic = false
+    this.moveCamera(this.fittedView(this.preset), new THREE.Vector3(), dur, () => {
+      this.controls.enabled = true
+    })
+  }
+
+  shake(amount: number): void {
+    this.shakeAmount = Math.max(this.shakeAmount, amount)
+  }
+
+  /** Comic impact frame centred on a world point, keeping `subjects` as silhouettes. */
+  impact(worldPoint: THREE.Vector3, subjects: THREE.Object3D[]): void {
+    this.setSubjectLayer(false)
+    this.impactSubjects = subjects
+    this.setSubjectLayer(true)
+    this.impactCenter = worldPoint.clone()
+    this.impactPass.setSubjectMask(this.maskTarget.texture)
+    this.impactPass.trigger(this.toUv(worldPoint))
+  }
+
+  private setSubjectLayer(on: boolean): void {
+    for (const s of this.impactSubjects) s.traverse((o) => (on ? o.layers.enable(MASK_LAYER) : o.layers.disable(MASK_LAYER)))
+  }
+
+  /**
+   * Our own subject mask: the built-in one rejects scenes containing the vendor effects'
+   * custom shaders, so we draw only the subjects (layer MASK_LAYER) white on black.
+   */
+  private renderSubjectMask(): void {
+    const r = this.renderer
+    const size = r.getDrawingBufferSize(new THREE.Vector2())
+    if (this.maskTarget.width !== size.x || this.maskTarget.height !== size.y) this.maskTarget.setSize(size.x, size.y)
+    const background = this.scene.background
+    const fog = this.scene.fog
+    const clear = r.getClearColor(new THREE.Color())
+    const clearAlpha = r.getClearAlpha()
+    const shadows = r.shadowMap.autoUpdate
+    this.scene.background = null
+    this.scene.fog = null
+    this.scene.overrideMaterial = this.maskMaterial
+    r.shadowMap.autoUpdate = false
+    this.camera.layers.set(MASK_LAYER)
+    r.setRenderTarget(this.maskTarget)
+    r.setClearColor(0x000000, 1)
+    r.clear()
+    r.render(this.scene, this.camera)
+    this.camera.layers.set(0)
+    r.setRenderTarget(null)
+    r.setClearColor(clear, clearAlpha)
+    r.shadowMap.autoUpdate = shadows
+    this.scene.overrideMaterial = null
+    this.scene.background = background
+    this.scene.fog = fog
+  }
+
+  /** Compile the impact shaders behind the menu so the first hit does not stall. */
+  prewarmImpact(): void {
+    this.impactPass.setSubjectMask(this.maskTarget.texture)
+    this.impactPass.trigger()
+    this.renderSubjectMask()
+    this.composer.render(0)
+    this.impactPass.reset()
+    this.restoreViewport()
+  }
+
+  /** The impact pass leaves its own viewport behind; put the full canvas back. */
+  private restoreViewport(): void {
+    const size = this.renderer.getSize(new THREE.Vector2())
+    this.renderer.setRenderTarget(null)
+    this.renderer.setScissorTest(false)
+    this.renderer.setViewport(0, 0, size.x, size.y)
+  }
+
+  private toUv(p: THREE.Vector3): { x: number; y: number } {
+    const ndc = p.clone().project(this.camera)
+    return { x: ndc.x * 0.5 + 0.5, y: ndc.y * 0.5 + 0.5 }
+  }
+
+  private moveCamera(pos: THREE.Vector3, look: THREE.Vector3, dur: number, done?: () => void): void {
+    this.tween?.done?.()
+    this.tween = {
+      fromPos: this.camera.position.clone(),
+      toPos: pos.clone(),
+      fromLook: this.cinematic || this.tween ? this.look.clone() : this.controls.target.clone(),
+      toLook: look.clone(),
+      t: 0,
+      dur: Math.max(dur, 0.001),
+      done,
+    }
   }
 
   /** Pull the camera back on portrait screens so the whole board fits. */
@@ -92,24 +249,52 @@ export class Stage {
     const w = this.container.clientWidth || window.innerWidth
     const h = this.container.clientHeight || window.innerHeight
     this.renderer.setSize(w, h)
+    this.composer.setPixelRatio(this.renderer.getPixelRatio())
+    this.composer.setSize(w, h)
     this.camera.aspect = w / h
     this.camera.updateProjectionMatrix()
     this.controls.maxDistance = 24 * Math.max(1, 1 / this.camera.aspect)
-    if (!this.viewTween) this.setView(this.preset, false)
+    if (!this.tween && !this.cinematic) this.setView(this.preset, false)
   }
 
   private frame(): void {
     const dt = Math.min(this.clock.getDelta(), 0.05)
     const t = this.clock.elapsedTime
-    if (this.viewTween) {
-      const tw = this.viewTween
-      tw.t = Math.min(1, tw.t + dt / 0.6)
+    this.impactPass.update(dt)
+
+    if (this.tween) {
+      const tw = this.tween
+      tw.t = Math.min(1, tw.t + dt / tw.dur)
       const k = 1 - Math.pow(1 - tw.t, 3)
-      this.camera.position.lerpVectors(tw.from, tw.to, k)
-      if (tw.t >= 1) this.viewTween = null
+      this.camera.position.lerpVectors(tw.fromPos, tw.toPos, k)
+      this.look.lerpVectors(tw.fromLook, tw.toLook, k)
+      this.camera.lookAt(this.look)
+      if (tw.t >= 1) {
+        this.tween = null
+        if (!this.cinematic) this.controls.target.copy(this.look)
+        tw.done?.()
+      }
     }
-    this.controls.update()
+    if (!this.cinematic && !this.tween) this.controls.update()
+
     for (const fn of this.tickers) fn(dt, t)
-    this.outline.render(this.scene, this.camera)
+
+    const shaking = this.shakeAmount > 0.001
+    const saved = this.camera.position.clone()
+    if (shaking) {
+      this.camera.position.x += (Math.random() - 0.5) * this.shakeAmount
+      this.camera.position.y += (Math.random() - 0.5) * this.shakeAmount
+      this.shakeAmount *= Math.pow(0.002, dt)
+    }
+
+    if (this.impactPass.active) {
+      if (this.impactCenter) this.impactPass.setCenter(this.toUv(this.impactCenter))
+      this.renderSubjectMask()
+      this.composer.render(dt)
+      this.restoreViewport()
+    } else {
+      this.outline.render(this.scene, this.camera)
+    }
+    if (shaking) this.camera.position.copy(saved)
   }
 }

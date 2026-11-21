@@ -320,7 +320,7 @@ export class PieceView {
 
     const label = new THREE.Mesh(
       new THREE.CircleGeometry(0.2, 32),
-      withoutOutline(new THREE.MeshToonMaterial({ map: nameTexture(piece), transparent: true })),
+      withoutOutline(new THREE.MeshToonMaterial({ map: nameTexture(piece), alphaTest: 0.5 })),
     )
     label.rotation.x = -Math.PI / 2
     if (piece.side === 'black') label.rotation.z = Math.PI

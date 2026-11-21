@@ -1,0 +1,27 @@
+{
+  "kind": "effect",
+  "id": "spell-indicator-circle",
+  "origin": "https://00gamedevs.com",
+  "schemaVersion": 2,
+  "integrationType": "scene-object",
+  "contentVersion": "a1b0aff06de586e4fd9afdabb314177f2d6ce9049b890ac6cf7f727b1c14ca34",
+  "sha256": "1f4d1f287ce9887e7656198541edaf4dee4680588b49ec9a34ef7b7fd4b7644a",
+  "methods": [
+    "update",
+    "stop",
+    "reset",
+    "dispose",
+    "setOptions",
+    "setProgress"
+  ],
+  "defaultOptions": {
+    "color": "#ff303e",
+    "size": 3,
+    "detail": 1,
+    "angleDeg": 360,
+    "warningDuration": 2,
+    "progressMode": "auto",
+    "speed": 1,
+    "density": 0.5
+  }
+}

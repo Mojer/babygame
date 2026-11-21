@@ -9,6 +9,8 @@ export const STR = {
   yourTurn: (side: Side) => `輪到你了（${SIDE_NAME[side]}）`,
   aiThinking: '電腦思考中…',
   menu: '選單',
+  skipHint: '點一下跳過 ▶▶',
+  cutscene: { all: '過場：每次', major: '過場：大子', off: '過場：關閉' } as const,
   hotseat: '雙人對戰',
   hotseatHint: '兩個人用同一台輪流下',
   vsAi: '電腦對戰',

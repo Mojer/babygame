@@ -1,0 +1,75 @@
+{
+  "kind": "effect",
+  "id": "impact-frame",
+  "origin": "https://00gamedevs.com",
+  "schemaVersion": 2,
+  "integrationType": "postprocess",
+  "contentVersion": "a1b0aff06de586e4fd9afdabb314177f2d6ce9049b890ac6cf7f727b1c14ca34",
+  "sha256": "c5f08a9b105f304f1db760138ce0b8ad16804e123816a3762dc8514aa3c2ae6a",
+  "methods": [
+    "trigger",
+    "setCenter",
+    "setDirection",
+    "setSubjects",
+    "setSubjectMask",
+    "update",
+    "reset",
+    "setOptions",
+    "setSize",
+    "render",
+    "dispose"
+  ],
+  "defaultOptions": {
+    "threshold": 0.5,
+    "softness": 0.05,
+    "strokeLength": 0.65,
+    "inkDensity": 0.65,
+    "backgroundSuppression": 0.35,
+    "starSize": 1,
+    "starStrength": 1,
+    "sequence": [
+      {
+        "pose": "silhouette",
+        "mode": "inverted",
+        "durationMs": 66.66666666666667,
+        "intensity": 1
+      },
+      {
+        "pose": "tear",
+        "mode": "monochrome",
+        "durationMs": 66.66666666666667,
+        "intensity": 1
+      },
+      {
+        "pose": "burst",
+        "mode": "inverted",
+        "durationMs": 66.66666666666667,
+        "intensity": 1
+      },
+      {
+        "pose": "clean",
+        "mode": "monochrome",
+        "durationMs": 33.333333333333336,
+        "intensity": 1
+      },
+      {
+        "pose": "release",
+        "mode": "inverted",
+        "durationMs": 33.333333333333336,
+        "intensity": 1
+      },
+      {
+        "pose": "detonate",
+        "mode": "inverted",
+        "durationMs": 66.66666666666667,
+        "intensity": 1
+      },
+      {
+        "pose": "shock",
+        "mode": "monochrome",
+        "durationMs": 66.66666666666667,
+        "intensity": 1
+      }
+    ]
+  }
+}

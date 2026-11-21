@@ -3,6 +3,7 @@ import type { Side } from '../rules/position'
 import { STR } from './strings'
 
 export interface HudActions {
+  cycleCutscene(): string
   undo(): void
   restart(): void
   resetView(): void
@@ -22,6 +23,7 @@ export class Hud {
   private readonly toast: HTMLDivElement
   private readonly overlay: HTMLDivElement
   private readonly undoBtn: HTMLButtonElement
+  private readonly skipHint: HTMLDivElement
   private toastTimer = 0
 
   constructor(parent: HTMLElement, actions: HudActions) {
@@ -30,7 +32,11 @@ export class Hud {
     this.toast = el('div', 'toast')
     const bar = el('div', 'bar')
     this.undoBtn = button(STR.undo, actions.undo)
+    const cutsceneBtn = button('', () => (cutsceneBtn.textContent = actions.cycleCutscene()))
+    this.skipHint = el('div', 'skip-hint')
+    this.skipHint.textContent = STR.skipHint
     bar.append(
+      cutsceneBtn,
       button(STR.menu, () => {
         if (confirm(STR.confirmMenu)) actions.menu()
       }),
@@ -46,8 +52,15 @@ export class Hud {
       if (action === 'again') actions.restart()
       if (action === 'menu') actions.menu()
     })
-    root.append(this.turn, this.toast, bar, this.overlay)
+    root.append(this.turn, this.toast, this.skipHint, bar, this.overlay)
     parent.append(root)
+    this.setCutsceneLabel = (label) => (cutsceneBtn.textContent = label)
+  }
+
+  readonly setCutsceneLabel: (label: string) => void
+
+  showSkipHint(on: boolean): void {
+    this.skipHint.classList.toggle('show', on)
   }
 
   update(s: HudState): void {
