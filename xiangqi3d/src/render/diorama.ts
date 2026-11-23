@@ -490,6 +490,86 @@ function waterfall(side: number, material: THREE.ShaderMaterial): THREE.Mesh {
   return m
 }
 
+const MAP_URL = `${import.meta.env.BASE_URL}textures/old-map.webp`
+/** world size of one copy of the map; it repeats (mirrored) out to the horizon */
+const MAP_W = 78
+const MAP_H = 52
+const MAP_Y = -6.5
+const MAP_REACH = 320
+/** share of each side trimmed off so the torn paper edges do not show where copies meet */
+const MAP_TRIM = 0.05
+
+/** A copy of the image squeezed to `width` pixels; drawn back up, the lost detail reads as blur. */
+function softened(img: HTMLImageElement, width: number): THREE.CanvasTexture {
+  const sx = img.width * MAP_TRIM
+  const sy = img.height * MAP_TRIM
+  const sw = img.width - sx * 2
+  const sh = img.height - sy * 2
+  const height = Math.round((width * sh) / sw)
+  const tex = canvasTexture(width, height, (ctx) => {
+    ctx.imageSmoothingQuality = 'high'
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, width, height)
+  })
+  tex.wrapS = tex.wrapT = THREE.MirroredRepeatWrapping
+  return tex
+}
+
+/**
+ * An old map spread out below the board and on to the horizon. Three copies at falling
+ * resolution are blended by distance from the viewer, so it gets ever softer and darker.
+ */
+function mapBackdrop(): THREE.Mesh {
+  const blank = new THREE.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1)
+  blank.needsUpdate = true
+  const mat = withoutOutline(
+    new THREE.ShaderMaterial({
+      depthWrite: false,
+      uniforms: {
+        uNear: { value: blank as THREE.Texture },
+        uMid: { value: blank as THREE.Texture },
+        uFar: { value: blank as THREE.Texture },
+        uShow: { value: 0 },
+        uBackdrop: { value: new THREE.Color(BACKDROP) },
+      },
+      vertexShader: WATER_VERT,
+      fragmentShader: /* glsl */ `
+        uniform sampler2D uNear, uMid, uFar;
+        uniform float uShow;
+        uniform vec3 uBackdrop;
+        varying vec3 vWorld;
+        void main() {
+          vec2 uv = vWorld.xz / vec2(${MAP_W.toFixed(1)}, ${MAP_H.toFixed(1)}) + 0.5;
+          float dist = length(vWorld - cameraPosition);
+          float soft = smoothstep(12.0, 34.0, dist);
+          float softer = smoothstep(30.0, 90.0, dist);
+          vec3 col = mix(texture2D(uNear, uv).rgb, texture2D(uMid, uv).rgb, soft);
+          col = mix(col, texture2D(uFar, uv).rgb, softer);
+          col *= 0.82 - soft * 0.17 - softer * 0.25;
+          // the board's shadow pooled underneath it
+          vec2 q = abs(vWorld.xz) - vec2(${HALF_X.toFixed(2)}, ${HALF_Z.toFixed(2)});
+          float box = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0);
+          col *= mix(0.2, 1.0, smoothstep(-1.0, 3.0, box));
+          float horizon = smoothstep(70.0, 140.0, length(vWorld.xz));
+          gl_FragColor = vec4(mix(col, uBackdrop, max(horizon, 1.0 - uShow)), 1.0);
+          #include <colorspace_fragment>
+        }
+      `,
+    }),
+  )
+  const plane = new THREE.Mesh(new THREE.PlaneGeometry(MAP_REACH, MAP_REACH), mat)
+  plane.rotation.x = -Math.PI / 2
+  plane.position.y = MAP_Y
+  plane.renderOrder = -1
+  plane.frustumCulled = false
+  new THREE.ImageLoader().load(MAP_URL, (img) => {
+    mat.uniforms.uNear.value = softened(img, 480)
+    mat.uniforms.uMid.value = softened(img, 110)
+    mat.uniforms.uFar.value = softened(img, 32)
+    mat.uniforms.uShow.value = 1
+  })
+  return plane
+}
+
 /** The board as a floating block of earth: grass banks, layered cliffs, and a river spilling off both ends. */
 export class Diorama {
   readonly root = new THREE.Group()
@@ -497,7 +577,7 @@ export class Diorama {
   private readonly fall = fallMaterial()
 
   constructor() {
-    this.root.add(topSurface(RIVER_HALF, HALF_Z, 3), topSurface(-HALF_Z, -RIVER_HALF, 9))
+    this.root.add(mapBackdrop(), topSurface(RIVER_HALF, HALF_Z, 3), topSurface(-HALF_Z, -RIVER_HALF, 9))
 
     const c = new CliffBuilder()
     for (const sx of [-1, 1]) {
@@ -512,7 +592,6 @@ export class Diorama {
     const cliffTex = cliffTexture()
     cliffTex.wrapS = THREE.RepeatWrapping
     const cliffs = new THREE.Mesh(c.build(), toonMap(cliffTex))
-    cliffs.receiveShadow = true
     this.root.add(cliffs)
 
     const surface = new THREE.Mesh(new THREE.PlaneGeometry(HALF_X * 2, RIVER_HALF * 2), this.river)
