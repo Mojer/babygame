@@ -6,7 +6,7 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
 import { Pass } from 'three/examples/jsm/postprocessing/Pass.js'
 import createImpactFramePass, { type ImpactFramePass } from '../vfx/vendor/effect-impact-frame.js'
 import { ColorImpactPass } from './colorImpact'
-import { FOG_COLOR } from './terrain'
+import { BACKDROP } from './diorama'
 
 const MASK_LAYER = 5
 
@@ -101,8 +101,7 @@ export class Stage {
     container.appendChild(r.domElement)
     this.outline = new OutlineEffect(r, { defaultThickness: 0.004, defaultColor: [0.3, 0.2, 0.16], defaultAlpha: 0.9 })
 
-    // the sky dome and the radial fog of war live in Terrain; this only shows past the dome
-    this.scene.background = new THREE.Color(FOG_COLOR)
+    this.scene.background = new THREE.Color(BACKDROP)
     const hemi = new THREE.HemisphereLight(0xfff8ec, 0x9cc7a0, 1.8)
     const sun = (this.sun = new THREE.DirectionalLight(0xfff1dc, 1.7))
     sun.position.set(4, 12, 6)

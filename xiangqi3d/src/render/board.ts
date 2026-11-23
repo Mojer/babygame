@@ -1,11 +1,9 @@
 import * as THREE from 'three'
 import { FILES, RANKS } from '../rules/position'
-import { Terrain } from './terrain'
+import { Diorama, RIVER_HALF } from './diorama'
 import { mesh, withoutOutline } from './toon'
 
 export const GRASS_TOP = 0
-const RIVER_HALF = 0.32
-const MARGIN = 0.95
 const LINE = 0xffffff
 
 /** World position of a board square (index = rank * 9 + file); red's back rank is nearest +z. */
@@ -52,34 +50,13 @@ function lineBar(x1: number, z1: number, x2: number, z2: number, width = 0.045):
   return bar
 }
 
-function grassHalf(zFrom: number, zTo: number): THREE.Group {
-  const g = new THREE.Group()
-  const w = 8 + MARGIN * 2
-  const d = Math.abs(zTo - zFrom)
-  const cz = (zFrom + zTo) / 2
-  const top = mesh(new THREE.BoxGeometry(w, 0.35, d), 0x8fd16a)
-  top.position.set(0, GRASS_TOP - 0.175, cz)
-  g.add(top)
-  return g
-}
-
 export class Board {
   readonly root = new THREE.Group()
   private readonly markers = new THREE.Group()
-  private readonly water: THREE.Mesh
-  private readonly terrain: Terrain
+  private readonly diorama = new Diorama()
 
   constructor() {
-    const halfDepth = 4.5 + MARGIN
-    this.root.add(grassHalf(halfDepth, RIVER_HALF), grassHalf(-RIVER_HALF, -halfDepth))
-
-    const waterMat = new THREE.MeshToonMaterial({ color: 0x5cc4f0, transparent: true, opacity: 0.92 })
-    this.water = new THREE.Mesh(new THREE.BoxGeometry(8 + MARGIN * 2 - 0.05, 0.5, RIVER_HALF * 2 + 0.02), waterMat)
-    this.water.position.y = GRASS_TOP - 0.33
-    this.water.receiveShadow = true
-    this.root.add(this.water)
-    this.terrain = new Terrain(waterMat)
-    this.root.add(this.terrain.root)
+    this.root.add(this.diorama.root)
 
     const label = new THREE.Mesh(
       new THREE.PlaneGeometry(7.2, 0.9),
@@ -129,8 +106,7 @@ export class Board {
   }
 
   tick(t: number): void {
-    this.terrain.tick(t)
-    ;(this.water.material as THREE.MeshToonMaterial).color.setHSL(0.55, 0.8, 0.64 + Math.sin(t * 1.4) * 0.02)
+    this.diorama.tick(t)
   }
 
   /** Show selection ring and legal-move dots; captures get a red ring. */
