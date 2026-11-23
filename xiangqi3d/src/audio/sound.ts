@@ -32,7 +32,7 @@ const PHRASE_B = [5, -1, 6, 7, 6, -1, 5, 4, 3, -1, 4, 3, 2, 1, 0, -1]
 const BASS = [0, 0, 3, 3, 4, 4, 0, 0]
 const STEP = 0.24
 
-const TRACK_URL = `${import.meta.env.BASE_URL}audio/whitechapel.mp3`
+const TRACK_URL = `${import.meta.env.BASE_URL}audio/medieval.mp3`
 const TRACK_GAIN = 0.45
 const SYNTH_GAIN = 0.16
 
