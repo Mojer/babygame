@@ -124,7 +124,6 @@
       display: grid;
       grid-template-columns: 1fr;
       overflow: hidden;
-      margin-bottom: 30px;
     }
     .feature .shot {
       position: relative;
@@ -173,7 +172,47 @@
     }
     .play:focus-visible, .trailer:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 
+    /* ---------- 分類按鈕列 ---------- */
+    .cats {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin: 0 -16px 18px;
+      padding: calc(8px + env(safe-area-inset-top)) 16px 10px;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+    }
+    .cats ul {
+      position: relative;
+      list-style: none;
+      display: flex; gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .cats ul::-webkit-scrollbar { display: none; }
+    .cats a {
+      display: flex; align-items: center; gap: 6px;
+      flex: none;
+      font-size: 15px; font-weight: 800;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 15px;
+      white-space: nowrap;
+      transition: background .2s, color .2s;
+    }
+    .cats a:active { transform: scale(.95); }
+    .cats a[aria-current="true"] {
+      color: var(--accent-text);
+      background: var(--accent);
+      border-color: transparent;
+    }
+    .cats a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
     /* ---------- 分區 ---------- */
+    section { scroll-margin-top: calc(72px + env(safe-area-inset-top)); }
     section + section { margin-top: 30px; }
     h2 {
       display: flex; align-items: baseline; gap: 8px;
@@ -304,6 +343,17 @@
       <h1>寶貝遊戲選單</h1>
     </header>
 
+    <nav class="cats rise" aria-label="遊戲分類">
+      <ul>
+        <li><a href="#new" aria-current="true"><span aria-hidden="true">✨</span>精選新作</a></li>
+        <li><a href="#solo"><span aria-hidden="true">🙋</span>一個人玩</a></li>
+        <li><a href="#duo"><span aria-hidden="true">👫</span>兩個人玩</a></li>
+        <li><a href="#story"><span aria-hidden="true">📖</span>說故事</a></li>
+      </ul>
+    </nav>
+
+    <section id="new">
+    <h2>精選新作 <small>最新最好玩</small></h2>
     <div class="card tile rise top-pick" style="--i:0">
       <span class="art"><img src="thumbs/zombie.jpg" alt="" width="800" height="350"><span class="tag badge">新作</span></span>
       <p class="name">屍潮超載<span class="last">上次玩的</span></p>
@@ -338,8 +388,9 @@
         </span>
       </span>
     </div>
+    </section>
 
-    <section>
+    <section id="solo">
       <h2>一個人玩</h2>
       <ul class="grid">
         <li class="wide"><a class="card tile rise" style="--i:2" data-game="miniature-city" href="./miniature-city/dist/">
@@ -385,7 +436,7 @@
       </ul>
     </section>
 
-    <section>
+    <section id="duo">
       <h2>兩個人一起玩 <small>找爸爸媽媽或好朋友</small></h2>
       <ul class="grid">
         <li class="wide"><div class="card tile rise" style="--i:9">
@@ -425,7 +476,7 @@
       </ul>
     </section>
 
-    <section>
+    <section id="story">
       <h2>說故事練習 <small>比賽前一起練習</small></h2>
       <ul class="grid">
         <li class="wide"><a class="card tile rise" style="--i:12" data-game="story-dinosaur" href="./baby_story_chien/dinosaur.html">
@@ -454,6 +505,48 @@
         try { localStorage.setItem(KEY, a.dataset.game); } catch (e) {}
       });
     });
+  })();
+
+  // 分類按鈕：點了平滑捲到該區，捲動時標出目前所在分類
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('.cats a'));
+    var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+    var smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var lock = 0;
+
+    function mark(i) {
+      links.forEach(function (a, j) { a.setAttribute('aria-current', j === i ? 'true' : 'false'); });
+      var bar = links[i].closest('ul');
+      var left = links[i].offsetLeft - (bar.clientWidth - links[i].offsetWidth) / 2;
+      bar.scrollTo({ left: left, behavior: smooth ? 'smooth' : 'auto' });
+    }
+
+    links.forEach(function (a, i) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        mark(i);
+        lock = Date.now() + 700;
+        sections[i].scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+        history.replaceState(null, '', a.getAttribute('href'));
+      });
+    });
+
+    var current = 0;
+    function update() {
+      if (Date.now() < lock) return;
+      var line = window.innerHeight * 0.3;
+      var i = 0;
+      sections.forEach(function (sec, j) { if (sec.getBoundingClientRect().top <= line) i = j; });
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) i = sections.length - 1;
+      if (i !== current) { current = i; mark(i); }
+    }
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () { ticking = false; update(); });
+    }, { passive: true });
+    update();
   })();
 
   window.addEventListener('load', () => {
