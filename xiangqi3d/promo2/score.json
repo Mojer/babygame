@@ -1,0 +1,53 @@
+{
+  "bpm": 120,
+  "beats": 117,
+  "tail": 0,
+  "fps": 60,
+  "width": 1920,
+  "height": 1080,
+  "sampleRate": 48000,
+  "music": { "file": "../assets-src/Epic Fight.wav", "offset": 0.08 },
+  "shots": [
+    { "name": "open", "beat": 0 },
+    { "name": "reveal", "beat": 6 },
+    { "name": "classes", "beat": 12 },
+    { "name": "kings", "beat": 60 },
+    { "name": "clash", "beat": 68 },
+    { "name": "army", "beat": 84 },
+    { "name": "faceoff", "beat": 92 },
+    { "name": "logo", "beat": 104 }
+  ],
+  "half": 4,
+  "events": [
+    { "beat": 6, "type": "slam" },
+    { "beat": 6.5, "type": "caption", "text": "楚河漢界", "kicker": "THE RIVER BORDER" },
+    { "beat": 9, "type": "caption", "text": "紅黑兩軍　七大兵種", "kicker": "RED  ×  BLACK" },
+
+    { "beat": 12, "type": "class", "i": 0, "kind": "pawn",     "first": "red",   "line": "過河勇往直前", "stats": [2, 2, 1], "en": "SOLDIER" },
+    { "beat": 20, "type": "class", "i": 1, "kind": "cannon",   "first": "black", "line": "隔山一擊必中", "stats": [5, 3, 1], "en": "CANNON" },
+    { "beat": 28, "type": "class", "i": 2, "kind": "horse",    "first": "red",   "line": "日字飛躍奇襲", "stats": [4, 4, 2], "en": "HORSE" },
+    { "beat": 36, "type": "class", "i": 3, "kind": "rook",     "first": "black", "line": "橫衝直撞無敵", "stats": [5, 5, 3], "en": "CHARIOT" },
+    { "beat": 44, "type": "class", "i": 4, "kind": "elephant", "first": "red",   "line": "田字鎮守疆土", "stats": [1, 2, 4], "en": "ELEPHANT" },
+    { "beat": 52, "type": "class", "i": 5, "kind": "advisor",  "first": "black", "line": "斜步貼身護主", "stats": [1, 1, 5], "en": "ADVISOR" },
+    { "beat": 60, "type": "class", "i": 6, "kind": "king",     "first": "red",   "line": "九宮坐鎮天下", "stats": [3, 1, 5], "en": "GENERAL" },
+
+    { "beat": 16, "type": "swap" },
+    { "beat": 24, "type": "swap" },
+    { "beat": 32, "type": "swap" },
+    { "beat": 40, "type": "swap" },
+    { "beat": 48, "type": "swap" },
+    { "beat": 56, "type": "swap" },
+    { "beat": 62, "type": "swap" },
+
+    { "beat": 68, "type": "capture", "i": 0, "side": "red",   "how": "cannon" },
+    { "beat": 72, "type": "capture", "i": 1, "side": "black", "how": "cannon" },
+    { "beat": 76, "type": "capture", "i": 2, "side": "red",   "how": "rook" },
+    { "beat": 80, "type": "capture", "i": 3, "side": "black", "how": "rook" },
+
+    { "beat": 84, "type": "card", "title": "紅黑對決", "sub": "雙人對戰・電腦挑戰・教學關卡", "kicker": "RED  VS  BLACK" },
+    { "beat": 96, "type": "vs" },
+    { "beat": 98, "type": "ask", "text": "你站哪一邊？" },
+    { "beat": 104, "type": "gong" },
+    { "beat": 107, "type": "tagline", "text": "立即開戰" }
+  ]
+}
