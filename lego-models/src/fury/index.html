@@ -1,0 +1,358 @@
+<title>Fury 雪曼戰車</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: 軍事模型說明書 — 3D 舞台＋步驟卡，下方零件表、結構說明、LDraw 匯出 */
+:root{
+  --bg:#eceee6; --panel:#fbfbf7; --fg:#1f241c; --muted:#5d6656; --line:#d3d7c8;
+  --accent:#55562a; --accent-fg:#ffffff; --hi:#e3b23c; --hi-fg:#1f241c;
+  --stage-a:#f6f7f1; --stage-b:#d7dccb;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"PingFang TC","Noto Sans TC",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141711; --panel:#1c2018; --fg:#e7eadf; --muted:#9aa38e; --line:#2d3327;
+  --accent:#a9bd63; --accent-fg:#141711; --stage-a:#262b20; --stage-b:#11140e; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#141711; --panel:#1c2018; --fg:#e7eadf; --muted:#9aa38e; --line:#2d3327;
+  --accent:#a9bd63; --accent-fg:#141711; --stage-a:#262b20; --stage-b:#11140e; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1240px;margin:0 auto;padding-block:28px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:28px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(30px,5vw,46px);line-height:1;margin:0;letter-spacing:-.01em}
+h1 small{display:block;font-family:var(--f-body);font-weight:500;font-size:15px;color:var(--muted);margin-top:8px;letter-spacing:0}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 14px;font-variant-numeric:tabular-nums}
+.stat b{font-family:var(--f-display);font-size:20px;display:block;line-height:1.1}
+.stat span{font-size:12px;color:var(--muted);letter-spacing:.04em}
+.main{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px}
+@media (max-width:860px){.main{grid-template-columns:1fr}}
+.stage{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line);
+  background:radial-gradient(ellipse at 50% 35%,var(--stage-a),var(--stage-b));aspect-ratio:4/3;max-width:100%;min-height:340px}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none}
+.hint{position:absolute;left:12px;bottom:10px;font-size:12px;color:var(--muted);pointer-events:none}
+.tools{position:absolute;right:10px;top:10px;display:flex;gap:6px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.stephead{display:flex;align-items:center;gap:14px}
+.stepno{background:var(--hi);color:var(--hi-fg);font-family:var(--f-display);font-weight:800;font-size:34px;
+  min-width:62px;height:62px;display:grid;place-items:center;border-radius:6px;font-variant-numeric:tabular-nums}
+.stephead h2{font-family:var(--f-display);font-weight:600;font-size:21px;margin:0;text-wrap:balance}
+.stephead p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.instr{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.callout{border:1px dashed var(--line);border-radius:8px;padding:12px;display:flex;flex-wrap:wrap;gap:6px;max-height:220px;overflow:auto}
+.callout-t{width:100%;font-size:12px;color:var(--muted);letter-spacing:.06em}
+.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:12.5px}
+.sw{width:13px;height:13px;border-radius:3px;border:1px solid rgba(0,0,0,.25);flex:none}
+.mono{font-family:var(--f-mono);font-size:12px}
+.ctl{display:grid;grid-template-columns:auto minmax(0,1fr) 3.2em;gap:8px 12px;align-items:center;border-top:1px solid var(--line);padding-top:14px}
+.ctl .callout-t{grid-column:1/-1}
+.ctl label{font-size:13px;color:var(--muted)}
+.ctl output{font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.nav{display:flex;gap:8px;align-items:center;margin-top:auto}
+button{font:inherit;cursor:pointer;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--fg);padding:8px 14px}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:600}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:disabled{opacity:.45;cursor:default}
+input[type=range]{flex:1;accent-color:var(--accent);min-width:0;width:100%}
+section h3{font-family:var(--f-display);font-weight:600;font-size:20px;margin:0 0 12px}
+.cols{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.cols{grid-template-columns:1fr}}
+.tbl{overflow:auto;max-height:520px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.05em;position:sticky;top:0;background:var(--panel)}
+tr:last-child td{border-bottom:0}
+td.n{text-align:right}
+.notes{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+.notes ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:8px}
+.notes b{font-weight:600}
+.ldr{display:flex;flex-direction:column;gap:10px}
+.ldr p{margin:0;color:var(--muted);max-width:72ch}
+textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:12px;background:var(--panel);color:var(--fg);
+  border:1px solid var(--line);border-radius:8px;padding:12px;resize:vertical}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ok{font-size:13px;color:var(--muted)}
+.sel{font:inherit;font-size:13px;padding:5px 8px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--fg);min-width:0}
+.tools{flex-wrap:wrap;justify-content:flex-end;max-width:calc(100% - 20px)}
+.tools button{padding:6px 10px;font-size:13px}
+.tools button[aria-pressed=true]{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>FURY<small>M4A3E8 雪曼 Easy Eight · 1:18 · 遙控電動 · 可動 HVSS 懸吊 · V8 引擎活塞</small></h1>
+    <div class="stats">
+      <div class="stat"><b id="s-pcs">–</b><span>零件</span></div>
+      <div class="stat"><b>13</b><span>步驟</span></div>
+      <div class="stat"><b id="s-len">–</b><span>全長（含砲管）</span></div>
+      <div class="stat"><b>0</b><span>碰撞／懸空</span></div>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="stage" id="stage">
+      <div class="tools">
+        <button id="drive" aria-pressed="false">行駛示範</button>
+        <button id="xray" aria-pressed="false">透視內部</button>
+        <button id="spin" aria-pressed="true">自動旋轉：開</button>
+      </div>
+      <div class="hint">拖曳旋轉 · 滾輪/雙指縮放 · 右鍵平移</div>
+    </div>
+
+    <div class="card" aria-live="polite">
+      <div class="stephead">
+        <div class="stepno" id="no">13</div>
+        <div><h2 id="ttl"></h2><p id="sub"></p></div>
+      </div>
+      <ol class="instr" id="instr"></ol>
+      <div class="callout" id="callout"></div>
+      <div class="ctl">
+        <div class="callout-t">可動部位與配色</div>
+        <label for="tur">砲塔</label><input type="range" id="tur" min="-180" max="180" value="-20"><output id="tur-o">-20°</output>
+        <label for="gun">砲管</label><input type="range" id="gun" min="-10" max="25" value="6"><output id="gun-o">6°</output>
+        <label for="scheme">配色</label>
+        <select id="scheme" class="sel"><option value="olive">橄欖綠（真車）</option><option value="gray">淺灰（參考作品）</option></select><span></span>
+      </div>
+      <div class="nav">
+        <button id="prev" aria-label="上一步">◀</button>
+        <input type="range" id="slider" min="1" max="13" value="13" aria-label="步驟">
+        <button id="next" class="primary" aria-label="下一步">▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <section>
+      <h3>零件清單</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>零件</th><th>編號</th><th>顏色</th><th>數量</th></tr></thead>
+        <tbody id="parts"></tbody>
+      </table></div>
+    </section>
+    <section>
+      <h3>可實拼驗證</h3>
+      <div class="notes"><ul>
+        <li><b>零件來源：</b>每個零件都對照 LDraw 官方零件庫（2025 版，約 2.5 萬個零件檔）確認存在，位置與方向用零件的真實幾何計算，3D 畫面顯示的也是真實零件外形。</li>
+        <li><b>碰撞檢查：</b>以真實外形的定向包圍盒逐一比對全部零件，<b>0 處互相穿插</b>（軸穿孔、齒輪咬合、輪胎套輪框屬正常接合，不計入）。</li>
+        <li><b>接合檢查：</b>787 個有凸點的零件，每一個上下都至少接到另一個零件，<b>0 個懸空</b>。</li>
+        <li><b>機構尺寸：</b>24T／24T 中心距 3 格、20T／28T 差速器 3 格、蝸桿對 60T 轉盤 4.25 格、避震器跨距 6.5 格，皆依 LEGO 齒輪半徑計算。</li>
+        <li><b>仍需在 Studio 確認：</b>側裝（SNOT）的防沙邊條與車首木樑支架、原木內部的軸、Hub 與馬達的固定方式、Technic 銷是否真的卡進孔，以及編織繩的實際繞法；這些在 LDraw 裡位置正確但接合方式需要你在 Studio 用穩定性檢查再確認一次。</li>
+        <li><b>與上一版不同：</b>依零件庫實測，履帶 57518 是 5 格寬單排，因此每個負重站改為單輪；FURY 貼紙不是 LEGO 零件已移除；綁帶改用 LEGO 編織繩 14225。</li>
+      </ul></div>
+    </section>
+  </div>
+
+  <section class="ldr">
+    <h3>匯入 BrickLink Studio</h3>
+    <p>把下面的內容存成 <span class="mono">FURY.ldr</span>，用 BrickLink Studio 開啟。每個零件的位置與方向都是用 LDraw 零件庫的真實幾何算出來的，開啟後應該直接到位；切換配色會一併更新這份清單。</p>
+    <div class="row"><button id="copy" class="primary">複製 LDraw 內容</button><span class="ok" id="copied"></span></div>
+    <textarea id="ldr" readonly aria-label="LDraw 檔案內容"></textarea>
+  </section>
+</div>
+
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+"three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from "three";
+import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+
+const raw=document.getElementById("fury-data");
+if(raw)start(JSON.parse(raw.textContent));
+else fetch("fury-data.json").then(r=>r.json()).then(start).catch(()=>{document.getElementById("ttl").textContent="零件資料載入失敗，請重新整理頁面"});
+
+function start(DATA){
+if(THREE.ColorManagement){if("legacyMode" in THREE.ColorManagement)THREE.ColorManagement.legacyMode=false;else THREE.ColorManagement.enabled=true}
+const {parts:PARTS,geo:GEO_DATA,track:TRACK,eng:ENG,steps:STEPS,names:NAMES,iddisp:IDDISP,colors:COLORS,schemes:SCHEMES,k:K}=DATA;
+const PH=0.4, stage=document.getElementById("stage");
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+if("physicallyCorrectLights" in renderer)renderer.physicallyCorrectLights=true;
+if("outputEncoding" in renderer&&THREE.sRGBEncoding!==undefined)renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
+stage.prepend(renderer.domElement);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(32,1,1,600);
+camera.position.set(50,34,60);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.target.set(0,8,3); controls.enableDamping=true; controls.autoRotate=!reduce; controls.autoRotateSpeed=.8;
+controls.minDistance=12; controls.maxDistance=200;
+scene.add(new THREE.HemisphereLight(0xe4ebf5,0x3b3a33,1.1));
+const sun=new THREE.DirectionalLight(0xfff1de,2.1); sun.position.set(40,90,60); sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048); Object.assign(sun.shadow.camera,{left:-40,right:40,top:40,bottom:-40,near:10,far:220}); sun.shadow.bias=-.0005; sun.shadow.normalBias=.02; scene.add(sun);
+const rim=new THREE.DirectionalLight(0xd6e2ff,.45); rim.position.set(-60,30,-50); scene.add(rim);
+const ground=new THREE.Mesh(new THREE.CircleGeometry(44,64),new THREE.ShadowMaterial({opacity:.3})); ground.receiveShadow=true;
+ground.rotation.x=-Math.PI/2; ground.position.y=-.02; scene.add(ground);
+
+const mats={};
+function mat(k){
+  if(mats[k])return mats[k];const c=COLORS[k];
+  return mats[k]=new THREE.MeshStandardMaterial({color:c.hex,roughness:.7,metalness:k==="silver"?.45:0,flatShading:true,side:THREE.DoubleSide,
+    transparent:!!c.trans,opacity:c.trans?.6:1});
+}
+function b64(s,T){const bin=atob(s),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new T(u.buffer)}
+const GEOM={};
+function geom(id){
+  if(GEOM[id])return GEOM[id];const d=GEO_DATA[id];if(!d)return null;
+  const p=b64(d.p,Int16Array),f=new Float32Array(p.length);for(let i=0;i<p.length;i++)f[i]=p[i]*.25;
+  const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.BufferAttribute(f,3));
+  g.setIndex(new THREE.BufferAttribute(b64(d.i,d.i32?Uint32Array:Uint16Array),1));g.computeVertexNormals();g.computeBoundingSphere();
+  return GEOM[id]=g;
+}
+const STUDG=new THREE.CylinderGeometry(6,6,4,14); STUDG.translate(0,-2,0);
+const W=new THREE.Matrix4().makeScale(.05,-.05,-.05);
+function ldm(R,P){return new THREE.Matrix4().set(R[0],R[1],R[2],P[0],R[3],R[4],R[5],P[1],R[6],R[7],R[8],P[2],0,0,0,1)}
+const world=(R,P)=>W.clone().multiply(ldm(R,P));
+
+// ---------- groups ----------
+const turPivot=new THREE.Group(); turPivot.position.set(0,0,K.TCZ); scene.add(turPivot);
+const turret=new THREE.Group(); turret.position.set(0,0,-K.TCZ); turPivot.add(turret);
+const GPY=(K.GY+K.DY_T)*PH, gunPivot=new THREE.Group(); gunPivot.position.set(0,GPY,K.GPZ); turret.add(gunPivot);
+const gunHolder=new THREE.Group(); gunHolder.position.set(0,-GPY,-K.GPZ); gunPivot.add(gunHolder);
+const PARENT={hull:scene,tur:turret,gun:gunHolder};
+const steps=[];
+for(let s=0;s<STEPS.length;s++){const z={};["hull","tur","gun"].forEach(k=>{z[k]=new THREE.Group();PARENT[k].add(z[k])});steps.push(z)}
+
+const buckets={}, studB={}, dyns=[];
+PARTS.forEach(p=>{
+  if(p.v||!p.R)return;
+  if(p.cu)return;
+  if(!GEO_DATA[p.id])return;
+  const key=p.st+"|"+p.z+"|"+p.id+"|"+p.c, Mw=world(p.R,p.P);
+  const b=buckets[key]=buckets[key]||{p,list:[]};
+  if(p.d)dyns.push({p,key,idx:b.list.length,base:Mw.clone()});
+  b.list.push(Mw);
+  if(!p.d){const studs=GEO_DATA[p.id].s;if(studs.length){const sk=p.st+"|"+p.z+"|"+(COLORS[p.c].trans?"tclear":p.c),sb=studB[sk]=studB[sk]||{p,list:[]};
+    studs.forEach(s=>sb.list.push(Mw.clone().multiply(new THREE.Matrix4().makeTranslation(s[0],s[1],s[2]))))}}
+});
+const meshOf={};
+function addIM(geo,m,list,step,zone,shadow){
+  const im=new THREE.InstancedMesh(geo,m,list.length);list.forEach((M,i)=>im.setMatrixAt(i,M));
+  im.instanceMatrix.needsUpdate=true;im.frustumCulled=false;if(shadow){im.castShadow=true;im.receiveShadow=true}
+  steps[step-1][zone].add(im);return im;
+}
+for(const k in buckets){const b=buckets[k];const g=geom(b.p.id);if(!g)continue;
+  const im=addIM(g,mat(b.p.c),b.list,b.p.st,b.p.z,!COLORS[b.p.c].trans);meshOf[k]=im;
+  if(b.list.length>1&&(b.p.c==="olive"||b.p.c==="int")){const col=new THREE.Color();b.list.forEach((m,i)=>{const h=Math.sin(i*12.9898+k.length*78.233)*43758.5453,v=.93+(h-Math.floor(h))*.1;im.setColorAt(i,col.setRGB(v,v,v))});im.instanceColor.needsUpdate=true}
+}
+for(const k in studB){const b=studB[k];const c=k.split("|")[2];addIM(STUDG,mat(c),b.list,b.p.st,b.p.z,true)}
+// strings drawn as straps / bands
+PARTS.filter(p=>p.cu&&p.x).forEach(p=>{
+  const x=p.x, m=mat("black"), g=steps[p.st-1][p.z];
+  if(p.k==="strap"){const mesh=new THREE.Mesh(new THREE.BoxGeometry(.12,15.6*PH,.2),m);mesh.position.set(x.x,24.6*PH,x.z);g.add(mesh)}
+  else{const mesh=new THREE.Mesh(new THREE.CylinderGeometry(x.r,x.r,.18,24,1,true),new THREE.MeshStandardMaterial({color:0x1e2328,side:THREE.DoubleSide}));
+    mesh.rotation.x=Math.PI/2;mesh.position.set(x.cx,(x.cy+K.DY_T)*PH,x.cz);g.add(mesh)}
+});
+
+// ---------- moving parts ----------
+const T1=new THREE.Matrix4(),T2=new THREE.Matrix4(),RM=new THREE.Matrix4(),AX={x:new THREE.Vector3(1,0,0),y:new THREE.Vector3(0,1,0),z:new THREE.Vector3(0,0,1)};
+const norm=a=>{const l=Math.hypot(...a);return a.map(v=>v/l)}, cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const mv=(R,v)=>[R[0]*v[0]+R[1]*v[1]+R[2]*v[2],R[3]*v[0]+R[4]*v[1]+R[5]*v[2],R[6]*v[0]+R[7]*v[1]+R[8]*v[2]];
+function frame(c){let {X,Y,Z}=c;if(!X)X=cross(Y,Z);if(!Y)Y=cross(Z,X);if(!Z)Z=cross(X,Y);return [X[0],Y[0],Z[0],X[1],Y[1],Z[1],X[2],Y[2],Z[2]]}
+function alignY(b){b=norm(b);const v=cross([0,1,0],b),c=b[1];if(c<-.9999)return [1,0,0,0,-1,0,0,0,-1];const k=1/(1+c),[x,y,z]=v;
+  return [x*x*k+c,x*y*k-z,x*z*k+y,y*x*k+z,y*y*k+c,y*z*k-x,z*x*k-y,z*y*k+x,z*z*k+c]}
+function fitP(id,R,Ct){const c=GEO_DATA[id].c,rc=mv(R,c);return [Ct[0]-rc[0],Ct[1]-rc[1],Ct[2]-rc[2]]}
+function linkAt(d,x){
+  const seg=TRACK.seg,L=TRACK.per;d=((d%L)+L)%L;let s=0;while(s<seg.length-1&&seg[s][3]+seg[s][2]<d)s++;
+  const g=seg[s],f=(d-g[3])/g[2],z=g[0][0]+(g[1][0]-g[0][0])*f,y=g[0][1]+(g[1][1]-g[0][1])*f,tz=(g[1][0]-g[0][0])/g[2],ty=(g[1][1]-g[0][1])/g[2];
+  const t=norm([0,-ty,-tz]);return {R:frame({X:[-1,0,0],Z:t.map(v=>-v)}),P:[x*20,-y*20,-z*20]};
+}
+function engineRP(kind,e,th){
+  const a=th+e.phase,bank=Math.atan2(e.dir[0],e.dir[1]),dp=1.9+.45*Math.cos(a-bank);
+  const C=[0,K.CR_Y*.4,e.z],pin=[Math.sin(a)*.5,C[1]+Math.cos(a)*.5,e.z],pc=[e.dir[0]*dp,C[1]+e.dir[1]*dp,e.z],toL=v=>[v[0]*20,-v[1]*20,-v[2]*20];
+  if(kind==="piston"){const R=alignY([-e.dir[0],e.dir[1],0]);return {R,P:fitP("2851",R,toL(pc))}}
+  const R=alignY([-(pc[0]-pin[0]),(pc[1]-pin[1]),0]);return {R,P:fitP("2852",R,toL([(pin[0]+pc[0])/2,(pin[1]+pc[1])/2,e.z]))};
+}
+let dist=0;
+function setDyn(){
+  const sprAng=-dist/K.SPR_R, th=dist/K.SPR_R/0.43, touched=new Set();
+  dyns.forEach(d=>{
+    const p=d.p,im=meshOf[d.key];if(!im)return;let M;
+    if(p.d.t==="link"){const r=linkAt(p.d.k*TRACK.pitch+dist,p.d.row);M=world(r.R,r.P)}
+    else if(p.d.t==="piston"||p.d.t==="conrod"){const r=engineRP(p.d.t,ENG[p.d.eng],th);M=world(r.R,r.P)}
+    else{const ang=p.d.t==="wheel"?-dist/p.d.r:(p.d.spin?p.d.spin*sprAng/0.43:0);if(!ang)return;
+      const c=new THREE.Vector3(p.d.c[0],p.d.c[1]*PH,p.d.c[2]);
+      M=T1.makeTranslation(c.x,c.y,c.z).clone().multiply(RM.makeRotationAxis(AX[p.d.axis],ang)).multiply(T2.makeTranslation(-c.x,-c.y,-c.z)).multiply(d.base)}
+    im.setMatrixAt(d.idx,M);touched.add(im);
+  });
+  touched.forEach(im=>im.instanceMatrix.needsUpdate=true);
+}
+setDyn();
+
+function resize(){const r=stage.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix()}
+new ResizeObserver(resize).observe(stage); resize();
+
+let anim=null, driving=false, last=performance.now();
+function showStep(n,animate){
+  steps.forEach((z,i)=>{for(const k in z){z[k].visible=i<n;z[k].position.y=0}});
+  anim=animate&&!reduce?{z:steps[n-1],t0:performance.now()}:null;
+}
+function tick(now){
+  const dt=Math.min(.05,(now-last)/1000);last=now;
+  if(anim){const k=Math.min(1,(now-anim.t0)/500);for(const z in anim.z)anim.z[z].position.y=8*(1-k)*(1-k);if(k>=1)anim=null}
+  if(driving){dist-=5*dt;setDyn()}
+  controls.update(); renderer.render(scene,camera); requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+// ---------- UI ----------
+const $=id=>document.getElementById(id);
+const hex=n=>"#"+n.toString(16).padStart(6,"0");
+const idOf=p=>IDDISP[p]||p;
+function chips(list){const grp={};list.forEach(p=>{const k=p.part+"|"+p.c;grp[k]=(grp[k]||0)+1});return Object.entries(grp).sort((a,b)=>b[1]-a[1])}
+function render(n,animate){
+  const st=STEPS[n-1], list=PARTS.filter(p=>p.st===n);
+  $("no").textContent=n; $("ttl").textContent=st.t; $("sub").textContent=`${st.s?st.s+" · ":""}${list.length} 個零件`;
+  $("instr").innerHTML=st.i.map(x=>`<li>${x}</li>`).join("");
+  $("callout").innerHTML=`<div class="callout-t">這一步需要</div>`+chips(list).map(([k,c])=>{const [part,col]=k.split("|");
+    return `<span class="chip"><span class="sw" style="background:${hex(COLORS[col].hex)}"></span>${c}× ${NAMES[part]||part} <span class="mono">${idOf(part)}</span></span>`}).join("");
+  $("slider").max=STEPS.length; $("slider").value=n; $("prev").disabled=n===1; $("next").disabled=n===STEPS.length;
+  showStep(n,animate);
+}
+let cur=STEPS.length;
+$("prev").onclick=()=>{if(cur>1)render(--cur,true)};
+$("next").onclick=()=>{if(cur<STEPS.length)render(++cur,true)};
+$("slider").oninput=e=>{cur=+e.target.value;render(cur,true)};
+$("spin").onclick=e=>{controls.autoRotate=!controls.autoRotate;e.target.textContent="自動旋轉："+(controls.autoRotate?"開":"關");e.target.setAttribute("aria-pressed",controls.autoRotate)};
+if(reduce){$("spin").textContent="自動旋轉：關";$("spin").setAttribute("aria-pressed","false")}
+function setTur(v){turPivot.rotation.y=v*Math.PI/180;$("tur-o").textContent=v+"°"}
+function setGun(v){gunPivot.rotation.x=-v*Math.PI/180;$("gun-o").textContent=v+"°"}
+$("tur").oninput=e=>setTur(+e.target.value); $("gun").oninput=e=>setGun(+e.target.value);
+setTur(-20); setGun(6);
+$("drive").onclick=e=>{driving=!driving;e.target.textContent=driving?"停止行駛":"行駛示範";e.target.setAttribute("aria-pressed",driving)};
+let xray=false;
+$("xray").onclick=e=>{xray=!xray;["olive","int"].forEach(k=>{const m=mat(k);m.transparent=xray;m.opacity=xray?.12:1;m.depthWrite=!xray;m.needsUpdate=true});
+  e.target.textContent=xray?"關閉透視":"透視內部";e.target.setAttribute("aria-pressed",xray)};
+function f(n){n=Math.round(n*1000)/1000;return (Object.is(n,-0)?0:n).toString()}
+function toLDraw(){
+  const o=["0 M4A3E8 Sherman Easy Eight \"Fury\" (1:18, motorized)","0 Name: FURY.ldr","0 Author: Claude","0 !LDRAW_ORG Unofficial_Model",""];
+  for(let s=1;s<=STEPS.length;s++){
+    PARTS.forEach(p=>{if(p.st!==s||!p.R||!p.P)return;o.push(["1",COLORS[p.c].ld,...p.P.map(f),...p.R.map(f),p.id+".dat"].join(" "))});
+    o.push("0 STEP");
+  }
+  return o.join("\n")+"\n";
+}
+let ldr="";
+function table(){
+  $("parts").innerHTML=chips(PARTS).sort((a,b)=>a[0].localeCompare(b[0])).map(([k,c])=>{const [part,col]=k.split("|");
+    return `<tr><td>${NAMES[part]||part}</td><td class="mono">${idOf(part)}</td><td><span class="chip" style="border:0;padding:0"><span class="sw" style="background:${hex(COLORS[col].hex)}"></span>${COLORS[col].name}</span></td><td class="n">${c}</td></tr>`}).join("");
+  ldr=toLDraw(); $("ldr").value=ldr;
+}
+$("scheme").onchange=e=>{Object.assign(COLORS.olive,SCHEMES[e.target.value]);mat("olive").color.setHex(COLORS.olive.hex);table();render(cur,false)};
+render(cur,false); table();
+$("s-pcs").textContent=PARTS.length.toLocaleString();
+$("s-len").textContent=`≈ ${Math.round(K.len*0.8)} cm`;
+$("copy").onclick=()=>{
+  navigator.clipboard.writeText(ldr).then(()=>{$("copied").textContent="已複製，貼到文字檔並存成 FURY.ldr"})
+  .catch(()=>{$("ldr").select();$("copied").textContent="已選取全部內容，請按 ⌘C / Ctrl+C 複製"});
+};
+}
+</script>

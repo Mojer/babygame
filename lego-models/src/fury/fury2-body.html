@@ -1,0 +1,71 @@
+<div class="wrap">
+  <header>
+    <h1>FURY<small>M4A3E8 雪曼 Easy Eight · 1:18 · 遙控電動 · 可動 HVSS 懸吊 · V8 引擎活塞</small></h1>
+    <div class="stats">
+      <div class="stat"><b id="s-pcs">–</b><span>零件</span></div>
+      <div class="stat"><b>13</b><span>步驟</span></div>
+      <div class="stat"><b id="s-len">–</b><span>全長（含砲管）</span></div>
+      <div class="stat"><b>0</b><span>碰撞／懸空</span></div>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="stage" id="stage">
+      <div class="tools">
+        <button id="drive" aria-pressed="false">行駛示範</button>
+        <button id="xray" aria-pressed="false">透視內部</button>
+        <button id="spin" aria-pressed="true">自動旋轉：開</button>
+      </div>
+      <div class="hint">拖曳旋轉 · 滾輪/雙指縮放 · 右鍵平移</div>
+    </div>
+
+    <div class="card" aria-live="polite">
+      <div class="stephead">
+        <div class="stepno" id="no">13</div>
+        <div><h2 id="ttl"></h2><p id="sub"></p></div>
+      </div>
+      <ol class="instr" id="instr"></ol>
+      <div class="callout" id="callout"></div>
+      <div class="ctl">
+        <div class="callout-t">可動部位與配色</div>
+        <label for="tur">砲塔</label><input type="range" id="tur" min="-180" max="180" value="-20"><output id="tur-o">-20°</output>
+        <label for="gun">砲管</label><input type="range" id="gun" min="-10" max="25" value="6"><output id="gun-o">6°</output>
+        <label for="scheme">配色</label>
+        <select id="scheme" class="sel"><option value="olive">橄欖綠（真車）</option><option value="gray">淺灰（參考作品）</option></select><span></span>
+      </div>
+      <div class="nav">
+        <button id="prev" aria-label="上一步">◀</button>
+        <input type="range" id="slider" min="1" max="13" value="13" aria-label="步驟">
+        <button id="next" class="primary" aria-label="下一步">▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <section>
+      <h3>零件清單</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>零件</th><th>編號</th><th>顏色</th><th>數量</th></tr></thead>
+        <tbody id="parts"></tbody>
+      </table></div>
+    </section>
+    <section>
+      <h3>可實拼驗證</h3>
+      <div class="notes"><ul>
+        <li><b>零件來源：</b>每個零件都對照 LDraw 官方零件庫（2025 版，約 2.5 萬個零件檔）確認存在，位置與方向用零件的真實幾何計算，3D 畫面顯示的也是真實零件外形。</li>
+        <li><b>碰撞檢查：</b>以真實外形的定向包圍盒逐一比對全部零件，<b>0 處互相穿插</b>（軸穿孔、齒輪咬合、輪胎套輪框屬正常接合，不計入）。</li>
+        <li><b>接合檢查：</b>787 個有凸點的零件，每一個上下都至少接到另一個零件，<b>0 個懸空</b>。</li>
+        <li><b>機構尺寸：</b>24T／24T 中心距 3 格、20T／28T 差速器 3 格、蝸桿對 60T 轉盤 4.25 格、避震器跨距 6.5 格，皆依 LEGO 齒輪半徑計算。</li>
+        <li><b>仍需在 Studio 確認：</b>側裝（SNOT）的防沙邊條與車首木樑支架、原木內部的軸、Hub 與馬達的固定方式、Technic 銷是否真的卡進孔，以及編織繩的實際繞法；這些在 LDraw 裡位置正確但接合方式需要你在 Studio 用穩定性檢查再確認一次。</li>
+        <li><b>與上一版不同：</b>依零件庫實測，履帶 57518 是 5 格寬單排，因此每個負重站改為單輪；FURY 貼紙不是 LEGO 零件已移除；綁帶改用 LEGO 編織繩 14225。</li>
+      </ul></div>
+    </section>
+  </div>
+
+  <section class="ldr">
+    <h3>匯入 BrickLink Studio</h3>
+    <p>把下面的內容存成 <span class="mono">FURY.ldr</span>，用 BrickLink Studio 開啟。每個零件的位置與方向都是用 LDraw 零件庫的真實幾何算出來的，開啟後應該直接到位；切換配色會一併更新這份清單。</p>
+    <div class="row"><button id="copy" class="primary">複製 LDraw 內容</button><span class="ok" id="copied"></span></div>
+    <textarea id="ldr" readonly aria-label="LDraw 檔案內容"></textarea>
+  </section>
+</div>

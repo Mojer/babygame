@@ -3,3 +3,8 @@
 .pnpm-store/
 # 角色原始大圖（1254px，約 10MB）不進 repo，遊戲使用 *_s.png 縮小版
 babyballrace2/assets/ch_0?.png
+
+# LEGO 模型建置用（LDraw 零件庫 621MB 與中間產物不進 repo）
+lego-models/tools/ldraw-lib/
+lego-models/tools/*-real.json
+lego-models/tools/compile-report.json
